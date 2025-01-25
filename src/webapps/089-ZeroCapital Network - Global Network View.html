@@ -1,0 +1,230 @@
+<html><head><base href="https://zerocapital.network/#network"><title>ZeroCapital Network - Global Network View</title>
+<style>
+    body {
+        font-family: 'Courier New', monospace;
+        background-color: #0a0a0a;
+        color: #00ff00;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    h1, h2 {
+        color: #00ff00;
+        border-bottom: 1px solid #00ff00;
+        padding-bottom: 10px;
+    }
+    .menu {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .menu a {
+        color: #00ff00;
+        text-decoration: none;
+        padding: 5px 10px;
+        border: 1px solid #00ff00;
+    }
+    .menu a:hover {
+        background-color: #00ff00;
+        color: #0a0a0a;
+    }
+    #network-view {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #00ff00;
+        margin-bottom: 20px;
+    }
+    .network-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    .stat-box {
+        background-color: #1a1a1a;
+        padding: 20px;
+        border: 1px solid #00ff00;
+    }
+    .connections-list {
+        height: 200px;
+        overflow-y: scroll;
+        border: 1px solid #00ff00;
+        padding: 10px;
+        font-size: 0.9em;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>ZeroCapital Network - Global Network View</h1>
+    <div class="menu">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#barter">Barter Exchange</a>
+        <a href="#projects">Zero Capital Projects</a>
+        <a href="#network">Global Network</a>
+    </div>
+    
+    <div id="network-view"></div>
+    
+    <div class="network-stats">
+        <div class="stat-box">
+            <h2>Network Statistics</h2>
+            <p>Total Nodes: <span id="total-nodes">0</span></p>
+            <p>Active Connections: <span id="active-connections">0</span></p>
+            <p>Resources Shared: <span id="resources-shared">0</span></p>
+        </div>
+        <div class="stat-box">
+            <h2>Top Resources</h2>
+            <ol id="top-resources"></ol>
+        </div>
+        <div class="stat-box">
+            <h2>Recent Connections</h2>
+            <div class="connections-list" id="recent-connections"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Network simulation data
+const networkData = {
+    nodes: [],
+    links: []
+};
+
+// Generate random network data
+function generateNetworkData() {
+    const nodeCount = 100;
+    const maxConnections = 5;
+    
+    for (let i = 0; i < nodeCount; i++) {
+        networkData.nodes.push({
+            id: i,
+            name: `Node ${i}`,
+            resources: [`Resource ${Math.floor(Math.random() * 10)}`]
+        });
+    }
+    
+    for (let i = 0; i < nodeCount; i++) {
+        const connectionCount = Math.floor(Math.random() * maxConnections) + 1;
+        for (let j = 0; j < connectionCount; j++) {
+            const target = Math.floor(Math.random() * nodeCount);
+            if (target !== i) {
+                networkData.links.push({
+                    source: i,
+                    target: target
+                });
+            }
+        }
+    }
+}
+
+generateNetworkData();
+
+// Create network visualization
+const width = document.getElementById('network-view').clientWidth;
+const height = 600;
+
+const svg = d3.select("#network-view")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+const simulation = d3.forceSimulation(networkData.nodes)
+    .force("link", d3.forceLink(networkData.links).id(d => d.id))
+    .force("charge", d3.forceManyBody().strength(-50))
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+const link = svg.append("g")
+    .selectAll("line")
+    .data(networkData.links)
+    .enter().append("line")
+    .attr("stroke", "#00ff00")
+    .attr("stroke-opacity", 0.6);
+
+const node = svg.append("g")
+    .selectAll("circle")
+    .data(networkData.nodes)
+    .enter().append("circle")
+    .attr("r", 5)
+    .attr("fill", "#00ff00");
+
+node.append("title")
+    .text(d => d.name);
+
+simulation.on("tick", () => {
+    link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+    node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+});
+
+// Update network statistics
+function updateNetworkStats() {
+    document.getElementById('total-nodes').textContent = networkData.nodes.length;
+    document.getElementById('active-connections').textContent = networkData.links.length;
+    document.getElementById('resources-shared').textContent = networkData.nodes.reduce((total, node) => total + node.resources.length, 0);
+    
+    const resourceCounts = {};
+    networkData.nodes.forEach(node => {
+        node.resources.forEach(resource => {
+            resourceCounts[resource] = (resourceCounts[resource] || 0) + 1;
+        });
+    });
+    
+    const topResources = Object.entries(resourceCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    const topResourcesList = document.getElementById('top-resources');
+    topResourcesList.innerHTML = '';
+    topResources.forEach(([resource, count]) => {
+        const li = document.createElement('li');
+        li.textContent = `${resource}: ${count}`;
+        topResourcesList.appendChild(li);
+    });
+}
+
+// Simulate network activity
+function simulateNetworkActivity() {
+    const recentConnections = document.getElementById('recent-connections');
+    
+    setInterval(() => {
+        const sourceNode = networkData.nodes[Math.floor(Math.random() * networkData.nodes.length)];
+        const targetNode = networkData.nodes[Math.floor(Math.random() * networkData.nodes.length)];
+        
+        if (sourceNode !== targetNode) {
+            const connectionElement = document.createElement('p');
+            connectionElement.textContent = `${sourceNode.name} connected with ${targetNode.name}`;
+            recentConnections.insertBefore(connectionElement, recentConnections.firstChild);
+            
+            if (recentConnections.childElementCount > 10) {
+                recentConnections.removeChild(recentConnections.lastChild);
+            }
+            
+            // Simulate resource sharing
+            if (Math.random() > 0.5) {
+                const sharedResource = sourceNode.resources[Math.floor(Math.random() * sourceNode.resources.length)];
+                if (!targetNode.resources.includes(sharedResource)) {
+                    targetNode.resources.push(sharedResource);
+                }
+            }
+            
+            updateNetworkStats();
+        }
+    }, 2000);
+}
+
+updateNetworkStats();
+simulateNetworkActivity();
+</script>
+</body>
+</html>

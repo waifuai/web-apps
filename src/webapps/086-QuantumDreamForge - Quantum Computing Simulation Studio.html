@@ -1,0 +1,392 @@
+<html><head><base href="https://quantumdreamforge.ai/"><title>QuantumDreamForge - Quantum Computing Simulation Studio</title><style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #0a192f;
+    margin: 0;
+    padding: 20px;
+    color: #8892b0;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #112240;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  h1 {
+    color: #64ffda;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    text-shadow: 0 0 10px rgba(100,255,218,0.5);
+  }
+  .input-section {
+    margin-bottom: 25px;
+    position: relative;
+  }
+  textarea {
+    width: 100%;
+    height: 100px;
+    padding: 15px;
+    border: 2px solid #233554;
+    border-radius: 10px;
+    resize: vertical;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    background-color: #0a192f;
+    color: #ccd6f6;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: #64ffda;
+  }
+  .reset-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background-color: #f76c6c;
+    color: #0a192f;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .options-container {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  .left-options, .right-options {
+    flex: 1;
+  }
+  .option-group {
+    background-color: #1d2d50;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .option-group h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #64ffda;
+    font-size: 18px;
+  }
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #233554;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #ccd6f6;
+    background-color: #0a192f;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364ffda' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+  }
+  select:focus {
+    outline: none;
+    border-color: #64ffda;
+  }
+  .quantum-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .quantum-option {
+    background-color: #233554;
+    color: #ccd6f6;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .quantum-option.selected {
+    background-color: #64ffda;
+    color: #0a192f;
+  }
+  button {
+    background-color: #64ffda;
+    color: #0a192f;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+    display: block;
+    margin: 0 auto;
+  }
+  button:hover {
+    background-color: #4cD9b9;
+  }
+  button:active {
+    transform: scale(0.98);
+  }
+  .prompt-preview {
+    background-color: #1d2d50;
+    border: 1px solid #233554;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #ccd6f6;
+  }
+  .simulation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-top: 40px;
+  }
+  .simulation-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    background-color: #1d2d50;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(100,255,218,0.2);
+    transition: transform 0.3s;
+  }
+  .simulation-container:hover {
+    transform: translateY(-5px);
+  }
+  .simulation-container svg, .simulation-container .placeholder-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #64ffda;
+  }
+</style></head><body>
+<div class="container">
+  <h1>QuantumDreamForge - Quantum Computing Simulation Studio</h1>
+  
+  <div class="input-section">
+    <textarea id="prompt" placeholder="Describe the quantum circuit or algorithm you want to simulate..."></textarea>
+    <button class="reset-button" onclick="resetPrompt()">Reset</button>
+  </div>
+  
+  <div class="prompt-preview" id="promptPreview"></div>
+  
+  <div class="options-container">
+    <div class="left-options">
+      <div class="option-group">
+        <h3>Quantum Gate Set</h3>
+        <select id="gateSet">
+          <option value="">Select a gate set</option>
+          <option value="Universal">Universal (H, CNOT, T)</option>
+          <option value="Clifford+T">Clifford+T</option>
+          <option value="IBM Q">IBM Q</option>
+          <option value="Google Sycamore">Google Sycamore</option>
+          <option value="Rigetti">Rigetti</option>
+          <option value="IonQ">IonQ</option>
+          <option value="Custom">Custom</option>
+        </select>
+      </div>
+      
+      <div class="option-group">
+        <h3>Number of Qubits</h3>
+        <select id="qubitCount">
+          <option value="">Select qubit count</option>
+          <option value="1">1 qubit</option>
+          <option value="2">2 qubits</option>
+          <option value="3">3 qubits</option>
+          <option value="5">5 qubits</option>
+          <option value="10">10 qubits</option>
+          <option value="20">20 qubits</option>
+          <option value="50">50 qubits</option>
+          <option value="100">100 qubits</option>
+          <option value="Custom">Custom</option>
+        </select>
+      </div>
+      
+      <div class="option-group">
+        <h3>Simulation Type</h3>
+        <select id="simulationType">
+          <option value="">Select simulation type</option>
+          <option value="State Vector">State Vector</option>
+          <option value="Density Matrix">Density Matrix</option>
+          <option value="Stabilizer">Stabilizer</option>
+          <option value="Unitary">Unitary</option>
+          <option value="MPS">Matrix Product State (MPS)</option>
+          <option value="DMRG">Density Matrix Renormalization Group (DMRG)</option>
+          <option value="Tensor Network">Tensor Network</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="right-options">
+      <div class="option-group">
+        <h3>Quantum Features (Multiple Selection)</h3>
+        <div class="quantum-options" id="quantumFeatures">
+          <span class="quantum-option" data-value="Superposition">Superposition</span>
+          <span class="quantum-option" data-value="Entanglement">Entanglement</span>
+          <span class="quantum-option" data-value="Interference">Interference</span>
+          <span class="quantum-option" data-value="Teleportation">Teleportation</span>
+          <span class="quantum-option" data-value="QFT">Quantum Fourier Transform</span>
+          <span class="quantum-option" data-value="Grover">Grover's Algorithm</span>
+          <span class="quantum-option" data-value="Shor">Shor's Algorithm</span>
+          <span class="quantum-option" data-value="VQE">Variational Quantum Eigensolver</span>
+          <span class="quantum-option" data-value="QAOA">Quantum Approximate Optimization Algorithm</span>
+          <span class="quantum-option" data-value="QML">Quantum Machine Learning</span>
+          <span class="quantum-option" data-value="ErrorCorrection">Quantum Error Correction</span>
+          <span class="quantum-option" data-value="Annealing">Quantum Annealing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <button onclick="generateSimulations()">Generate Quantum Simulations</button>
+  
+  <div class="simulation-grid" id="simulationGrid">
+    <!-- Simulations will be dynamically inserted here -->
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const quantumFeatures = document.querySelectorAll('.quantum-option');
+  quantumFeatures.forEach(option => {
+    option.addEventListener('click', function() {
+      this.classList.toggle('selected');
+      updatePromptPreview();
+    });
+  });
+
+  const inputs = document.querySelectorAll('textarea, select');
+  inputs.forEach(input => {
+    input.addEventListener('change', updatePromptPreview);
+    input.addEventListener('input', updatePromptPreview);
+  });
+
+  updatePromptPreview();
+});
+
+function getSelectedFeatures() {
+  return Array.from(document.querySelectorAll('.quantum-option.selected'))
+    .map(option => option.dataset.value);
+}
+
+function buildPrompt() {
+  let basePrompt = document.getElementById('prompt').value;
+  const gateSet = document.getElementById('gateSet').value;
+  const qubitCount = document.getElementById('qubitCount').value;
+  const simulationType = document.getElementById('simulationType').value;
+  const features = getSelectedFeatures();
+  
+  let fullPrompt = basePrompt;
+  
+  if (gateSet) fullPrompt += `, Gate Set: ${gateSet}`;
+  if (qubitCount) fullPrompt += `, Qubits: ${qubitCount}`;
+  if (simulationType) fullPrompt += `, Simulation: ${simulationType}`;
+  if (features.length) fullPrompt += `, Features: ${features.join(', ')}`;
+  
+  return fullPrompt;
+}
+
+function updatePromptPreview() {
+  const preview = document.getElementById('promptPreview');
+  preview.textContent = `Generated Prompt: ${buildPrompt()}`;
+}
+
+function resetPrompt() {
+  document.getElementById('prompt').value = '';
+  document.getElementById('gateSet').selectedIndex = 0;
+  document.getElementById('qubitCount').selectedIndex = 0;
+  document.getElementById('simulationType').selectedIndex = 0;
+  document.querySelectorAll('.quantum-option.selected').forEach(option => {
+    option.classList.remove('selected');
+  });
+  updatePromptPreview();
+}
+
+async function generateSimulations() {
+  const fullPrompt = buildPrompt();
+  console.log("Full prompt:", fullPrompt);
+  
+  const simulationGrid = document.getElementById('simulationGrid');
+  simulationGrid.innerHTML = '';
+  
+  for (let i = 0; i < 4; i++) {
+    const simulationContainer = document.createElement('div');
+    simulationContainer.className = 'simulation-container';
+    
+    const placeholderText = document.createElement('div');
+    placeholderText.className = 'placeholder-text';
+    placeholderText.textContent = 'Generating Quantum Simulation...';
+    
+    simulationContainer.appendChild(placeholderText);
+    simulationGrid.appendChild(simulationContainer);
+  }
+  
+  try {
+    const simulationPromises = Array(4).fill().map(() => generateQuantumSimulation(fullPrompt));
+    const simulationSvgs = await Promise.all(simulationPromises);
+    
+    simulationGrid.innerHTML = '';
+    
+    simulationSvgs.forEach((svgContent, index) => {
+      const simulationContainer = document.createElement('div');
+      simulationContainer.className = 'simulation-container';
+      simulationContainer.innerHTML = svgContent;
+      simulationGrid.appendChild(simulationContainer);
+    });
+  } catch (error) {
+    console.error("Error generating quantum simulations:", error);
+    alert("An error occurred while generating quantum simulations. Please try again.");
+  }
+}
+
+async function generateQuantumSimulation(prompt) {
+  // This is a placeholder function. In a real application, you would make an API call to a quantum simulation engine here.
+  // For this example, we'll generate a simple SVG representing a quantum circuit.
+  await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000)); // Simulate varying generation times
+  
+  const svgWidth = 300;
+  const svgHeight = 200;
+  const wireCount = 3 + Math.floor(Math.random() * 3); // 3 to 5 wires
+  const gateCount = 4 + Math.floor(Math.random() * 3); // 4 to 6 gates per wire
+  
+  let svg = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
+  
+  // Draw quantum wires
+  for (let i = 0; i < wireCount; i++) {
+    const y = 30 + i * 40;
+    svg += `<line x1="10" y1="${y}" x2="${svgWidth-10}" y2="${y}" stroke="#64ffda" stroke-width="2"/>`;
+  }
+  
+  // Draw quantum gates
+  const gates = ['H', 'X', 'Y', 'Z', 'CNOT', 'T'];
+  for (let i = 0; i < wireCount; i++) {
+    for (let j = 0; j < gateCount; j++) {
+      const x = 40 + j * 50;
+      const y = 30 + i * 40;
+      const gate = gates[Math.floor(Math.random() * gates.length)];
+      
+      if (gate === 'CNOT' && i < wireCount - 1) {
+        svg += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y+40}" stroke="#64ffda" stroke-width="2"/>`;
+        svg += `<circle cx="${x}" cy="${y}" r="10" fill="#112240" stroke="#64ffda" stroke-width="2"/>`;
+        svg += `<circle cx="${x}" cy="${y+40}" r="10" fill="#64ffda"/>`;
+      } else {
+        svg += `<rect x="${x-15}" y="${y-15}" width="30" height="30" fill="#112240" stroke="#64ffda" stroke-width="2"/>`;
+        svg += `<text x="${x}" y="${y+5}" font-family="Arial" font-size="16" fill="#64ffda" text-anchor="middle">${gate}</text>`;
+      }
+    }
+  }
+  
+  svg += '</svg>';
+  return svg;
+}
+</script>
+</body></html>

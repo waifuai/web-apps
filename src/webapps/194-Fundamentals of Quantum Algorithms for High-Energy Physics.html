@@ -1,0 +1,160 @@
+<html><head><base href="https://quantum.stringtheory.edu/algorithms/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fundamentals of Quantum Algorithms for High-Energy Physics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f5ff;
+  }
+  h1, h2 {
+    color: #1a237e;
+  }
+  .interactive-element {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  #qubit-visualization {
+    width: 100%;
+    height: 400px;
+  }
+  #quantum-circuit {
+    width: 100%;
+    height: 200px;
+  }
+  .nav-menu {
+    background-color: #1a237e;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .nav-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+  }
+  .nav-menu a:hover {
+    background-color: #3f51b5;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+  <nav class="nav-menu">
+    <a href="https://quantum.stringtheory.edu/introduction/">1. Introduction</a>
+    <a href="https://quantum.stringtheory.edu/algorithms/">2. Algorithms</a>
+    <a href="https://quantum.stringtheory.edu/simulations/">3. Simulations</a>
+    <a href="https://quantum.stringtheory.edu/error-correction/">4. Error Correction</a>
+  </nav>
+
+  <h1>Fundamentals of Quantum Algorithms for High-Energy Physics</h1>
+  
+  <p>Welcome to our exploration of quantum algorithms tailored for high-energy physics applications, with a focus on string theory. This page will introduce you to the core concepts and provide interactive demonstrations to enhance your understanding.</p>
+
+  <h2>1. Quantum Superposition and Entanglement</h2>
+  
+  <div class="interactive-element">
+    <h3>Qubit Visualization</h3>
+    <p>Explore the concept of quantum superposition by manipulating a single qubit on the Bloch sphere:</p>
+    <div id="qubit-visualization"></div>
+  </div>
+
+  <h2>2. Quantum Gates and Circuits</h2>
+  
+  <div class="interactive-element">
+    <h3>Interactive Quantum Circuit</h3>
+    <p>Build a simple quantum circuit and observe its effects on qubits:</p>
+    <div id="quantum-circuit"></div>
+  </div>
+
+  <h2>3. Quantum Fourier Transform</h2>
+  
+  <p>The Quantum Fourier Transform (QFT) is a fundamental building block for many quantum algorithms, including those used in high-energy physics simulations. It allows us to efficiently analyze the frequency components of quantum states, which is crucial for understanding particle interactions and string vibrations.</p>
+
+  <h2>4. Grover's Algorithm in Particle Physics</h2>
+  
+  <p>Grover's algorithm provides a quadratic speedup for searching unsorted databases. In the context of high-energy physics, it can be applied to problems such as finding specific particle configurations or optimizing parameters in string theory models.</p>
+
+  <h2>5. Quantum Phase Estimation</h2>
+  
+  <p>Quantum Phase Estimation is a key subroutine in many quantum algorithms relevant to high-energy physics. It allows us to estimate the eigenvalues of unitary operators, which is useful for simulating quantum systems and solving equations in string theory.</p>
+
+  <script>
+    // Qubit Visualization
+    function updateQubitVisualization(theta, phi) {
+      const x = Math.sin(theta) * Math.cos(phi);
+      const y = Math.sin(theta) * Math.sin(phi);
+      const z = Math.cos(theta);
+
+      const trace = {
+        x: [0, x],
+        y: [0, y],
+        z: [0, z],
+        type: 'scatter3d',
+        mode: 'lines+markers',
+        line: {color: 'blue', width: 5},
+        marker: {size: 5, color: ['#1a237e', '#f50057']},
+      };
+
+      const layout = {
+        scene: {
+          xaxis: {range: [-1, 1]},
+          yaxis: {range: [-1, 1]},
+          zaxis: {range: [-1, 1]},
+          aspectmode: 'cube'
+        },
+        width: 500,
+        height: 500,
+        margin: {l: 0, r: 0, b: 0, t: 0}
+      };
+
+      Plotly.newPlot('qubit-visualization', [trace], layout);
+    }
+
+    // Initialize qubit visualization
+    updateQubitVisualization(Math.PI / 4, 0);
+
+    // Quantum Circuit Visualization
+    function updateQuantumCircuit(gates) {
+      const canvas = document.getElementById('quantum-circuit');
+      const ctx = canvas.getContext('2d');
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw qubit lines
+      for (let i = 0; i < 2; i++) {
+        ctx.beginPath();
+        ctx.moveTo(50, 50 + i * 50);
+        ctx.lineTo(750, 50 + i * 50);
+        ctx.stroke();
+      }
+      
+      // Draw gates
+      gates.forEach((gate, index) => {
+        ctx.fillStyle = gate.color;
+        ctx.fillRect(100 + index * 100, gate.qubit * 50 + 25, 50, 50);
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText(gate.symbol, 115 + index * 100, gate.qubit * 50 + 55);
+      });
+    }
+
+    // Initialize quantum circuit
+    const initialGates = [
+      {symbol: 'H', qubit: 0, color: '#1a237e'},
+      {symbol: 'X', qubit: 1, color: '#f50057'},
+      {symbol: 'CNOT', qubit: 0, color: '#00bfa5'}
+    ];
+    updateQuantumCircuit(initialGates);
+  </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<html><head><base href="https://quantum-string-theory.edu/quantum-computing/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Machine Learning in String Phenomenology</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f5ff;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .chart-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+    }
+    .interactive-demo {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    #compactification-visualizer {
+        width: 100%;
+        height: 300px;
+        background-color: #000;
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+    <h1>Quantum Machine Learning in String Phenomenology</h1>
+    
+    <p>Welcome to the fascinating intersection of quantum computing, machine learning, and string theory. This page explores how quantum machine learning algorithms can revolutionize our understanding of string phenomenology.</p>
+    
+    <h2>1. Introduction to String Phenomenology</h2>
+    <p>String phenomenology is the study of how string theory connects to observable physics. It involves exploring the vast landscape of possible string theory solutions and identifying those that could describe our universe.</p>
+    
+    <h2>2. Quantum Machine Learning: A Brief Overview</h2>
+    <p>Quantum machine learning leverages quantum computing to enhance classical machine learning algorithms or to develop entirely new quantum-native learning methods.</p>
+    
+    <div class="chart-container">
+        <canvas id="qml-speedup-chart"></canvas>
+    </div>
+    
+    <h2>3. Applications in String Phenomenology</h2>
+    <p>Quantum machine learning can assist string theorists in several ways:</p>
+    <ul>
+        <li>Exploring the string theory landscape</li>
+        <li>Optimizing compactification schemes</li>
+        <li>Predicting particle physics parameters</li>
+        <li>Identifying promising models for further study</li>
+    </ul>
+    
+    <h2>4. Interactive Demo: Calabi-Yau Manifold Explorer</h2>
+    <div class="interactive-demo">
+        <p>Use this interactive tool to explore different Calabi-Yau manifolds and their properties:</p>
+        <button onclick="generateRandomManifold()">Generate Random Manifold</button>
+        <div id="compactification-visualizer"></div>
+        <p id="manifold-properties"></p>
+    </div>
+    
+    <h2>5. Quantum Support Vector Machines for String Model Classification</h2>
+    <p>Quantum SVMs can efficiently classify string models based on their phenomenological properties:</p>
+    
+    <div class="chart-container">
+        <canvas id="qsvm-performance-chart"></canvas>
+    </div>
+    
+    <h2>6. Future Directions and Challenges</h2>
+    <p>As quantum hardware improves, we anticipate breakthroughs in:</p>
+    <ul>
+        <li>Quantum simulation of string theory dynamics</li>
+        <li>Quantum-enhanced optimization of string model parameters</li>
+        <li>Quantum neural networks for string phenomenology</li>
+    </ul>
+    
+    <script>
+    // Chart.js implementation for QML Speedup
+    const qmlSpeedupCtx = document.getElementById('qml-speedup-chart').getContext('2d');
+    new Chart(qmlSpeedupCtx, {
+        type: 'line',
+        data: {
+            labels: ['10', '50', '100', '500', '1000'],
+            datasets: [{
+                label: 'Classical ML',
+                data: [1, 5, 10, 50, 100],
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1
+            }, {
+                label: 'Quantum ML',
+                data: [1, 2.2, 3.1, 7.1, 10],
+                borderColor: 'rgb(54, 162, 235)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'QML vs Classical ML Speedup'
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Problem Size'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Computation Time (arbitrary units)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Chart.js implementation for QSVM Performance
+    const qsvmPerformanceCtx = document.getElementById('qsvm-performance-chart').getContext('2d');
+    new Chart(qsvmPerformanceCtx, {
+        type: 'bar',
+        data: {
+            labels: ['SUSY Models', 'GUT Models', 'Heterotic String Models', 'Type IIB Models'],
+            datasets: [{
+                label: 'Classical SVM Accuracy',
+                data: [75, 82, 68, 79],
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }, {
+                label: 'Quantum SVM Accuracy',
+                data: [89, 93, 84, 91],
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'QSVM vs Classical SVM Performance'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Classification Accuracy (%)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Calabi-Yau Manifold Visualizer
+    function generateRandomManifold() {
+        const canvas = document.getElementById('compactification-visualizer');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Generate random parameters for the manifold
+        const n = Math.floor(Math.random() * 5) + 3; // Number of dimensions (3 to 7)
+        const h11 = Math.floor(Math.random() * 10) + 1; // Hodge number h^(1,1)
+        const h21 = Math.floor(Math.random() * 10) + 1; // Hodge number h^(2,1)
+        
+        // Visualize the manifold (simplified representation)
+        for (let i = 0; i < 1000; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const r = Math.random() * 2 + 1;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, 2 * Math.PI);
+            ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            ctx.fill();
+        }
+        
+        // Display manifold properties
+        document.getElementById('manifold-properties').innerHTML = `
+            Generated Calabi-Yau manifold properties:<br>
+            Dimensions: ${n}<br>
+            Hodge numbers: h<sup>(1,1)</sup> = ${h11}, h<sup>(2,1)</sup> = ${h21}<br>
+            Euler characteristic: χ = 2(h<sup>(1,1)</sup> - h<sup>(2,1)</sup>) = ${2 * (h11 - h21)}
+        `;
+    }
+
+    // Initialize with a random manifold
+    generateRandomManifold();
+    </script>
+</body>
+</html>

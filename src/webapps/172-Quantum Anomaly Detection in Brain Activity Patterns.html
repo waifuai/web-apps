@@ -1,0 +1,182 @@
+<html><head><base href="https://quantum-anomaly-detection.orch-or-theory.edu/"><title>Quantum Anomaly Detection in Brain Activity Patterns</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .chart-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    #quantum-circuit {
+        width: 100%;
+        height: 300px;
+        border: 1px solid #ddd;
+    }
+    #brain-activity-chart {
+        width: 100%;
+        height: 400px;
+    }
+    .interactive-demo {
+        background-color: #ecf0f1;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+    button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+</head>
+<body>
+    <h1>Quantum Anomaly Detection in Brain Activity Patterns</h1>
+    
+    <p>Welcome to our exploration of quantum anomaly detection techniques applied to brain activity patterns in the context of Orchestrated Objective Reduction (Orch-OR) theory. This cutting-edge research combines quantum computing principles with advanced machine learning to identify unusual neural activity that may be linked to altered states of consciousness or cognitive phenomena.</p>
+
+    <h2>Quantum Circuit for Anomaly Detection</h2>
+    <div class="chart-container">
+        <canvas id="quantum-circuit"></canvas>
+    </div>
+
+    <h2>Brain Activity Patterns</h2>
+    <div class="chart-container">
+        <canvas id="brain-activity-chart"></canvas>
+    </div>
+
+    <div class="interactive-demo">
+        <h2>Interactive Anomaly Detection Demo</h2>
+        <p>Use the button below to generate and analyze synthetic brain activity data using our quantum-inspired anomaly detection algorithm.</p>
+        <button id="generate-data">Generate and Analyze Data</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Quantum Circuit Visualization
+        const quantumCircuit = new Chart(document.getElementById('quantum-circuit').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Q0', 'Q1', 'Q2', 'Q3'],
+                datasets: [{
+                    label: 'Quantum Gates',
+                    data: [1, 0, 1, 0],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Simplified Quantum Circuit for Anomaly Detection'
+                    }
+                }
+            }
+        });
+
+        // Brain Activity Chart
+        const brainActivityChart = new Chart(document.getElementById('brain-activity-chart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 100}, (_, i) => i),
+                datasets: [{
+                    label: 'Normal Activity',
+                    data: Array.from({length: 100}, () => Math.random() * 0.5 + 0.5),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true
+                }, {
+                    label: 'Anomalous Activity',
+                    data: Array.from({length: 100}, (_, i) => i > 50 && i < 70 ? Math.random() * 1.5 + 1 : Math.random() * 0.5 + 0.5),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Brain Activity Patterns with Anomaly'
+                    }
+                }
+            }
+        });
+
+        // Interactive Demo
+        document.getElementById('generate-data').addEventListener('click', async () => {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'Generating and analyzing data...';
+
+            // Simulating data generation and analysis
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Create a simple autoencoder model
+            const model = tf.sequential();
+            model.add(tf.layers.dense({inputShape: [10], units: 5, activation: 'relu'}));
+            model.add(tf.layers.dense({units: 10, activation: 'sigmoid'}));
+
+            model.compile({optimizer: 'adam', loss: 'meanSquaredError'});
+
+            // Generate synthetic data
+            const normalData = tf.randomNormal([100, 10]);
+            const anomalyData = tf.randomNormal([20, 10]).add(tf.scalar(2));
+            const allData = normalData.concat(anomalyData);
+
+            // Train the model
+            await model.fit(allData, allData, {epochs: 50, shuffle: true, verbose: 0});
+
+            // Use the model to reconstruct the data
+            const reconstructed = model.predict(allData);
+            const mse = tf.losses.meanSquaredError(allData, reconstructed);
+            const mseValues = await mse.array();
+
+            // Detect anomalies based on reconstruction error
+            const threshold = tf.mean(mse).add(tf.moments(mse).variance.sqrt().mul(2));
+            const anomalies = mse.greater(threshold);
+            const anomalyCount = tf.sum(anomalies.cast('float32')).arraySync();
+
+            resultsDiv.innerHTML = `
+                <p>Analysis complete!</p>
+                <p>Detected ${anomalyCount} potential anomalies in the dataset.</p>
+                <p>These anomalies might represent unusual brain activity patterns that could be linked to altered states of consciousness or cognitive phenomena relevant to Orch-OR theory.</p>
+            `;
+
+            // Cleanup
+            model.dispose();
+            normalData.dispose();
+            anomalyData.dispose();
+            allData.dispose();
+            reconstructed.dispose();
+            mse.dispose();
+            anomalies.dispose();
+        });
+    </script>
+</body></html>

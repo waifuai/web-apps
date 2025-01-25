@@ -1,0 +1,141 @@
+<html><head><base href="https://websim.ai/"><title>Reinforcement Learning to LLM API Interface</title><style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  pre {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    overflow-x: auto;
+  }
+  .example {
+    background-color: #e8f4f8;
+    border-left: 4px solid #3498db;
+    padding: 10px;
+    margin: 20px 0;
+  }
+  .api-call {
+    background-color: #f8e8e8;
+    border-left: 4px solid #e74c3c;
+    padding: 10px;
+    margin: 10px 0;
+  }
+</style></head><body>
+  <h1>Reinforcement Learning to LLM API Interface</h1>
+  
+  <p>Welcome to the RL-LLM API Interface, an innovative programming paradigm that allows developers to describe computer programs using the language of reinforcement learning, which are then translated into Large Language Model (LLM) API calls for implementation.</p>
+  
+  <h2>Key Concepts</h2>
+  <ul>
+    <li><strong>State:</strong> The current context or situation of the program</li>
+    <li><strong>Action:</strong> An operation that can be performed to change the state</li>
+    <li><strong>Reward:</strong> A feedback signal indicating the desirability of the resulting state</li>
+    <li><strong>Policy:</strong> A strategy for choosing actions based on the current state</li>
+  </ul>
+  
+  <h2>Basic Syntax</h2>
+  <pre>
+program MyProgram {
+  state {
+    // Define program state variables
+  }
+  
+  action ActionName(parameters) {
+    // Define an action
+  }
+  
+  reward {
+    // Define reward function
+  }
+  
+  policy {
+    // Define action selection policy
+  }
+}
+  </pre>
+  
+  <h2>Example: Text Summarization</h2>
+  <div class="example">
+  <pre>
+program TextSummarizer {
+  state {
+    text: string
+    summary: string
+    quality: float
+  }
+  
+  action Summarize(length: int) {
+    // Summarize the text to the specified length
+  }
+  
+  action Refine() {
+    // Refine the existing summary
+  }
+  
+  reward {
+    return quality
+  }
+  
+  policy {
+    if (quality < 0.8) {
+      return Refine()
+    } else {
+      return Summarize(length / 2)
+    }
+  }
+}
+  </pre>
+  </div>
+  
+  <h2>Translation to LLM API Calls</h2>
+  <p>The RL-LLM Interface automatically translates the reinforcement learning concepts into appropriate LLM API calls. Here's how it might look for the TextSummarizer example:</p>
+  
+  <div class="api-call">
+  <pre>
+// Action: Summarize
+llm_api.complete({
+  prompt: `Summarize the following text in ${length} words:\n${state.text}`,
+  max_tokens: length * 2
+})
+
+// Action: Refine
+llm_api.complete({
+  prompt: `Refine the following summary to improve its quality:\n${state.summary}\nOriginal text:\n${state.text}`,
+  max_tokens: state.summary.split(' ').length * 2
+})
+
+// Reward calculation
+llm_api.complete({
+  prompt: `Rate the quality of this summary from 0 to 1:\nSummary: ${state.summary}\nOriginal text: ${state.text}`,
+  max_tokens: 10
+})
+  </pre>
+  </div>
+  
+  <h2>Benefits</h2>
+  <ul>
+    <li>Intuitive program design using familiar RL concepts</li>
+    <li>Automatic optimization through reward-based learning</li>
+    <li>Seamless integration with powerful LLM capabilities</li>
+    <li>Adaptable to a wide range of applications beyond traditional programming</li>
+  </ul>
+  
+  <p>This innovative interface bridges the gap between reinforcement learning concepts and practical implementation using LLMs, opening up new possibilities for AI-driven software development.</p>
+  
+  <p>Explore more examples and start building with RL-LLM Interface today!</p>
+  
+  <a href="https://websim.ai/docs/rl-llm-interface">Full Documentation</a> | 
+  <a href="https://websim.ai/examples/rl-llm">More Examples</a> | 
+  <a href="https://websim.ai/community/rl-llm">Community Forum</a>
+
+</body></html>

@@ -1,0 +1,91 @@
+<html><head><base href="/" /></head>
+<body style="font-family: 'LaTeX', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; background: #fafafa;">
+    <div id="proof" style="background: white; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+        <h1 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Interactive Parking Rectangle Algorithm Visualization</h1>
+        
+        <div id="controls" style="margin: 20px 0;">
+            <label>Street Angle (θ): <input type="range" id="angle" min="0" max="360" value="0" step="1"></label>
+            <span id="angleValue">0°</span><br>
+            <label>Distance from center (K): <input type="range" id="k" min="1" max="50" value="20" step="1"></label>
+            <span id="kValue">20m</span><br>
+            <label>Rectangle Height (H): <input type="range" id="h" min="1" max="100" value="40" step="1"></label>
+            <span id="hValue">40m</span><br>
+            <label>Rectangle Width (W): <input type="range" id="w" min="1" max="50" value="15" step="1"></label>
+            <span id="wValue">15m</span>
+        </div>
+
+        <svg id="visualization" width="600" height="400" style="background: #fff; border: 1px solid #ddd;"></svg>
+
+        <div id="matrix-display" style="margin-top: 20px; font-family: monospace;"></div>
+    </div>
+
+    <script>
+        const svg = document.getElementById('visualization');
+        const centerX = 300;
+        const centerY = 200;
+        const scale = 2; // pixels per meter
+
+        function updateVisualization() {
+            // Clear previous visualization
+            svg.innerHTML = '';
+
+            // Get current values
+            const theta = document.getElementById('angle').value * Math.PI / 180;
+            const K = parseFloat(document.getElementById('k').value);
+            const H = parseFloat(document.getElementById('h').value);
+            const W = parseFloat(document.getElementById('w').value);
+
+            // Create street center line
+            const streetLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            streetLine.setAttribute("x1", centerX - 150 * Math.cos(theta));
+            streetLine.setAttribute("y1", centerY - 150 * Math.sin(theta));
+            streetLine.setAttribute("x2", centerX + 150 * Math.cos(theta));
+            streetLine.setAttribute("y2", centerY + 150 * Math.sin(theta));
+            streetLine.setAttribute("stroke", "#666");
+            streetLine.setAttribute("stroke-width", "2");
+            streetLine.setAttribute("stroke-dasharray", "5,5");
+            svg.appendChild(streetLine);
+
+            // Matrix M definition
+            const M = [
+                [1, 0, 0],
+                [1, 1, 0],
+                [1, 1, 1],
+                [1, 0, 1]
+            ];
+
+            // Compute rectangle vertices for both sides
+            const B = [K, H, W];
+            
+            [1, -1].forEach(side => {
+                const points = M.map(row => {
+                    const x = side * (row[0] * B[0] + row[2] * B[2] * Math.cos(theta + Math.PI/2));
+                    const y = side * (row[1] * B[1] * Math.cos(theta) + row[2] * B[2] * Math.sin(theta + Math.PI/2));
+                    return `${centerX + x * scale},${centerY + y * scale}`;
+                }).join(' ');
+
+                const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                polygon.setAttribute("points", points);
+                polygon.setAttribute("fill", side > 0 ? "rgba(100,149,237,0.3)" : "rgba(255,99,71,0.3)");
+                polygon.setAttribute("stroke", side > 0 ? "#6495ED" : "#FF6347");
+                polygon.setAttribute("stroke-width", "2");
+                svg.appendChild(polygon);
+            });
+
+            // Update value displays
+            document.getElementById('angleValue').textContent = `${document.getElementById('angle').value}°`;
+            document.getElementById('kValue').textContent = `${K}m`;
+            document.getElementById('hValue').textContent = `${H}m`;
+            document.getElementById('wValue').textContent = `${W}m`;
+        }
+
+        // Add event listeners
+        document.getElementById('angle').addEventListener('input', updateVisualization);
+        document.getElementById('k').addEventListener('input', updateVisualization);
+        document.getElementById('h').addEventListener('input', updateVisualization);
+        document.getElementById('w').addEventListener('input', updateVisualization);
+
+        // Initial visualization
+        updateVisualization();
+    </script>
+</body></html>

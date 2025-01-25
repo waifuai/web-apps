@@ -1,0 +1,249 @@
+<!DOCTYPE html><html><head><base href="https://quantum-neuroscience.org/photonic-qubit-interconnects/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photonic Qubit Interconnects: Modeling Brain-Wide Quantum Effects</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .interactive-diagram {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+    margin: 20px 0;
+    background-color: white;
+  }
+  .data-visualization {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+  }
+</style>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <h1>Photonic Qubit Interconnects: Modeling Brain-Wide Quantum Effects</h1>
+  
+  <p>Welcome to our exploration of photonic qubit interconnects and their role in modeling brain-wide quantum effects. This page is part of our series on million-qubit photonic quantum computing and its applications in consciousness studies.</p>
+  
+  <h2>Interactive Brain-Wide Quantum Network Model</h2>
+  
+  <div id="quantum-network" class="interactive-diagram">
+  <svg width="100%" height="400">
+  <g transform="translate(50, 0)">
+    <rect x="10" y="10" width="50" height="380" fill="#4CAF50"></rect>
+    <rect x="70" y="50" width="50" height="340" fill="#2196F3"></rect>
+    <rect x="130" y="90" width="50" height="300" fill="#FFC107"></rect>
+    <rect x="190" y="130" width="50" height="260" fill="#FF5722"></rect>
+    <rect x="250" y="170" width="50" height="220" fill="#9C27B0"></rect>
+    <text x="35" y="405" text-anchor="middle" font-size="12">A</text>
+    <text x="95" y="405" text-anchor="middle" font-size="12">B</text>
+    <text x="155" y="405" text-anchor="middle" font-size="12">C</text>
+    <text x="215" y="405" text-anchor="middle" font-size="12">D</text>
+    <text x="275" y="405" text-anchor="middle" font-size="12">E</text>
+    <text x="5" y="20" font-size="12">100</text>
+    <text x="5" y="140" font-size="12">75</text>
+    <text x="5" y="260" font-size="12">50</text>
+    <text x="5" y="380" font-size="12">25</text>
+    
+    <text x="150" y="430" text-anchor="middle" font-size="14">Brain Regions</text>
+    <text x="-200" y="5" transform="rotate(-90)" text-anchor="middle" font-size="14">Quantum Coherence (%)</text>
+    <text x="150" y="30" text-anchor="middle" font-size="16" font-weight="bold">Quantum Coherence Across Brain Regions</text>
+  </g>
+</svg>
+  <div class="controls">
+    <button id="reset-view">Reset View</button>
+    <select id="highlight-region">
+      <option value="">Highlight Region</option>
+      <option value="frontal">Frontal Lobe</option>
+      <option value="parietal">Parietal Lobe</option>
+      <option value="temporal">Temporal Lobe</option>
+      <option value="occipital">Occipital Lobe</option>
+      <option value="cerebellum">Cerebellum</option>
+      <option value="brainstem">Brainstem</option>
+    </select>
+  </div>
+</div>
+  
+  <p>The above interactive diagram represents a simplified model of brain-wide quantum effects facilitated by photonic qubit interconnects. Click on different regions to explore quantum entanglement patterns and information flow.</p>
+  
+  <h2>Photonic Qubit Interconnect Architecture</h2>
+  
+  <p>Photonic qubit interconnects play a crucial role in scaling quantum effects across the entire brain. Here's how they work:</p>
+  
+  <ul>
+    <li>High-bandwidth optical channels</li>
+    <li>Low-loss quantum state transfer</li>
+    <li>Scalable to millions of qubits</li>
+    <li>Compatible with existing brain imaging techniques</li>
+  </ul>
+  
+  <h2>Quantum Coherence Across Brain Regions</h2>
+  
+  <div id="coherence-chart" class="data-visualization"></div>
+  
+  <p>The chart above shows the measured quantum coherence times across different brain regions, enabled by our advanced photonic qubit interconnects.</p>
+  
+  <h2>Implications for Orch-OR Theory</h2>
+  
+  <p>Our million-qubit photonic quantum computer allows us to model and test predictions of the Orch-OR (Orchestrated Objective Reduction) theory of consciousness on an unprecedented scale. Key findings include:</p>
+  
+  <ul>
+    <li>Extended quantum coherence in microtubules</li>
+    <li>Quantum entanglement patterns correlating with conscious experiences</li>
+    <li>Evidence of quantum computation in neuronal microtubules</li>
+  </ul>
+  
+  <h2>Future Directions</h2>
+  
+  <p>As we continue to refine our photonic qubit interconnect technology, we anticipate several exciting developments:</p>
+  
+  <ol>
+    <li>Real-time mapping of brain-wide quantum effects</li>
+    <li>Integration with non-invasive brain-computer interfaces</li>
+    <li>Quantum-enhanced neuromorphic computing architectures</li>
+  </ol>
+  
+  <script>
+    // Interactive Quantum Network Diagram
+    const width = document.getElementById('quantum-network').clientWidth;
+    const height = 400;
+    const svg = d3.select("#quantum-network")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+    
+    const simulation = d3.forceSimulation()
+      .force("link", d3.forceLink().id(d => d.id))
+      .force("charge", d3.forceManyBody())
+      .force("center", d3.forceCenter(width / 2, height / 2));
+    
+    d3.json("https://quantum-neuroscience.org/data/brain-network.json").then(function(graph) {
+      const link = svg.append("g")
+        .selectAll("line")
+        .data(graph.links)
+        .enter().append("line")
+        .attr("stroke-width", d => Math.sqrt(d.value))
+        .attr("stroke", "#999");
+      
+      const node = svg.append("g")
+        .selectAll("circle")
+        .data(graph.nodes)
+        .enter().append("circle")
+        .attr("r", 5)
+        .attr("fill", "#69b3a2")
+        .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+      
+      node.append("title")
+        .text(d => d.id);
+      
+      simulation
+        .nodes(graph.nodes)
+        .on("tick", ticked);
+      
+      simulation.force("link")
+        .links(graph.links);
+      
+      function ticked() {
+        link
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
+        
+        node
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y);
+      }
+    });
+    
+    function dragstarted(event) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      event.subject.fx = event.subject.x;
+      event.subject.fy = event.subject.y;
+    }
+    
+    function dragged(event) {
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+    }
+    
+    function dragended(event) {
+      if (!event.active) simulation.alphaTarget(0);
+      event.subject.fx = null;
+      event.subject.fy = null;
+    }
+    
+    // Quantum Coherence Chart
+    const coherenceData = [
+      {region: "Frontal Lobe", coherenceTime: 100},
+      {region: "Parietal Lobe", coherenceTime: 85},
+      {region: "Temporal Lobe", coherenceTime: 92},
+      {region: "Occipital Lobe", coherenceTime: 78},
+      {region: "Cerebellum", coherenceTime: 110},
+      {region: "Brainstem", coherenceTime: 95}
+    ];
+    
+    const margin = {top: 20, right: 20, bottom: 30, left: 40};
+    const chartWidth = document.getElementById('coherence-chart').clientWidth - margin.left - margin.right;
+    const chartHeight = 300 - margin.top - margin.bottom;
+    
+    const x = d3.scaleBand()
+      .range([0, chartWidth])
+      .padding(0.1);
+    
+    const y = d3.scaleLinear()
+      .range([chartHeight, 0]);
+    
+    const coherenceChart = d3.select("#coherence-chart").append("svg")
+      .attr("width", chartWidth + margin.left + margin.right)
+      .attr("height", chartHeight + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    x.domain(coherenceData.map(d => d.region));
+    y.domain([0, d3.max(coherenceData, d => d.coherenceTime)]);
+    
+    coherenceChart.selectAll(".bar")
+      .data(coherenceData)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", d => x(d.region))
+      .attr("width", x.bandwidth())
+      .attr("y", d => y(d.coherenceTime))
+      .attr("height", d => chartHeight - y(d.coherenceTime))
+      .attr("fill", "#4CAF50");
+    
+    coherenceChart.append("g")
+      .attr("transform", `translate(0,${chartHeight})`)
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+      .attr("transform", "rotate(-45)")
+      .style("text-anchor", "end");
+    
+    coherenceChart.append("g")
+      .call(d3.axisLeft(y));
+    
+    coherenceChart.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (chartHeight / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Coherence Time (μs)");
+  </script>
+
+</body></html>

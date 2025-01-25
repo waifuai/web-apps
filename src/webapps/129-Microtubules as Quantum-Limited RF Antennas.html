@@ -1,0 +1,143 @@
+<html><head><base href="https://quantum-neural-dynamics.edu/microtubules-rf-antennas/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microtubules as Quantum-Limited RF Antennas</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .container {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .interactive-demo {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  #antenna-demo {
+    width: 100%;
+    height: 300px;
+    background-color: #e0e0e0;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Microtubules as Quantum-Limited RF Antennas</h1>
+    
+    <h2>Basic principles of RF antennas</h2>
+    <p>Radio Frequency (RF) antennas are devices designed to transmit or receive electromagnetic waves. They work on the principle of electromagnetic induction, converting electrical energy into radio waves and vice versa.</p>
+    
+    <div class="interactive-demo">
+      <h3>Interactive RF Antenna Demonstration</h3>
+      <div id="antenna-demo"></div>
+    </div>
+
+    <h2>Quantum limitations in antenna sensitivity</h2>
+    <p>At the quantum level, the sensitivity of antennas is limited by fundamental physical principles. These include:</p>
+    <ul>
+      <li>Heisenberg's uncertainty principle</li>
+      <li>Zero-point fluctuations</li>
+      <li>Quantum noise</li>
+    </ul>
+
+    <h2>How microtubules might function as antennas</h2>
+    <p>Microtubules, cylindrical structures found in cells, have been proposed to act as quantum-limited RF antennas due to their unique properties:</p>
+    <ul>
+      <li>Highly ordered structure</li>
+      <li>Potential for quantum coherence</li>
+      <li>Ability to conduct and amplify electromagnetic signals</li>
+    </ul>
+
+    <div class="interactive-demo">
+      <h3>Microtubule Antenna Simulation</h3>
+      <div id="microtubule-demo"></div>
+    </div>
+  </div>
+
+  <script>
+    // Three.js scene setup for RF Antenna Demonstration
+    const antennaScene = new THREE.Scene();
+    const antennaCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const antennaRenderer = new THREE.WebGLRenderer();
+    antennaRenderer.setSize(document.getElementById('antenna-demo').clientWidth, document.getElementById('antenna-demo').clientHeight);
+    document.getElementById('antenna-demo').appendChild(antennaRenderer.domElement);
+
+    // Create antenna geometry
+    const antennaGeometry = new THREE.CylinderGeometry(0.1, 0.1, 5, 32);
+    const antennaMaterial = new THREE.MeshBasicMaterial({color: 0x00ff00});
+    const antenna = new THREE.Mesh(antennaGeometry, antennaMaterial);
+    antennaScene.add(antenna);
+
+    antennaCamera.position.z = 10;
+
+    // Animate RF waves
+    const waveCount = 20;
+    const waves = [];
+    for (let i = 0; i < waveCount; i++) {
+      const waveGeometry = new THREE.TorusGeometry(i * 0.2 + 1, 0.02, 16, 100);
+      const waveMaterial = new THREE.MeshBasicMaterial({color: 0x0000ff, transparent: true, opacity: 0.5});
+      const wave = new THREE.Mesh(waveGeometry, waveMaterial);
+      wave.rotation.x = Math.PI / 2;
+      antennaScene.add(wave);
+      waves.push(wave);
+    }
+
+    function animateAntenna() {
+      requestAnimationFrame(animateAntenna);
+      waves.forEach((wave, index) => {
+        wave.scale.x = wave.scale.y = 1 + 0.1 * Math.sin(Date.now() * 0.001 + index * 0.1);
+      });
+      antennaRenderer.render(antennaScene, antennaCamera);
+    }
+    animateAntenna();
+
+    // Three.js scene setup for Microtubule Antenna Simulation
+    const microScene = new THREE.Scene();
+    const microCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const microRenderer = new THREE.WebGLRenderer();
+    microRenderer.setSize(document.getElementById('microtubule-demo').clientWidth, document.getElementById('microtubule-demo').clientHeight);
+    document.getElementById('microtubule-demo').appendChild(microRenderer.domElement);
+
+    // Create microtubule geometry
+    const tubulinCount = 13;
+    const tubulins = [];
+    for (let i = 0; i < tubulinCount; i++) {
+      const angle = (i / tubulinCount) * Math.PI * 2;
+      const tubulinGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+      const tubulinMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+      const tubulin = new THREE.Mesh(tubulinGeometry, tubulinMaterial);
+      tubulin.position.x = Math.cos(angle) * 1;
+      tubulin.position.y = Math.sin(angle) * 1;
+      microScene.add(tubulin);
+      tubulins.push(tubulin);
+    }
+
+    microCamera.position.z = 5;
+
+    // Animate quantum effects
+    function animateMicrotubule() {
+      requestAnimationFrame(animateMicrotubule);
+      tubulins.forEach((tubulin, index) => {
+        tubulin.scale.x = tubulin.scale.y = tubulin.scale.z = 1 + 0.1 * Math.sin(Date.now() * 0.002 + index * 0.1);
+      });
+      microRenderer.render(microScene, microCamera);
+    }
+    animateMicrotubule();
+  </script>
+</body>
+</html>

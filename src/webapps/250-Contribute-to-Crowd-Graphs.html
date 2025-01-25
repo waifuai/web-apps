@@ -1,0 +1,225 @@
+<html><head><base href="/contribute">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contribute to Crowd Graphs</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
+<style>
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+#map {
+    height: 400px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+.contribution-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.recent-contributions {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.contribution-card {
+    border-left: 4px solid #0d6efd;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+}
+.crowd-indicator {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">Crowd Graphs</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/locations">Locations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/contribute">Contribute</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <h2>Contribute Crowd Data</h2>
+    <p class="lead">Help others by sharing real-time crowd information for locations you visit.</p>
+
+    <div id="map"></div>
+
+    <div class="contribution-form">
+        <h3>Add New Location</h3>
+        <form id="newLocationForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="locationName" class="form-label">Location Name</label>
+                        <input type="text" class="form-control" id="locationName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="locationType" class="form-label">Location Type</label>
+                        <select class="form-select" id="locationType" required>
+                            <option value="">Select type...</option>
+                            <option value="restaurant">Restaurant</option>
+                            <option value="cafe">Café</option>
+                            <option value="gym">Gym</option>
+                            <option value="library">Library</option>
+                            <option value="park">Park</option>
+                            <option value="store">Store</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="crowdLevel" class="form-label">Current Crowd Level: <span id="crowdValue">50%</span></label>
+                        <input type="range" class="form-range" id="crowdLevel" min="0" max="100" value="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="notes" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Location</button>
+        </form>
+    </div>
+
+    <div class="recent-contributions">
+        <h3>Recent Contributions</h3>
+        <div id="recentContributions">
+            <!-- Recent contributions will be populated here -->
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+// Initialize map
+const map = L.map('map').setView([51.505, -0.09], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Handle crowd level slider
+document.getElementById('crowdLevel').addEventListener('input', function(e) {
+    document.getElementById('crowdValue').textContent = e.target.value + '%';
+});
+
+// Handle form submission
+document.getElementById('newLocationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const locationData = {
+        name: document.getElementById('locationName').value,
+        type: document.getElementById('locationType').value,
+        crowdLevel: document.getElementById('crowdLevel').value,
+        notes: document.getElementById('notes').value,
+        timestamp: new Date(),
+        coordinates: map.getCenter() // Get current map center as location
+    };
+    
+    // Add to recent contributions
+    addContribution(locationData);
+    
+    // Clear form
+    e.target.reset();
+    alert('Thank you for contributing!');
+});
+
+// Add contribution to the list
+function addContribution(data) {
+    const container = document.getElementById('recentContributions');
+    const crowdColor = getCrowdLevelColor(data.crowdLevel);
+    
+    const contributionHTML = `
+        <div class="contribution-card">
+            <div class="d-flex align-items-center">
+                <div class="crowd-indicator me-3" style="background-color: ${crowdColor}">
+                    ${data.crowdLevel}%
+                </div>
+                <div>
+                    <h5 class="mb-1">${data.name}</h5>
+                    <p class="mb-1"><small>${data.type} • ${new Date(data.timestamp).toLocaleString()}</small></p>
+                    ${data.notes ? `<p class="mb-0"><small>${data.notes}</small></p>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('afterbegin', contributionHTML);
+}
+
+// Get color based on crowd level
+function getCrowdLevelColor(level) {
+    if (level < 30) return '#28a745';
+    if (level < 70) return '#ffc107';
+    return '#dc3545';
+}
+
+// Add sample contributions
+const sampleContributions = [
+    {
+        name: "Central Park Café",
+        type: "cafe",
+        crowdLevel: 75,
+        notes: "Long queue for coffee",
+        timestamp: new Date(Date.now() - 1000 * 60 * 15)
+    },
+    {
+        name: "Downtown Fitness",
+        type: "gym",
+        crowdLevel: 45,
+        notes: "Most equipment available",
+        timestamp: new Date(Date.now() - 1000 * 60 * 30)
+    },
+    {
+        name: "Public Library",
+        type: "library",
+        crowdLevel: 25,
+        notes: "Quiet study spaces available",
+        timestamp: new Date(Date.now() - 1000 * 60 * 45)
+    }
+];
+
+sampleContributions.forEach(contribution => addContribution(contribution));
+
+// Add click handler to map
+map.on('click', function(e) {
+    // Clear existing markers
+    map.eachLayer((layer) => {
+        if (layer instanceof L.Marker) {
+            map.removeLayer(layer);
+        }
+    });
+    
+    // Add new marker
+    L.marker(e.latlng).addTo(map);
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body></html>

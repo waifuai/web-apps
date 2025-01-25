@@ -1,0 +1,258 @@
+<html><head><base href="/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Waifu AI OS: Building Your AI Companion Operating System</title>
+
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #8a2be2;
+  --background: #1a1a2e;
+  --text: #ffffff;
+  --code-bg: #2a2a40;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--background);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 2rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+}
+
+.animated-circles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 8s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-20px) translateX(20px); }
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.chart-container {
+  background: var(--code-bg);
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 2rem 0;
+}
+
+code {
+  background: var(--code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: scale(1.05);
+}
+
+#performance-chart, #compatibility-chart {
+  width: 100%;
+  height: 300px;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="animated-circles">
+    <div class="circle" style="width: 100px; height: 100px; top: 20%; left: 10%;"></div>
+    <div class="circle" style="width: 150px; height: 150px; top: 50%; left: 30%;"></div>
+    <div class="circle" style="width: 80px; height: 80px; top: 30%; left: 60%;"></div>
+  </div>
+  <div class="header-content">
+    <h1>Welcome to Waifu AI OS</h1>
+    <p>Building Your AI Companion Operating System</p>
+    <a href="https://github.com/waifu-ai-os/getting-started" class="cta-button">Get Started →</a>
+  </div>
+</header>
+
+<div class="container">
+  <section>
+    <h2>What is Waifu AI OS?</h2>
+    <p>Waifu AI OS is a revolutionary open-source operating system written in Common Lisp that brings AI companionship to every device. Whether you're on desktop, mobile, or working with robots, Waifu AI OS provides a consistent, intelligent, and adaptable companion experience.</p>
+    
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Universal Compatibility</h3>
+        <p>Run on any device with our adaptive hardware interface system</p>
+      </div>
+      <div class="feature-card">
+        <h3>AI-First Design</h3>
+        <p>Built from the ground up for natural AI interactions</p>
+      </div>
+      <div class="feature-card">
+        <h3>MIT-0 Licensed</h3>
+        <p>Completely free to use, modify, and share - no strings attached</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Performance Metrics</h2>
+    <div class="chart-container">
+      <canvas id="performance-chart"></canvas>
+    </div>
+  </section>
+
+  <section>
+    <h2>Device Compatibility</h2>
+    <div class="chart-container">
+      <canvas id="compatibility-chart"></canvas>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quick Start Example</h2>
+    <pre><code class="language-lisp">
+(defpackage :waifu-os
+  (:use :cl :ai-core :device-adaptor))
+
+(in-package :waifu-os)
+
+;; Initialize your AI companion
+(defun initialize-waifu ()
+  (let ((waifu (make-instance 'ai-companion
+                             :name "Your Waifu"
+                             :personality-path "templates/default.personality")))
+    (initialize-systems waifu)
+    (start-interaction-loop waifu)))
+    </code></pre>
+  </section>
+</div>
+
+<script>
+// Performance Chart
+const perfCtx = document.getElementById('performance-chart').getContext('2d');
+new Chart(perfCtx, {
+    type: 'line',
+    data: {
+        labels: ['Boot', 'Idle', 'Light Load', 'Heavy Load', 'AI Processing'],
+        datasets: [{
+            label: 'Waifu AI OS',
+            data: [1.2, 0.5, 2.1, 3.8, 4.2],
+            borderColor: '#ff69b4',
+            tension: 0.4
+        },
+        {
+            label: 'Traditional OS',
+            data: [2.5, 1.0, 3.2, 5.5, 7.8],
+            borderColor: '#8a2be2',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Resource Usage (GB RAM)'
+                }
+            }
+        }
+    }
+});
+
+// Compatibility Chart
+const compatCtx = document.getElementById('compatibility-chart').getContext('2d');
+new Chart(compatCtx, {
+    type: 'radar',
+    data: {
+        labels: ['Desktop', 'Mobile', 'IoT', 'Robots', 'Servers', 'Embedded'],
+        datasets: [{
+            label: 'Compatibility Score',
+            data: [100, 95, 90, 85, 100, 80],
+            backgroundColor: 'rgba(255, 105, 180, 0.2)',
+            borderColor: '#ff69b4',
+            pointBackgroundColor: '#ff69b4'
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+</script>
+
+</body></html>

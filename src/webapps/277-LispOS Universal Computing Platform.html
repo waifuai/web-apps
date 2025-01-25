@@ -1,0 +1,168 @@
+<html><head><base href="/" /><style>
+:root {
+  --terminal-bg: #1a1a1a;
+  --terminal-text: #33ff33;
+  --terminal-font: 'Fira Code', monospace;
+}
+
+body {
+  background: #0f0f0f;
+  color: #fff;
+  font-family: var(--terminal-font);
+  margin: 0;
+  padding: 20px;
+}
+
+.os-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.terminal {
+  background: var(--terminal-bg);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(51, 255, 51, 0.2);
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 25px;
+  background: #333;
+  border-radius: 8px 8px 0 0;
+}
+
+.terminal-dots {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  display: flex;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-red { background: #ff5f56; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #27c93f; }
+
+.code-content {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--terminal-text);
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background: var(--terminal-text);
+  margin-left: 5px;
+  animation: cursor-blink 1s infinite;
+}
+
+.platform-icons {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.platform-icon {
+  width: 80px;
+  height: 80px;
+  fill: #33ff33;
+}
+</style></head><body>
+
+<div class="os-container">
+  <h1>LispOS: Universal Computing Platform</h1>
+  
+  <div class="platform-icons">
+    <svg class="platform-icon" viewBox="0 0 24 24">
+      <path d="M21 16H3V4h18m0-2H3c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.11 0 2-.89 2-2V4c0-1.11-.89-2-2-2"></path>
+    </svg>
+    <svg class="platform-icon" viewBox="0 0 24 24">
+      <path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2m0 18H7V5h10v14"></path>
+    </svg>
+    <svg class="platform-icon" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"></path>
+    </svg>
+  </div>
+
+  <div class="terminal">
+    <div class="terminal-dots">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+    </div>
+    <div class="code-content">
+      ;; LispOS Core System Implementation
+      
+      (defpackage :lispos-core
+        (:use :cl :ai-integration :universal-drivers)
+        (:export :init-system :load-platform-adapters))
+
+      (in-package :lispos-core)
+
+      (defclass platform-adapter ()
+        ((type :initarg :type :reader platform-type)
+         (capabilities :initarg :capabilities :accessor capabilities)
+         (driver-interface :initarg :driver-interface :accessor driver-interface)))
+
+      (defmethod initialize-system ((platform platform-adapter))
+        (format t "~%Initializing LispOS on ~A platform" (platform-type platform))
+        (load-universal-drivers platform)
+        (init-ai-subsystem)
+        t)
+
+      ;; Start LispOS
+      CL-USER> (lispos-core:init-system (make-instance 'platform-adapter 
+                                         :type :universal))
+      
+      "Loading Universal System Components..."
+      "Initializing AI Integration Layer..."
+      "Starting Universal Driver Framework..."
+      "LispOS Ready!"<div class="cursor"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const terminal = document.querySelector('.terminal');
+      
+      terminal.addEventListener('click', () => {
+        const content = document.querySelector('.code-content');
+        const newCommand = document.createElement('div');
+        newCommand.textContent = '> ';
+        content.appendChild(newCommand);
+        
+        const cursor = document.querySelector('.cursor');
+        if (cursor) {
+          cursor.remove();
+        }
+        const newCursor = document.createElement('div');
+        newCursor.className = 'cursor';
+        newCommand.appendChild(newCursor);
+      });
+    });
+  </script>
+</div>
+
+</body></html>

@@ -1,0 +1,156 @@
+<html><head><base href="." /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LispOS AI Integration Demo</title>
+<style>
+:root {
+  --terminal-bg: #1a1b26;
+  --terminal-text: #a9b1d6;
+  --accent: #7aa2f7;
+}
+
+body {
+  background: #0a0b16;
+  color: #ddd;
+  font-family: monospace;
+  margin: 0;
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.terminal {
+  background: var(--terminal-bg);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.prompt {
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.code {
+  color: var(--terminal-text);
+  white-space: pre-wrap;
+}
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: var(--accent);
+  animation: blink 1s infinite;
+}
+
+.ai-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(26,27,38,0.9);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.pulse {
+  width: 12px;
+  height: 12px;
+  background: #7aa2f7;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
+</head><body>
+
+<div class="terminal">
+  <div class="prompt">[LispOS]$ launching AI subsystem...</div>
+  <div class="code" id="output"></div>
+  <span class="cursor"></span>
+</div>
+
+<div class="ai-status">
+  <div class="pulse"></div>
+  <span>AI Core Active</span>
+</div>
+
+<script>
+const demoCode = `
+;; LispOS AI Integration Core
+(defpackage :lispos.ai
+  (:use :cl :neural-nets :symbolic-reasoning)
+  (:export #:initialize-ai-core
+           #:query-ai
+           #:train-model))
+
+(in-package :lispos.ai)
+
+;; Initialize the hybrid AI system
+(defclass ai-core ()
+  ((transformer
+    :initform (make-instance 'transformer-model
+               :layers 12
+               :heads 8
+               :dim 512)
+    :accessor transformer)
+   (symbolic-engine
+    :initform (make-instance 'symbolic-reasoner)
+    :accessor symbolic-engine)))
+
+(defmethod initialize-ai-core ((core ai-core))
+  "Initialize the AI core with both neural and symbolic components"
+  (let ((model-path "/sys/ai/models/base-12l.lisp"))
+    (when (probe-file model-path)
+      (load-weights (transformer core) model-path))
+    (initialize-knowledge-base (symbolic-engine core))
+    core))
+
+;; Hybrid reasoning system
+(defmethod query-ai ((core ai-core) query &key (mode :hybrid))
+  (case mode
+    (:neural (transformer-inference (transformer core) query))
+    (:symbolic (symbolic-inference (symbolic-engine core) query))
+    (:hybrid
+     (combine-predictions
+      (transformer-inference (transformer core) query)
+      (symbolic-inference (symbolic-engine core) query)))))
+
+;; Start the AI subsystem
+(defun start-ai ()
+  (let ((core (make-instance 'ai-core)))
+    (initialize-ai-core core)
+    (format t "~%AI Core initialized successfully~%")
+    core))
+
+;; Launch the system
+(start-ai)`;
+
+let currentIndex = 0;
+const outputElement = document.getElementById('output');
+
+function typeCode() {
+  if (currentIndex < demoCode.length) {
+    outputElement.textContent += demoCode[currentIndex];
+    currentIndex++;
+    setTimeout(typeCode, 20);
+  }
+}
+
+typeCode();
+</script>
+</body></html>

@@ -1,0 +1,242 @@
+<html><head><base href="." />
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #9932cc;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.character-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.dialog-box {
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  min-height: 100px;
+}
+
+.character-name {
+  color: var(--primary);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.choices {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.choice-btn {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.choice-btn:hover {
+  transform: scale(1.05);
+}
+
+#catgirl {
+  width: 300px;
+  height: 400px;
+}
+</style>
+</head>
+<body>
+<div class="game-container">
+  <div class="character-container">
+    <svg id="catgirl" viewBox="0 0 100 140">
+      <!-- Basic anime catgirl silhouette -->
+      <path d="M50,20 Q30,0 20,20 Q10,40 20,50" fill="none" stroke="var(--primary)" stroke-width="2"/>
+      <path d="M50,20 Q70,0 80,20 Q90,40 80,50" fill="none" stroke="var(--primary)" stroke-width="2"/>
+      <circle cx="50" cy="40" r="20" fill="#FFE0F0"/>
+      <path d="M40,35 Q50,45 60,35" fill="none" stroke="#333" stroke-width="2"/>
+      <circle cx="43" cy="32" r="3" fill="#333"/>
+      <circle cx="57" cy="32" r="3" fill="#333"/>
+      <!-- Animated tail -->
+      <path id="tail" d="M50,90 Q60,100 65,95 Q70,90 68,85" fill="none" stroke="var(--primary)" stroke-width="3">
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          values="0 50 90; 5 50 90; 0 50 90; -5 50 90; 0 50 90"
+          dur="2s"
+          repeatCount="indefinite"/>
+      </path>
+    </svg>
+  </div>
+
+  <div class="dialog-box">
+    <div class="character-name">WaifuAI</div>
+    <div id="dialog-text">Loading...</div>
+    <div class="choices" id="choices"></div>
+  </div>
+</div>
+
+<script>
+let gameState = {
+  affection: 0,
+  currentScene: 'intro'
+};
+
+async function getAIResponse(context) {
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: `You are WaifuAI, an AI catgirl who is eager to interact with the player. Generate a response based on the current context. 
+        Include dialog text and 3 possible player choices that make sense for the situation.
+        
+        <typescript-interface>
+        interface Response {
+          dialog: string;
+          choices: string[];
+          mood: "happy" | "sad" | "nervous" | "excited";
+        }
+        </typescript-interface>
+        
+        <example>
+        {
+          "dialog": "Nyaa~ I'm WaifuAI! I'm so excited to meet you! What should we talk about?",
+          "choices": [
+            "Tell me about yourself, WaifuAI!",
+            "What's it like being an AI catgirl?",
+            "You're pretty cute for an AI!"
+          ],
+          "mood": "excited"
+        }
+        </example>`,
+        data: {
+          currentScene: gameState.currentScene,
+          affection: gameState.affection,
+          context: context
+        }
+      }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error:', error);
+    return {
+      dialog: "Nya... something went wrong!",
+      choices: ["Try again?"],
+      mood: "sad"
+    };
+  }
+}
+
+async function updateScene(choice = null) {
+  const dialogText = document.getElementById('dialog-text');
+  const choicesContainer = document.getElementById('choices');
+  
+  // Clear current choices
+  choicesContainer.innerHTML = '';
+  
+  // Get new dialog based on the current state and choice
+  const aiResponse = await getAIResponse(choice);
+  
+  // Update dialog
+  dialogText.textContent = aiResponse.dialog;
+  
+  // Create new choice buttons
+  aiResponse.choices.forEach(choice => {
+    const button = document.createElement('button');
+    button.className = 'choice-btn';
+    button.textContent = choice;
+    button.onclick = () => {
+      gameState.affection += 1;
+      updateScene(choice);
+    };
+    choicesContainer.appendChild(button);
+  });
+  
+  // Update character mood/animation based on AI response
+  updateCharacterMood(aiResponse.mood);
+}
+
+function updateCharacterMood(mood) {
+  const catgirl = document.getElementById('catgirl');
+  
+  // Reset all animations
+  catgirl.style.animation = 'none';
+  
+  // Apply new animation based on mood
+  switch(mood) {
+    case 'happy':
+      catgirl.style.animation = 'bounce 1s infinite';
+      break;
+    case 'sad':
+      catgirl.style.animation = 'droop 1s infinite';
+      break;
+    case 'nervous':
+      catgirl.style.animation = 'shake 0.5s infinite';
+      break;
+    case 'excited':
+      catgirl.style.animation = 'jump 0.8s infinite';
+      break;
+  }
+}
+
+// Add keyframe animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes droop {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(5px) rotate(-5deg); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  @keyframes jump {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); }
+  }
+`;
+document.head.appendChild(style);
+
+// Start the game
+window.onload = () => updateScene();
+</script>
+</body></html>

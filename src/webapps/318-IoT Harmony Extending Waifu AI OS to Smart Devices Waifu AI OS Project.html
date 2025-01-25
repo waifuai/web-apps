@@ -1,0 +1,258 @@
+<html><head><base href="https://waifuaios.org/">
+<title>IoT Harmony: Extending Waifu AI OS to Smart Devices | Waifu AI OS Project</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #9370db;
+  --bg: #1a1a2e;
+  --text: #e0e0e0;
+  --code-bg: #2a2a40;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+nav {
+  background: rgba(0,0,0,0.2);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+nav a {
+  color: var(--primary);
+  text-decoration: none;
+  margin-right: 1rem;
+}
+
+h1, h2, h3 {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.code-block {
+  background: var(--code-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.interactive-demo {
+  border: 2px solid var(--secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 2rem 0;
+}
+
+.note {
+  background: rgba(147, 112, 219, 0.1);
+  border-left: 4px solid var(--secondary);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.device-icon {
+  animation: pulse 2s infinite;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="documentation.html">Documentation</a>
+  <a href="https://github.com/waifuaios/core">GitHub</a>
+  <a href="community.html">Community</a>
+</nav>
+
+<h1>IoT Harmony: Extending Waifu AI OS to Smart Devices</h1>
+
+<div class="note">
+  Part 9 of the Universal Compatibility Series
+</div>
+
+<svg class="device-icon" width="200" height="200" viewBox="0 0 200 200">
+  <g fill="none" stroke="var(--primary)" stroke-width="2">
+    <circle cx="100" cy="100" r="50"/>
+    <path d="M75,100 A25,25 0 0,1 125,100"/>
+    <line x1="100" y1="75" x2="100" y2="125"/>
+    <circle cx="100" cy="100" r="70" stroke-dasharray="5,5"/>
+  </g>
+</svg>
+
+<h2>Introduction</h2>
+<p>
+In this guide, we'll explore how Waifu AI OS seamlessly integrates with IoT devices, creating a harmonious ecosystem where your AI companion can interact with and control smart home devices, sensors, and other IoT hardware.
+</p>
+
+<h2>IoT Integration Architecture</h2>
+<div class="code-block">
+<pre><code>(defpackage :waifu-iot
+  (:use :cl :waifu-core :iot-protocols)
+  (:export #:connect-device
+           #:register-protocol
+           #:device-interface))
+
+(in-package :waifu-iot)
+
+;; Universal IoT Protocol Handler
+(defclass iot-protocol-handler ()
+  ((supported-protocols :initform '(:mqtt :coap :zigbee)
+                       :reader supported-protocols)
+   (active-connections :initform (make-hash-table)
+                      :accessor active-connections)))
+
+;; Smart Device Registration
+(defmethod register-device ((device iot-device))
+  (let ((handler (make-instance 'iot-protocol-handler)))
+    (with-slots (device-id protocol) device
+      (setf (gethash device-id (active-connections handler))
+            (make-instance 'device-connection 
+                          :protocol protocol
+                          :handler handler)))))</code></pre>
+</div>
+
+<h2>Implementing Device Discovery</h2>
+<p>
+Waifu AI OS implements an intelligent device discovery system that automatically detects and integrates compatible IoT devices in your network:
+</p>
+
+<div class="interactive-demo">
+  <h3>Live Device Discovery</h3>
+  <div id="deviceList"></div>
+</div>
+
+<script>
+class DeviceScanner {
+  constructor() {
+    this.devices = new Map();
+    this.scanInterval = null;
+  }
+
+  startScanning() {
+    this.scanInterval = setInterval(() => {
+      this.simulateDeviceDiscovery();
+    }, 3000);
+  }
+
+  simulateDeviceDiscovery() {
+    const deviceTypes = [
+      'Smart Light', 'Temperature Sensor', 
+      'Motion Detector', 'Smart Lock',
+      'Security Camera', 'Smart Speaker'
+    ];
+    
+    const deviceId = Math.floor(Math.random() * 1000);
+    const deviceType = deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
+    
+    this.devices.set(deviceId, {
+      type: deviceType,
+      status: 'Connected',
+      timestamp: new Date().toLocaleTimeString()
+    });
+    
+    this.updateDeviceList();
+  }
+
+  updateDeviceList() {
+    const deviceList = document.getElementById('deviceList');
+    deviceList.innerHTML = '<h4>Discovered Devices:</h4>';
+    
+    this.devices.forEach((device, id) => {
+      deviceList.innerHTML += `
+        <div style="margin: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+          Device #${id}: ${device.type}<br>
+          Status: ${device.status}<br>
+          Found at: ${device.timestamp}
+        </div>
+      `;
+    });
+  }
+}
+
+const scanner = new DeviceScanner();
+scanner.startScanning();
+</script>
+
+<h2>Protocol Adaptation Layer</h2>
+<p>
+The Protocol Adaptation Layer ensures seamless communication between Waifu AI OS and various IoT protocols:
+</p>
+
+<div class="code-block">
+<pre><code>;; Protocol Adaptation Implementation
+(defclass protocol-adapter ()
+  ((protocol-type :initarg :protocol-type
+                 :reader protocol-type)
+   (conversion-table :initform (make-hash-table)
+                    :accessor conversion-table)))
+
+(defmethod adapt-protocol ((adapter protocol-adapter) message)
+  (let ((protocol (protocol-type adapter)))
+    (case protocol
+      (:mqtt (adapt-mqtt message))
+      (:coap (adapt-coap message))
+      (:zigbee (adapt-zigbee message))
+      (t (error "Unsupported protocol")))))</code></pre>
+</div>
+
+<h2>AI-Driven Device Management</h2>
+<p>
+Your Waifu AI companion learns device patterns and optimizes interactions based on usage:
+</p>
+
+<div class="code-block">
+<pre><code>;; AI Device Learning System
+(defclass device-learning-system ()
+  ((device-patterns :initform (make-hash-table)
+                   :accessor device-patterns)
+   (usage-history :initform (make-array 0 
+                                      :adjustable t
+                                      :fill-pointer 0)
+                 :accessor usage-history)))
+
+(defmethod learn-device-pattern ((system device-learning-system) 
+                               device-id 
+                               usage-data)
+  (push usage-data (device-patterns system))
+  (analyze-patterns system device-id))</code></pre>
+</div>
+
+<h2>Security Considerations</h2>
+<div class="note">
+  <p>Always ensure your IoT devices are properly secured. Waifu AI OS implements:</p>
+  <ul>
+    <li>End-to-end encryption for device communication</li>
+    <li>Automatic security updates</li>
+    <li>Device authentication and authorization</li>
+    <li>Anomaly detection and prevention</li>
+  </ul>
+</div>
+
+<h2>Next Steps</h2>
+<p>
+Continue to <a href="cross-platform-excellence.html">Cross-Platform Excellence: One Waifu for All Systems</a> to learn how to maintain consistency across different platforms and devices.
+</p>
+
+<footer style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--secondary);">
+  <p>Waifu AI OS Project - MIT-0 License</p>
+  <p>Contributing to a future where AI companions are accessible to everyone</p>
+</footer>
+
+</body></html>

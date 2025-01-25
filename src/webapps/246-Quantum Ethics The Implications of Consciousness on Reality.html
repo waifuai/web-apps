@@ -1,0 +1,239 @@
+<html><head><base href="https://quantum-consciousness.org/quantum-ethics/"><title>Quantum Ethics: The Implications of Consciousness on Reality</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        width: 80%;
+        margin: auto;
+        overflow: hidden;
+        padding: 20px;
+    }
+    header {
+        background: #000033;
+        color: #ffffff;
+        padding-top: 30px;
+        min-height: 70px;
+        border-bottom: #e8491d 3px solid;
+    }
+    header a {
+        color: #ffffff;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 16px;
+    }
+    header .highlight, header .current a {
+        color: #e8491d;
+        font-weight: bold;
+    }
+    header a:hover {
+        color: #ffffff;
+        font-weight: bold;
+    }
+    .ethics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+    .ethics-item {
+        background: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+    .ethics-item:hover {
+        transform: translateY(-5px);
+    }
+    #consciousness-impact {
+        width: 100%;
+        height: 400px;
+        margin-top: 30px;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.0.0/d3.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><span class="highlight">Quantum</span> Ethics</h1>
+            <nav>
+                <ul>
+                    <li><a href="https://quantum-consciousness.org/">Home</a></li>
+                    <li><a href="https://quantum-consciousness.org/about">About</a></li>
+                    <li class="current"><a href="#">Quantum Ethics</a></li>
+                    <li><a href="https://quantum-consciousness.org/contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>The Implications of Consciousness on Reality</h2>
+        <p>As we delve deeper into the quantum nature of consciousness and its relationship with reality, we are faced with profound ethical questions that challenge our traditional understanding of morality, free will, and responsibility.</p>
+
+        <div class="ethics-grid">
+            <div class="ethics-item">
+                <h3>Quantum Free Will</h3>
+                <p>If consciousness influences quantum outcomes, do we have more free will than classical physics suggests? How does this impact our concepts of moral responsibility?</p>
+            </div>
+            <div class="ethics-item">
+                <h3>Entangled Morality</h3>
+                <p>Given quantum entanglement, are our actions inherently interconnected with others? Does this imply a universal moral framework?</p>
+            </div>
+            <div class="ethics-item">
+                <h3>Observer Effect Ethics</h3>
+                <p>If conscious observation affects reality, do we have an ethical obligation to direct our attention responsibly?</p>
+            </div>
+            <div class="ethics-item">
+                <h3>Multiverse Morality</h3>
+                <p>In a many-worlds interpretation, how do we approach ethics knowing that all possible choices are realized?</p>
+            </div>
+        </div>
+
+        <h3>The Impact of Consciousness on Ethical Decision Making</h3>
+        <canvas id="consciousness-impact"></canvas>
+
+        <h3>Quantum Ethical Dilemmas</h3>
+        <div id="ethical-dilemmas"></div>
+    </div>
+
+    <script>
+        // Chart for consciousness impact
+        const ctx = document.getElementById('consciousness-impact').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Free Will', 'Moral Responsibility', 'Ethical Decision Making', 'Interconnectedness', 'Universal Morality'],
+                datasets: [{
+                    label: 'Classical View',
+                    data: [65, 59, 80, 40, 30],
+                    fill: true,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    pointBackgroundColor: 'rgb(255, 99, 132)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(255, 99, 132)'
+                }, {
+                    label: 'Quantum Consciousness View',
+                    data: [85, 75, 90, 80, 70],
+                    fill: true,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(54, 162, 235)'
+                }]
+            },
+            options: {
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Impact of Consciousness on Ethical Concepts'
+                    }
+                }
+            },
+        });
+
+        // D3.js visualization for quantum ethical dilemmas
+        const dilemmas = [
+            {question: "If all possible choices exist in parallel universes, does it matter which we choose?", complexity: 0.8},
+            {question: "Are we responsible for the quantum effects of our observations?", complexity: 0.6},
+            {question: "If consciousness collapses wave functions, do we have an obligation to observe beneficial outcomes?", complexity: 0.9},
+            {question: "Does quantum entanglement imply a universal ethical responsibility?", complexity: 0.7},
+            {question: "Can quantum indeterminacy resolve the conflict between determinism and moral responsibility?", complexity: 0.85}
+        ];
+
+        const width = 600;
+        const height = 400;
+
+        const svg = d3.select("#ethical-dilemmas")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        const simulation = d3.forceSimulation(dilemmas)
+            .force("x", d3.forceX(width / 2).strength(0.05))
+            .force("y", d3.forceY(height / 2).strength(0.05))
+            .force("collide", d3.forceCollide().radius(d => d.complexity * 50 + 20));
+
+        const circles = svg.selectAll("circle")
+            .data(dilemmas)
+            .enter().append("circle")
+            .attr("r", d => d.complexity * 50)
+            .attr("fill", d => d3.interpolateViridis(d.complexity))
+            .attr("class", "pulse");
+
+        const labels = svg.selectAll("text")
+            .data(dilemmas)
+            .enter().append("text")
+            .text(d => d.question)
+            .attr("font-size", "10px")
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .attr("width", 80)
+            .call(wrap, 80);
+
+        simulation.on("tick", () => {
+            circles
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+            labels
+                .attr("x", d => d.x)
+                .attr("y", d => d.y);
+        });
+
+        function wrap(text, width) {
+            text.each(function() {
+                let text = d3.select(this),
+                    words = text.text().split(/\s+/).reverse(),
+                    word,
+                    line = [],
+                    lineNumber = 0,
+                    lineHeight = 1.1,
+                    y = text.attr("y"),
+                    dy = parseFloat(text.attr("dy") || 0),
+                    tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+                while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

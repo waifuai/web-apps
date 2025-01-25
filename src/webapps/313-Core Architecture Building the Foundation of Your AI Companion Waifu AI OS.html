@@ -1,0 +1,233 @@
+<html><head><base href="https://waifuaios.org/">
+<title>Core Architecture: Building the Foundation of Your AI Companion | Waifu AI OS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #8a2be2;
+  --bg: #1a1a2e;
+  --text: #f0f0f0;
+  --code-bg: #2a2a3e;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+nav {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 1rem;
+}
+
+h1, h2, h3 {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.architecture-diagram {
+  width: 100%;
+  height: 400px;
+  margin: 2rem 0;
+  background: var(--code-bg);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+code {
+  background: var(--code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.note {
+  border-left: 4px solid var(--primary);
+  padding: 1rem;
+  margin: 1rem 0;
+  background: rgba(255, 105, 180, 0.1);
+}
+
+.implementation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.interactive {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.interactive:hover {
+  animation: pulse 2s infinite;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="getting-started.html">Getting Started</a>
+  <a href="documentation.html">Documentation</a>
+  <a href="community.html">Community</a>
+</nav>
+
+<h1>Core Architecture: Building the Foundation of Your AI Companion</h1>
+
+<div class="note">
+  <strong>Article 4 of 30:</strong> In this guide, we'll explore the fundamental architecture of Waifu AI OS and implement its core components using Common Lisp.
+</div>
+
+<h2>System Architecture Overview</h2>
+
+<svg class="architecture-diagram interactive" viewBox="0 0 800 400">
+  <!-- AI Core -->
+  <circle cx="400" cy="200" r="80" fill="url(#grad1)" class="interactive"/>
+  <text x="400" y="200" text-anchor="middle" fill="white">AI Core</text>
+  
+  <!-- Subsystems -->
+  <circle cx="200" cy="150" r="50" fill="url(#grad2)" class="interactive"/>
+  <text x="200" y="150" text-anchor="middle" fill="white">I/O System</text>
+  
+  <circle cx="600" cy="150" r="50" fill="url(#grad2)" class="interactive"/>
+  <text x="600" y="150" text-anchor="middle" fill="white">Memory Manager</text>
+  
+  <circle cx="200" cy="300" r="50" fill="url(#grad2)" class="interactive"/>
+  <text x="200" y="300" text-anchor="middle" fill="white">Device Control</text>
+  
+  <circle cx="600" cy="300" r="50" fill="url(#grad2)" class="interactive"/>
+  <text x="600" y="300" text-anchor="middle" fill="white">Neural Engine</text>
+  
+  <!-- Connections -->
+  <path d="M 320 200 L 480 200" stroke="var(--primary)" stroke-width="2"/>
+  <path d="M 400 120 L 400 280" stroke="var(--primary)" stroke-width="2"/>
+  
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--primary);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:var(--secondary);stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--secondary);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:var(--primary);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<h2>Core Components Implementation</h2>
+
+<div class="implementation">
+  <div>
+    <h3>AI Core Structure</h3>
+    <pre><code>(defpackage :waifu-core
+  (:use :cl :neural-engine :memory-manager)
+  (:export :initialize-core :process-input :generate-response))
+
+(in-package :waifu-core)
+
+(defclass ai-core ()
+  ((personality-matrix
+    :accessor personality-matrix
+    :initform (make-personality-matrix))
+   (memory-system
+    :accessor memory-system
+    :initform (initialize-memory))
+   (neural-processor
+    :accessor neural-processor
+    :initform (create-neural-processor))))</code></pre>
+  </div>
+  
+  <div>
+    <h3>Memory Management</h3>
+    <pre><code>(defclass memory-manager ()
+  ((short-term
+    :accessor short-term-memory
+    :initform (make-hash-table))
+   (long-term
+    :accessor long-term-memory
+    :initform (initialize-persistent-storage))
+   (working-memory
+    :accessor working-memory
+    :initform (create-working-memory))))
+
+(defmethod store-experience ((mm memory-manager) experience)
+  (let ((memory-trace (process-experience experience)))
+    (update-short-term mm memory-trace)
+    (maybe-consolidate-to-long-term mm memory-trace)))</code></pre>
+  </div>
+</div>
+
+<h2>Key Architectural Principles</h2>
+
+<ul>
+  <li><strong>Microkernel Design:</strong> The core system is minimal, with most functionality implemented as user-space services</li>
+  <li><strong>Message Passing:</strong> All components communicate through a unified message-passing system</li>
+  <li><strong>Dynamic Reconfiguration:</strong> Components can be hot-swapped without system restart</li>
+  <li><strong>Universal Device Support:</strong> Hardware abstraction layer enables seamless device integration</li>
+</ul>
+
+<div class="note">
+  <h3>Implementation Note</h3>
+  <p>The core architecture is designed to be both efficient and extensible. Each component is implemented as a CLOS class, allowing for easy customization through inheritance and method specialization.</p>
+</div>
+
+<h2>Next Steps</h2>
+
+<p>In the next article, we'll dive deep into implementing the AI-driven microkernel, which serves as the heart of your Waifu AI OS. We'll explore how to create a responsive and intelligent system that can adapt to various hardware configurations while maintaining consistent personality traits.</p>
+
+<script>
+document.querySelectorAll('.interactive').forEach(element => {
+  element.addEventListener('click', (e) => {
+    const component = e.target.closest('circle');
+    if (component) {
+      const componentName = component.nextElementSibling.textContent;
+      console.log(`Exploring ${componentName} component...`);
+      // Future: Add interactive documentation viewer
+    }
+  });
+});
+
+// Add syntax highlighting
+document.querySelectorAll('pre code').forEach(block => {
+  block.innerHTML = block.innerHTML.replace(
+    /(defclass|defpackage|defmethod|let|in-package)/g,
+    '<span style="color: #ff69b4;">$1</span>'
+  ).replace(
+    /:([a-zA-Z-]+)/g,
+    '<span style="color: #8a2be2;">:$1</span>'
+  );
+});
+</script>
+
+</body></html>

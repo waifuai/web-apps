@@ -1,0 +1,238 @@
+<html><head><base href="https://quantum-physics.ai/"/>
+<title>QuantumAI Physics - Decentralized Research Network</title>
+<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .logo {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #3498db;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  .chart-container {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  .chart-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #2c3e50;
+  }
+  #researchFeed {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+  }
+  #researchFeed h2 {
+    margin-top: 0;
+  }
+  #feedItems {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .feed-item {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  #newResearch {
+    margin-top: 20px;
+  }
+  #newResearch input, #newResearch button {
+    padding: 10px;
+    margin-right: 10px;
+  }
+  #newResearch button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #newResearch button:hover {
+    background-color: #2980b9;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">QuantumAI Physics GUN Network</div>
+  
+  <h1>Decentralized Quantum Research Dashboard</h1>
+  
+  <div class="dashboard">
+    <div class="chart-container">
+      <div class="chart-title">Active Research Nodes</div>
+      <canvas id="nodesChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Data Propagation</div>
+      <canvas id="propagationChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Consensus Distribution</div>
+      <canvas id="consensusChart"></canvas>
+    </div>
+  </div>
+
+  <div id="researchFeed">
+    <h2>Live Research Feed</h2>
+    <div id="feedItems"></div>
+    <div id="newResearch">
+      <input type="text" id="researchInput" placeholder="Enter new research data">
+      <button onclick="submitResearch()">Submit</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Initialize GUN
+  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun']);
+
+  // Charts initialization
+  const nodesChart = new Chart(document.getElementById('nodesChart'), {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Active Nodes',
+        data: [],
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  const propagationChart = new Chart(document.getElementById('propagationChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Instant', '<1s', '1-5s', '5-10s', '>10s'],
+      datasets: [{
+        label: 'Data Propagation Time',
+        data: [0, 0, 0, 0, 0],
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  const consensusChart = new Chart(document.getElementById('consensusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Agreed', 'Pending', 'Disputed'],
+      datasets: [{
+        data: [0, 0, 0],
+        backgroundColor: [
+          'rgb(75, 192, 192)',
+          'rgb(255, 205, 86)',
+          'rgb(255, 99, 132)'
+        ]
+      }]
+    },
+    options: {
+      responsive: true
+    }
+  });
+
+  // Function to update charts with random data (simulating real-time updates)
+  function updateCharts() {
+    // Update nodes chart
+    if (nodesChart.data.labels.length > 10) {
+      nodesChart.data.labels.shift();
+      nodesChart.data.datasets[0].data.shift();
+    }
+    nodesChart.data.labels.push(new Date().toLocaleTimeString());
+    nodesChart.data.datasets[0].data.push(Math.floor(Math.random() * 50) + 100);
+    nodesChart.update();
+
+    // Update propagation chart
+    propagationChart.data.datasets[0].data = [
+      Math.floor(Math.random() * 30),
+      Math.floor(Math.random() * 40),
+      Math.floor(Math.random() * 20),
+      Math.floor(Math.random() * 10),
+      Math.floor(Math.random() * 5)
+    ];
+    propagationChart.update();
+
+    // Update consensus chart
+    consensusChart.data.datasets[0].data = [
+      Math.floor(Math.random() * 70) + 30,
+      Math.floor(Math.random() * 20),
+      Math.floor(Math.random() * 10)
+    ];
+    consensusChart.update();
+  }
+
+  // Simulated real-time updates
+  setInterval(updateCharts, 5000);
+
+  // Function to submit new research data
+  function submitResearch() {
+    const input = document.getElementById('researchInput');
+    const data = input.value.trim();
+    if (data) {
+      gun.get('research').set({
+        data: data,
+        timestamp: Date.now()
+      });
+      input.value = '';
+    }
+  }
+
+  // Listen for new research data
+  gun.get('research').map().on(function(data, key) {
+    const feedItems = document.getElementById('feedItems');
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.textContent = `${new Date(data.timestamp).toLocaleString()}: ${data.data}`;
+    feedItems.insertBefore(item, feedItems.firstChild);
+
+    // Keep only the last 10 items
+    while (feedItems.children.length > 10) {
+      feedItems.removeChild(feedItems.lastChild);
+    }
+  });
+</script>
+</body></html>

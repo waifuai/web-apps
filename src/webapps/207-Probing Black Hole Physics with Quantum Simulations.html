@@ -1,0 +1,200 @@
+<html><head><base href="https://quantum-string-theory.edu/"><title>Probing Black Hole Physics with Quantum Simulations</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .visualization {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+    }
+    .interactive-demo {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 20px 0;
+    }
+    #blackhole-canvas {
+        width: 100%;
+        height: 400px;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Probing Black Hole Physics with Quantum Simulations</h1>
+        
+        <p>Welcome to an exciting journey where quantum computing meets the enigmatic world of black holes. In this exploration, we'll dive into how quantum simulations are revolutionizing our understanding of black hole physics and potentially unraveling some of the deepest mysteries of the universe.</p>
+        
+        <h2>1. Quantum Simulation of Hawking Radiation</h2>
+        <p>One of the most intriguing aspects of black hole physics is Hawking radiation. Let's visualize how quantum simulations can help us understand this phenomenon better.</p>
+        
+        <div id="hawking-radiation" class="visualization"></div>
+        
+        <h2>2. Exploring the Information Paradox</h2>
+        <p>The black hole information paradox has puzzled physicists for decades. Quantum simulations offer new avenues to tackle this problem.</p>
+        
+        <div class="interactive-demo">
+            <h3>Interactive Demo: Information Scrambling in Black Holes</h3>
+            <p>Use the slider to adjust the simulation parameters and observe how information is scrambled in a simulated black hole environment.</p>
+            <input type="range" id="scrambling-slider" min="0" max="100" value="50">
+            <div id="scrambling-viz"></div>
+        </div>
+        
+        <h2>3. Simulating Black Hole Mergers</h2>
+        <p>Quantum algorithms can significantly enhance our ability to simulate the complex dynamics of black hole mergers.</p>
+        
+        <div id="merger-simulation" class="visualization"></div>
+        
+        <h2>4. Probing the Black Hole Interior</h2>
+        <p>While classical physics breaks down at the singularity, quantum simulations might offer insights into the mysterious interior of black holes.</p>
+        
+        <div id="blackhole-canvas"></div>
+    </div>
+
+    <script>
+        // Hawking Radiation Visualization
+        function plotHawkingRadiation() {
+            const xValues = Array.from({length: 100}, (_, i) => i);
+            const yValues = xValues.map(x => Math.exp(-x/50) * Math.sin(x/5));
+            
+            const trace = {
+                x: xValues,
+                y: yValues,
+                mode: 'lines',
+                name: 'Hawking Radiation'
+            };
+            
+            const layout = {
+                title: 'Simulated Hawking Radiation Spectrum',
+                xaxis: {title: 'Energy'},
+                yaxis: {title: 'Intensity'}
+            };
+            
+            Plotly.newPlot('hawking-radiation', [trace], layout);
+        }
+        
+        // Information Scrambling Visualization
+        function updateScramblingViz() {
+            const slider = document.getElementById('scrambling-slider');
+            const value = slider.value;
+            
+            const xValues = Array.from({length: 50}, (_, i) => i);
+            const yValues = xValues.map(x => Math.sin(x * value / 500) * Math.exp(-x / 50));
+            
+            const trace = {
+                x: xValues,
+                y: yValues,
+                mode: 'lines',
+                name: 'Information Scrambling'
+            };
+            
+            const layout = {
+                title: 'Information Scrambling Simulation',
+                xaxis: {title: 'Time'},
+                yaxis: {title: 'Information Coherence'}
+            };
+            
+            Plotly.newPlot('scrambling-viz', [trace], layout);
+        }
+        
+        // Black Hole Merger Simulation
+        function plotMergerSimulation() {
+            const t = Array.from({length: 1000}, (_, i) => i * 0.01);
+            const x1 = t.map(ti => Math.cos(ti) * Math.exp(-ti/20));
+            const y1 = t.map(ti => Math.sin(ti) * Math.exp(-ti/20));
+            const x2 = t.map(ti => -Math.cos(ti) * Math.exp(-ti/20) + 1);
+            const y2 = t.map(ti => -Math.sin(ti) * Math.exp(-ti/20));
+            
+            const trace1 = {
+                x: x1,
+                y: y1,
+                mode: 'lines',
+                name: 'Black Hole 1'
+            };
+            
+            const trace2 = {
+                x: x2,
+                y: y2,
+                mode: 'lines',
+                name: 'Black Hole 2'
+            };
+            
+            const layout = {
+                title: 'Simulated Black Hole Merger',
+                xaxis: {title: 'x'},
+                yaxis: {title: 'y'}
+            };
+            
+            Plotly.newPlot('merger-simulation', [trace1, trace2], layout);
+        }
+        
+        // 3D Black Hole Visualization
+        function initBlackHole() {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('blackhole-canvas').appendChild(renderer.domElement);
+
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const material = new THREE.MeshBasicMaterial({color: 0x000000});
+            const blackHole = new THREE.Mesh(geometry, material);
+            scene.add(blackHole);
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCnt = 5000;
+            const posArray = new Float32Array(particlesCnt * 3);
+
+            for(let i = 0; i < particlesCnt * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 5;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({size: 0.005});
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 5;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                blackHole.rotation.x += 0.01;
+                blackHole.rotation.y += 0.01;
+                particlesMesh.rotation.x -= 0.002;
+                particlesMesh.rotation.y -= 0.002;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // Initialize all visualizations
+        document.addEventListener('DOMContentLoaded', (event) => {
+            plotHawkingRadiation();
+            updateScramblingViz();
+            plotMergerSimulation();
+            initBlackHole();
+            
+            document.getElementById('scrambling-slider').addEventListener('input', updateScramblingViz);
+        });
+    </script>
+</body>
+</html>

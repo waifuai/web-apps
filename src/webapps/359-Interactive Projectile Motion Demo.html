@@ -1,0 +1,175 @@
+<html><head><base href="." /><style>
+  body { background-color: #1f2937; color: #e5e7eb; font-family: system-ui; padding: 2rem; }
+  .canvas-container { position: relative; width: 800px; height: 500px; border: 2px solid #4b5563; margin: 2rem auto; }
+  canvas { background: #111827; }
+  .controls { text-align: center; margin: 1rem; }
+  button { background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; margin: 0 0.5rem; }
+  button:hover { background: #2563eb; }
+  .info { max-width: 800px; margin: 2rem auto; background: #374151; padding: 1rem; border-radius: 0.5rem; }
+</style></head><body>
+<div class="info">
+  <h2>Interactive Projectile Motion Demo</h2>
+  <p>Click "Start" to begin the simulation. The blue circle represents the target moving in a straight line, and the red circle represents your projectile launcher. Click "Fire" to launch a projectile that will intercept the target!</p>
+</div>
+
+<div class="canvas-container">
+  <canvas id="gameCanvas" width="800" height="500"></canvas>
+</div>
+
+<div class="controls">
+  <button id="startBtn">Start</button>
+  <button id="fireBtn">Fire</button>
+  <button id="resetBtn">Reset</button>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let gameState = {
+  running: false,
+  target: {
+    x: 50,
+    y: 250,
+    vx: 100,  // pixels per second
+    vy: 0,
+    radius: 10
+  },
+  launcher: {
+    x: 700,
+    y: 250,
+    radius: 15
+  },
+  projectiles: [],
+  lastTime: 0
+};
+
+function calculateInterception(launcher, target, projectileSpeed) {
+  const dx = target.x - launcher.x;
+  const dy = target.y - launcher.y;
+  const magnitude = Math.sqrt(dx * dx + dy * dy);
+  
+  // Time to intercept calculation
+  const a = projectileSpeed * projectileSpeed - (target.vx * target.vx);
+  const b = -2 * (dx * target.vx);
+  const c = -(dx * dx + dy * dy);
+  
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) return null;
+  
+  const t = (-b - Math.sqrt(discriminant)) / (2 * a);
+  if (t < 0) return null;
+  
+  const interceptX = target.x + target.vx * t;
+  const interceptY = target.y + target.vy * t;
+  
+  const velocityX = (interceptX - launcher.x) / t;
+  const velocityY = (interceptY - launcher.y) / t;
+  
+  return { vx: velocityX, vy: velocityY };
+}
+
+function update(timestamp) {
+  if (!gameState.lastTime) gameState.lastTime = timestamp;
+  const deltaTime = (timestamp - gameState.lastTime) / 1000;
+  gameState.lastTime = timestamp;
+  
+  if (gameState.running) {
+    // Update target position
+    gameState.target.x += gameState.target.vx * deltaTime;
+    if (gameState.target.x > canvas.width || gameState.target.x < 0) {
+      gameState.target.vx *= -1;
+    }
+    
+    // Update projectiles
+    gameState.projectiles.forEach((p, index) => {
+      p.x += p.vx * deltaTime;
+      p.y += p.vy * deltaTime;
+      
+      // Check for collision with target
+      const dx = p.x - gameState.target.x;
+      const dy = p.y - gameState.target.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < gameState.target.radius + 5) {
+        gameState.projectiles.splice(index, 1);
+        // Add hit effect here if desired
+      }
+      
+      // Remove projectiles that are off screen
+      if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+        gameState.projectiles.splice(index, 1);
+      }
+    });
+  }
+  
+  render();
+  requestAnimationFrame(update);
+}
+
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw target
+  ctx.beginPath();
+  ctx.arc(gameState.target.x, gameState.target.y, gameState.target.radius, 0, Math.PI * 2);
+  ctx.fillStyle = '#3b82f6';
+  ctx.fill();
+  
+  // Draw launcher
+  ctx.beginPath();
+  ctx.arc(gameState.launcher.x, gameState.launcher.y, gameState.launcher.radius, 0, Math.PI * 2);
+  ctx.fillStyle = '#ef4444';
+  ctx.fill();
+  
+  // Draw projectiles
+  gameState.projectiles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#10b981';
+    ctx.fill();
+  });
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  gameState.running = true;
+});
+
+document.getElementById('fireBtn').addEventListener('click', () => {
+  if (!gameState.running) return;
+  
+  const projectileSpeed = 300; // pixels per second
+  const solution = calculateInterception(gameState.launcher, gameState.target, projectileSpeed);
+  
+  if (solution) {
+    gameState.projectiles.push({
+      x: gameState.launcher.x,
+      y: gameState.launcher.y,
+      vx: solution.vx,
+      vy: solution.vy
+    });
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  gameState = {
+    running: false,
+    target: {
+      x: 50,
+      y: 250,
+      vx: 100,
+      vy: 0,
+      radius: 10
+    },
+    launcher: {
+      x: 700,
+      y: 250,
+      radius: 15
+    },
+    projectiles: [],
+    lastTime: 0
+  };
+});
+
+requestAnimationFrame(update);
+</script></body></html>

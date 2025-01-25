@@ -1,0 +1,211 @@
+<html><head><base href="https://websimulation.ai">
+<title>AI Commission Rate Optimizer</title>
+<style>
+:root {
+  --primary: #2A3FFB;
+  --secondary: #6C63FF;
+  --background: #FAFBFF;
+  --text: #2C3E50;
+  --accent: #00F4C8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(42, 63, 251, 0.3)); }
+  50% { filter: drop-shadow(0 0 20px rgba(42, 63, 251, 0.5)); }
+}
+
+.cta-button {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 2rem;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.feature {
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+}
+
+.feature svg {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 1rem;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div id="particles-js" class="particles"></div>
+  
+  <div class="content">
+    <h1>AI-Powered Commission Rate Optimization</h1>
+    <p>Harness the power of artificial intelligence to optimize your commission rates in real-time</p>
+    
+    <a href="https://websimulation.ai/simulate" class="cta-button">Start Simulation</a>
+    
+    <div class="features">
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        <h3>Real-time Simulation</h3>
+        <p>Watch your optimization scenarios unfold live with dynamic visualizations</p>
+      </div>
+      
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2">
+          <path d="M21 12h-6m-2 0H3m4-6l3.47 2L7 10m10-4l-3.47 2L17 10"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <h3>Data-driven Optimization</h3>
+        <p>Advanced algorithms analyze patterns to find your optimal commission rates</p>
+      </div>
+      
+      <div class="feature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M9 3v18m6-18v18"/>
+          <path d="M3 9h18m-18 6h18"/>
+        </svg>
+        <h3>Customizable Parameters</h3>
+        <p>Tailor simulations to your specific business needs and market conditions</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+particlesJS('particles-js', {
+  particles: {
+    number: {
+      value: 80,
+      density: {
+        enable: true,
+        value_area: 800
+      }
+    },
+    color: {
+      value: '#6C63FF'
+    },
+    shape: {
+      type: 'circle'
+    },
+    opacity: {
+      value: 0.5,
+      random: false
+    },
+    size: {
+      value: 3,
+      random: true
+    },
+    line_linked: {
+      enable: true,
+      distance: 150,
+      color: '#6C63FF',
+      opacity: 0.4,
+      width: 1
+    },
+    move: {
+      enable: true,
+      speed: 2,
+      direction: 'none',
+      random: false,
+      straight: false,
+      out_mode: 'out',
+      bounce: false
+    }
+  },
+  interactivity: {
+    detect_on: 'canvas',
+    events: {
+      onhover: {
+        enable: true,
+        mode: 'grab'
+      },
+      onclick: {
+        enable: true,
+        mode: 'push'
+      },
+      resize: true
+    }
+  },
+  retina_detect: true
+});
+</script>
+
+</body></html>

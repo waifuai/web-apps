@@ -1,0 +1,159 @@
+<html><head><base href="https://neural-em.science/intuition-premonition/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intuition and Premonition: An Electromagnetic Explanation?</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .interactive-demo {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  #emWaveVisualizer {
+    width: 100%;
+    height: 200px;
+    background-color: #000;
+    margin-bottom: 20px;
+  }
+  button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button:hover {
+    background-color: #2980b9;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+<body>
+  <h1>Intuition and Premonition: An Electromagnetic Explanation?</h1>
+  
+  <h2>Overview of reported intuitive and premonitory experiences</h2>
+  <p>Intuition and premonition have long fascinated humans, with countless anecdotal reports of inexplicable "gut feelings" or seemingly prophetic dreams. These experiences often defy conventional explanations, leading some researchers to explore alternative theories, including electromagnetic field (EMF) interactions.</p>
+  
+  <div class="interactive-demo">
+    <h3>Interactive EM Wave Visualizer</h3>
+    <p>Adjust the sliders to visualize how changes in electromagnetic waves might correspond to intuitive or premonitory experiences.</p>
+    <div id="emWaveVisualizer"></div>
+    <label for="frequencySlider">Frequency:</label>
+    <input type="range" id="frequencySlider" min="1" max="100" value="50">
+    <label for="amplitudeSlider">Amplitude:</label>
+    <input type="range" id="amplitudeSlider" min="1" max="100" value="50">
+  </div>
+
+  <h2>How EM field theories might explain these phenomena</h2>
+  <p>Electromagnetic field theories propose that the human brain might be capable of detecting and processing extremely weak electromagnetic signals from the environment. This hypothetical sensitivity could potentially explain some reported intuitive or premonitory experiences:</p>
+  <ul>
+    <li>Quantum entanglement of neural microtubules with external EM fields</li>
+    <li>Resonance between brain EM fields and geomagnetic fluctuations</li>
+    <li>Subconscious processing of subtle EM cues from the environment</li>
+  </ul>
+
+  <div class="interactive-demo">
+    <h3>EMF Sensitivity Test</h3>
+    <p>Test your sensitivity to electromagnetic fields with this simple experiment. Click the button when you think you sense a change in the EM field.</p>
+    <button id="emfTestButton">I Sense a Change</button>
+    <p id="emfTestResult"></p>
+  </div>
+
+  <h2>Critical evaluation of evidence and alternative explanations</h2>
+  <p>While EM field theories offer intriguing possibilities, it's crucial to approach these ideas with scientific skepticism:</p>
+  <ul>
+    <li>Lack of reproducible experimental evidence</li>
+    <li>Potential for confirmation bias in anecdotal reports</li>
+    <li>Alternative explanations (e.g., subconscious pattern recognition, selective memory)</li>
+  </ul>
+
+  <script>
+    let wave;
+    let frequency = 0.05;
+    let amplitude = 50;
+
+    function setup() {
+      let canvas = createCanvas(600, 200);
+      canvas.parent('emWaveVisualizer');
+      wave = new Wave();
+    }
+
+    function draw() {
+      background(0);
+      wave.update();
+      wave.display();
+    }
+
+    class Wave {
+      constructor() {
+        this.points = new Array(width).fill(0);
+      }
+
+      update() {
+        let frequencySlider = document.getElementById('frequencySlider');
+        let amplitudeSlider = document.getElementById('amplitudeSlider');
+        frequency = map(frequencySlider.value, 1, 100, 0.01, 0.1);
+        amplitude = map(amplitudeSlider.value, 1, 100, 10, 90);
+
+        for (let i = 0; i < this.points.length; i++) {
+          this.points[i] = sin(i * frequency + frameCount * 0.1) * amplitude;
+        }
+      }
+
+      display() {
+        stroke(0, 255, 0);
+        noFill();
+        beginShape();
+        for (let i = 0; i < this.points.length; i++) {
+          vertex(i, height / 2 + this.points[i]);
+        }
+        endShape();
+      }
+    }
+
+    // EMF Sensitivity Test
+    let emfTestButton = document.getElementById('emfTestButton');
+    let emfTestResult = document.getElementById('emfTestResult');
+    let emfChangeTime = null;
+    let emfTestStartTime = null;
+
+    emfTestButton.addEventListener('click', function() {
+      if (emfChangeTime === null) {
+        emfTestStartTime = Date.now();
+        emfChangeTime = emfTestStartTime + Math.random() * 10000; // Random time within 10 seconds
+        emfTestResult.textContent = "Test started. Click when you sense a change.";
+        setTimeout(() => {
+          if (emfChangeTime !== null) {
+            emfTestResult.textContent = "Test ended. You didn't detect the change in time.";
+            emfChangeTime = null;
+          }
+        }, 10000);
+      } else {
+        let clickTime = Date.now();
+        let timeDiff = Math.abs(clickTime - emfChangeTime);
+        if (timeDiff < 1000) {
+          emfTestResult.textContent = `Impressive! You detected the change within ${timeDiff} ms.`;
+        } else {
+          emfTestResult.textContent = `You clicked ${timeDiff} ms from the actual change. Keep practicing!`;
+        }
+        emfChangeTime = null;
+      }
+    });
+  </script>
+</body>
+</html>

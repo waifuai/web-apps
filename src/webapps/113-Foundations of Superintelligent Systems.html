@@ -1,0 +1,196 @@
+<html><head><base href="https://superintelligence.engineering/foundations/"><script src="https://d3js.org/d3.v7.min.js"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+h1, h2 {
+    color: #2c3e50;
+}
+
+.chart-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+#intelligence-scale {
+    width: 100%;
+    height: 400px;
+}
+
+#capability-comparison {
+    width: 100%;
+    height: 300px;
+}
+
+.interactive-demo {
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+#output {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+</style></head><body>
+    <h1>Foundations of Superintelligent Systems</h1>
+    
+    <p>Welcome to the first part of our series on engineering with superintelligence. This foundational module explores the core concepts and principles that underpin superintelligent systems.</p>
+
+    <h2>1. Defining Superintelligence</h2>
+    <p>Superintelligence refers to an intellect that is much smarter than the best human brains in practically every field, including scientific creativity, general wisdom and social skills. Let's visualize the scale of intelligence:</p>
+
+    <div class="chart-container">
+        <svg id="intelligence-scale"></svg>
+    </div>
+
+    <h2>2. Types of Superintelligence</h2>
+    <p>Researchers often categorize superintelligence into three main types:</p>
+    <ul>
+        <li>Speed Superintelligence</li>
+        <li>Collective Superintelligence</li>
+        <li>Quality Superintelligence</li>
+    </ul>
+
+    <div class="chart-container">
+        <canvas id="capability-comparison"></canvas>
+    </div>
+
+    <h2>3. The Path to Superintelligence</h2>
+    <p>The development of superintelligent systems is likely to be a gradual process, with several key milestones along the way. Let's explore an interactive timeline of potential developments:</p>
+
+    <div class="interactive-demo">
+        <button id="next-milestone">Next Milestone</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+    // Intelligence Scale Visualization
+    const svg = d3.select("#intelligence-scale")
+        .attr("width", 800)
+        .attr("height", 400);
+
+    const intelligenceData = [
+        {label: "Mouse", value: 1},
+        {label: "Chimpanzee", value: 20},
+        {label: "Human", value: 100},
+        {label: "Superintelligence", value: 1000}
+    ];
+
+    const xScale = d3.scaleLog()
+        .domain([1, 1000])
+        .range([50, 750]);
+
+    const yScale = d3.scalePoint()
+        .domain(intelligenceData.map(d => d.label))
+        .range([50, 350]);
+
+    svg.selectAll("circle")
+        .data(intelligenceData)
+        .enter()
+        .append("circle")
+        .attr("cx", d => xScale(d.value))
+        .attr("cy", d => yScale(d.label))
+        .attr("r", 10)
+        .attr("fill", "#3498db");
+
+    svg.selectAll("text")
+        .data(intelligenceData)
+        .enter()
+        .append("text")
+        .attr("x", d => xScale(d.value))
+        .attr("y", d => yScale(d.label) - 20)
+        .text(d => d.label)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#2c3e50");
+
+    // Capability Comparison Chart
+    const ctx = document.getElementById('capability-comparison').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Processing Speed', 'Memory Capacity', 'Learning Rate', 'Problem Solving', 'Creativity', 'Social Intelligence'],
+            datasets: [{
+                label: 'Human',
+                data: [50, 40, 60, 70, 80, 90],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                pointBackgroundColor: 'rgb(54, 162, 235)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(54, 162, 235)'
+            }, {
+                label: 'Superintelligence',
+                data: [100, 100, 100, 100, 100, 100],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(255, 99, 132)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        display: false
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            }
+        }
+    });
+
+    // Interactive Timeline Demo
+    const milestones = [
+        "Development of advanced machine learning algorithms",
+        "Creation of artificial general intelligence (AGI)",
+        "AGI surpasses human-level intelligence in specific domains",
+        "AGI achieves human-level intelligence across all domains",
+        "AGI begins rapid self-improvement",
+        "Emergence of superintelligent systems"
+    ];
+
+    let currentMilestone = 0;
+
+    document.getElementById('next-milestone').addEventListener('click', () => {
+        if (currentMilestone < milestones.length) {
+            document.getElementById('output').textContent = milestones[currentMilestone];
+            currentMilestone++;
+        } else {
+            document.getElementById('output').textContent = "Timeline complete. The future beyond this point is uncertain and subject to intense debate among experts.";
+            document.getElementById('next-milestone').disabled = true;
+        }
+    });
+    </script>
+</body></html>

@@ -1,0 +1,177 @@
+<html><head><base href="https://bondingsim.websim.ai/"><title>BondingCurve Architect: High-Profit Token Design</title><style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .simulator-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    input[type="number"], select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    button {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    #result {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    canvas {
+        width: 100%;
+        max-width: 600px;
+        height: 300px;
+        margin-top: 20px;
+    }
+    .info-box {
+        background-color: #e8f4f8;
+        border-left: 5px solid #3498db;
+        padding: 10px;
+        margin-top: 20px;
+    }
+</style></head><body>
+    <h1>BondingCurve Architect: High-Profit Token Design</h1>
+    
+    <div class="simulator-container">
+        <h2>Configure Your Bonding Curve</h2>
+        <form id="bondingForm">
+            <label for="initialSupply">Initial Token Supply:</label>
+            <input type="number" id="initialSupply" min="1" value="1000000" required>
+            
+            <label for="initialPrice">Initial Token Price (in USD):</label>
+            <input type="number" id="initialPrice" min="0.0001" step="0.0001" value="0.01" required>
+            
+            <label for="reserveRatio">Reserve Ratio (10%):</label>
+            <input type="number" id="reserveRatio" value="10" readonly>
+            
+            <label for="profitMargin">Profit Margin (99%):</label>
+            <input type="number" id="profitMargin" value="99" readonly>
+            
+            <label for="commissionRate">Commission Rate (%):</label>
+            <input type="number" id="commissionRate" min="0" max="100" value="10" required>
+            
+            <button type="submit">Calculate Bonding Curve</button>
+        </form>
+        <div id="result"></div>
+        <canvas id="bondingCurveChart"></canvas>
+    </div>
+
+    <div class="info-box">
+        <h3>Understanding Your High-Profit Bonding Curve</h3>
+        <p>This simulator is designed for a bonding curve with a 99% profit margin and a 10% reserve ratio. These parameters create a steep price increase as more tokens are purchased, potentially leading to high profits but also increased volatility.</p>
+        <p>The commission rate represents the percentage of each sale that goes to the project or designated wallets, further increasing potential profits.</p>
+        <p><strong>Note:</strong> While this model can generate significant profits, it also carries high risks. Ensure you understand the implications and consult with financial and legal experts before implementation.</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const form = document.getElementById('bondingForm');
+        const resultDiv = document.getElementById('result');
+        let bondingCurveChart;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const initialSupply = parseFloat(document.getElementById('initialSupply').value);
+            const initialPrice = parseFloat(document.getElementById('initialPrice').value);
+            const reserveRatio = 0.1; // 10%
+            const profitMargin = 0.99; // 99%
+            const commissionRate = parseFloat(document.getElementById('commissionRate').value) / 100;
+
+            const initialReserve = initialSupply * initialPrice * reserveRatio;
+            const curvePoints = calculateCurvePoints(initialSupply, initialReserve, reserveRatio, profitMargin, commissionRate);
+            
+            displayResults(curvePoints);
+            drawBondingCurve(curvePoints);
+        });
+
+        function calculateCurvePoints(initialSupply, initialReserve, reserveRatio, profitMargin, commissionRate) {
+            const points = [];
+            for (let i = 0; i <= 20; i++) {
+                const supply = initialSupply * (1 + i * 0.1);
+                const price = (initialReserve / (reserveRatio * initialSupply)) * Math.pow(supply / initialSupply, 1 / reserveRatio);
+                const adjustedPrice = price / (1 - profitMargin - commissionRate);
+                points.push({supply, price: adjustedPrice});
+            }
+            return points;
+        }
+
+        function displayResults(curvePoints) {
+            const initialPrice = curvePoints[0].price.toFixed(4);
+            const finalPrice = curvePoints[curvePoints.length - 1].price.toFixed(4);
+            resultDiv.innerHTML = `
+                <p>Initial Token Price: $${initialPrice}</p>
+                <p>Projected Price at 3x Supply: $${finalPrice}</p>
+                <p>Price Increase: ${((finalPrice / initialPrice - 1) * 100).toFixed(2)}%</p>
+            `;
+        }
+
+        function drawBondingCurve(curvePoints) {
+            const ctx = document.getElementById('bondingCurveChart').getContext('2d');
+            if (bondingCurveChart) {
+                bondingCurveChart.destroy();
+            }
+            bondingCurveChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: curvePoints.map(point => point.supply.toFixed(0)),
+                    datasets: [{
+                        label: 'Token Price (USD)',
+                        data: curvePoints.map(point => point.price),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Token Supply'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Token Price (USD)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <footer>
+        <p>BondingCurve Architect is an educational simulation tool. This high-profit model carries significant risks and may not be suitable for all projects. Always conduct thorough research and consult experts before implementing any token model.</p>
+        <nav>
+            <a href="https://bondingsim.websim.ai/about">About</a> |
+            <a href="https://bondingsim.websim.ai/risks">Understanding Risks</a> |
+            <a href="https://bondingsim.websim.ai/legal">Legal Considerations</a>
+        </nav>
+    </footer>
+</body></html>

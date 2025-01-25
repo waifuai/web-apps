@@ -1,0 +1,154 @@
+<html><head><base href="https://quantum-neuroscience.org/photonic-sensing/"><title>Photonic Quantum Sensing: Probing the Quantum Nature of Neurons</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .interactive-demo {
+        width: 100%;
+        height: 400px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .chart-container {
+        width: 100%;
+        height: 300px;
+        margin-bottom: 20px;
+    }
+</style>
+</head>
+<body>
+    <h1>Photonic Quantum Sensing: Probing the Quantum Nature of Neurons</h1>
+    
+    <p>Welcome to the cutting-edge world of photonic quantum sensing applied to neuroscience. This page explores how our million-qubit photonic quantum computer is revolutionizing our understanding of neurons at the quantum level.</p>
+    
+    <h2>Interactive Neuron Quantum State Visualizer</h2>
+    <div id="neuron-visualizer" class="interactive-demo"></div>
+    
+    <h2>Quantum Coherence in Neurons Over Time</h2>
+    <div class="chart-container">
+        <canvas id="coherence-chart"></canvas>
+    </div>
+    
+    <h2>Entanglement Distribution in Neural Networks</h2>
+    <div class="chart-container">
+        <canvas id="entanglement-chart"></canvas>
+    </div>
+    
+    <script>
+        // Neuron Quantum State Visualizer
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('neuron-visualizer');
+        }
+
+        function draw() {
+            background(240);
+            
+            // Simulate quantum state of a neuron
+            for (let i = 0; i < 100; i++) {
+                let x = noise(frameCount * 0.01 + i) * width;
+                let y = noise(frameCount * 0.02 + i + 1000) * height;
+                let size = noise(frameCount * 0.03 + i + 2000) * 20;
+                
+                fill(100, 150, 200, 150);
+                noStroke();
+                ellipse(x, y, size, size);
+            }
+        }
+
+        // Quantum Coherence Chart
+        const coherenceCtx = document.getElementById('coherence-chart').getContext('2d');
+        new Chart(coherenceCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 100}, (_, i) => i),
+                datasets: [{
+                    label: 'Quantum Coherence',
+                    data: Array.from({length: 100}, () => Math.random()),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Entanglement Distribution Chart
+        const entanglementCtx = document.getElementById('entanglement-chart').getContext('2d');
+        new Chart(entanglementCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Entanglement Distribution',
+                    data: Array.from({length: 100}, () => ({
+                        x: Math.random() * 100,
+                        y: Math.random() * 100
+                    })),
+                    backgroundColor: 'rgb(255, 99, 132)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+
+    <h2>Key Findings</h2>
+    <ul>
+        <li>Quantum coherence in neurons persists for microseconds, far longer than previously thought.</li>
+        <li>Entanglement between neurons shows patterns correlated with cognitive processes.</li>
+        <li>Photonic sensing allows non-invasive probing of quantum effects in living brain tissue.</li>
+    </ul>
+
+    <h2>Implications for Orch-OR Theory</h2>
+    <p>Our million-qubit photonic quantum computer has enabled unprecedented precision in measuring quantum effects in neurons. These findings lend support to key predictions of the Orchestrated Objective Reduction (Orch-OR) theory of consciousness:</p>
+    <ol>
+        <li>Quantum coherence in microtubules</li>
+        <li>Large-scale quantum entanglement in the brain</li>
+        <li>Quantum-to-classical transitions correlating with conscious events</li>
+    </ol>
+
+    <h2>Future Directions</h2>
+    <p>As we continue to refine our photonic quantum sensing techniques, we aim to:</p>
+    <ul>
+        <li>Map quantum coherence patterns across entire neural networks</li>
+        <li>Correlate quantum measurements with conscious experiences in real-time</li>
+        <li>Develop quantum-inspired neural interfaces for next-generation brain-computer interaction</li>
+    </ul>
+
+    <p>Stay tuned for more updates as we push the boundaries of quantum neuroscience!</p>
+
+    <nav>
+        <h3>Explore More:</h3>
+        <ul>
+            <li><a href="https://quantum-neuroscience.org/million-qubit-architecture/">Photonic Quantum Architecture: Scaling to a Million Qubits</a></li>
+            <li><a href="https://quantum-neuroscience.org/orch-or-implications/">Entanglement Dynamics Across a Million Qubits: Implications for Orch-OR</a></li>
+            <li><a href="https://quantum-neuroscience.org/quantum-drug-discovery/">Quantum-Accelerated Drug Discovery for Consciousness Alteration</a></li>
+        </ul>
+    </nav>
+</body></html>

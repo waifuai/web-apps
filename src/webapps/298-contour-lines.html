@@ -1,0 +1,111 @@
+<html><head><base href="http://example.com/"><style>
+.canvas {
+  width: 800px;
+  height: 800px;
+  background: #f5f5f5;
+  position: relative;
+  overflow: hidden;
+}
+.plot {
+  width: 600px;
+  height: 600px;
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  border: 1px solid #ccc;
+}
+.axis {
+  position: absolute;
+  background: #000;
+}
+.x-axis {
+  width: 600px;
+  height: 1px;
+  top: 300px;
+  left: 0;
+}
+.y-axis {
+  width: 1px;
+  height: 600px;
+  left: 300px;
+  top: 0;
+}
+.contour {
+  fill: none;
+  stroke: #2196F3;
+  stroke-width: 1;
+}
+.point {
+  fill: #f44336;
+}
+.label {
+  font-family: sans-serif;
+  font-size: 12px;
+}
+</style></head><body>
+<div class="canvas">
+  <div class="plot">
+    <svg width="600" height="600">
+      <!-- Coordinate System -->
+      <line x1="0" y1="300" x2="600" y2="300" stroke="black"/>
+      <line x1="300" y1="0" x2="300" y2="600" stroke="black"/>
+      
+      <!-- Grid Lines -->
+      <g stroke="#eee" stroke-width="1">
+        <line x1="0" y1="150" x2="600" y2="150"/>
+        <line x1="0" y1="450" x2="600" y2="450"/>
+        <line x1="150" y1="0" x2="150" y2="600"/>
+        <line x1="450" y1="0" x2="450" y2="600"/>
+      </g>
+
+      <!-- Contour Lines for λ=1/4 -->
+      <rect x="225" y="225" width="150" height="150" 
+            class="contour" stroke="#4CAF50"/>
+      
+      <!-- Contour Lines for λ=2/4 -->
+      <rect x="150" y="150" width="300" height="300" 
+            class="contour" stroke="#2196F3"/>
+      
+      <!-- Contour Lines for λ=3/4 -->
+      <rect x="75" y="75" width="450" height="450" 
+            class="contour" stroke="#9C27B0"/>
+
+      <!-- Labels -->
+      <text x="220" y="215" class="label">λ=1/4</text>
+      <text x="145" y="140" class="label">λ=2/4</text>
+      <text x="70" y="65" class="label">λ=3/4</text>
+
+      <!-- Axis Labels -->
+      <text x="570" y="290" class="label">x</text>
+      <text x="310" y="30" class="label">y</text>
+      
+      <!-- Scale Labels -->
+      <text x="450" y="290" class="label">5</text>
+      <text x="150" y="290" class="label">-5</text>
+      <text x="310" y="450" class="label">-5</text>
+      <text x="310" y="150" class="label">5</text>
+    </svg>
+  </div>
+</div>
+
+<script>
+// Add interactivity if needed
+const svg = document.querySelector('svg');
+
+// Function to convert Cartesian to SVG coordinates
+function toSVGCoords(x, y) {
+  return {
+    x: 300 + x * 30,
+    y: 300 - y * 30
+  };
+}
+
+// Function to draw polar coordinates if needed
+function drawPolarCoords(r, theta) {
+  const x = r * Math.cos(theta);
+  const y = r * Math.sin(theta);
+  const coords = toSVGCoords(x, y);
+  return coords;
+}
+</script>
+</body></html>

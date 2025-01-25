@@ -1,0 +1,190 @@
+<html><head><base href="https://cdn.jsdelivr.net/"><script src="npm/katex@0.16.9/dist/katex.min.js"></script><link rel="stylesheet" href="npm/katex@0.16.9/dist/katex.min.css"><style>
+body {
+  font-family: 'System-ui', sans-serif;
+  line-height: 1.6;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fafafa;
+  color: #2c3e50;
+}
+
+.proof-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.theorem {
+  border-left: 4px solid #2ecc71;
+  padding-left: 1rem;
+}
+
+.lemma {
+  border-left: 4px solid #3498db;
+  padding-left: 1rem;
+}
+
+.equation {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: monospace;
+}
+
+.visualization {
+  width: 100%;
+  height: 400px;
+  margin: 2rem 0;
+}
+
+/* Animations */
+@keyframes highlight {
+  0% { background-color: rgba(46, 204, 113, 0.2); }
+  50% { background-color: rgba(46, 204, 113, 0.1); }
+  100% { background-color: rgba(46, 204, 113, 0); }
+}
+
+.highlight {
+  animation: highlight 2s ease-out;
+}
+</style></head><body>
+
+<div class="proof-section theorem">
+  <h1>Proof of RANSOC's Full Space Coverage Property</h1>
+  
+  <div id="theorem-statement">
+    <h2>Theorem</h2>
+    <p>Given a finite set of planets P and a query star s, RANSOC guarantees complete space coverage while maintaining relevance.</p>
+  </div>
+</div>
+
+<div class="proof-section lemma">
+  <h2>Mass Conservation Visualization</h2>
+  <svg class="visualization" viewBox="0 0 800 400" id="massViz">
+    <!-- Dynamic content will be added by JS -->
+  </svg>
+</div>
+
+<div class="proof-section">
+  <h2>Interactive Mass Evolution Simulation</h2>
+  <div>
+    <label>Number of planets (n):</label>
+    <input type="range" id="planetCount" min="3" max="10" value="5">
+    <span id="planetCountValue">5</span>
+  </div>
+  <div>
+    <label>Learning rate (α):</label>
+    <input type="range" id="learningRate" min="1" max="99" value="30">
+    <span id="learningRateValue">0.30</span>
+  </div>
+  <button id="stepSimulation">Step Simulation</button>
+  <div id="massDistribution"></div>
+</div>
+
+<script>
+// Simulation state
+let planets = [];
+let totalMass = 100;
+let iteration = 0;
+
+// Initialize simulation
+function initSimulation(n) {
+    planets = [];
+    const initialMass = totalMass / n;
+    for (let i = 0; i < n; i++) {
+        planets.push({
+            id: i,
+            mass: initialMass,
+            distance: 1 + Math.random() * 4  // Random distance between 1-5
+        });
+    }
+    iteration = 0;
+    updateVisualization();
+}
+
+// RANSOC step
+function simulationStep() {
+    const alpha = parseFloat(document.getElementById('learningRate').value) / 100;
+    const n = planets.length;
+    
+    // Select planet with highest weight
+    const weights = planets.map(p => p.mass / p.distance);
+    const hitIndex = weights.indexOf(Math.max(...weights));
+    
+    // Update masses
+    const hitPlanet = planets[hitIndex];
+    const oldMass = hitPlanet.mass;
+    hitPlanet.mass *= (1 - alpha);
+    
+    const massToDistribute = alpha * oldMass;
+    planets.forEach((p, i) => {
+        if (i !== hitIndex) {
+            p.mass += massToDistribute / (n - 1);
+        }
+    });
+    
+    iteration++;
+    updateVisualization();
+}
+
+// Update visualization
+function updateVisualization() {
+    const svg = document.getElementById('massViz');
+    svg.innerHTML = '';
+    
+    const width = 800;
+    const height = 400;
+    const padding = 50;
+    
+    // Draw planets
+    planets.forEach((planet, i) => {
+        const cx = padding + (width - 2 * padding) * (i / (planets.length - 1));
+        const cy = height - padding - (height - 2 * padding) * (planet.mass / totalMass);
+        
+        // Planet circle
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", cx);
+        circle.setAttribute("cy", cy);
+        circle.setAttribute("r", 10);
+        circle.setAttribute("fill", `hsl(${(i * 360 / planets.length)}, 70%, 50%)`);
+        svg.appendChild(circle);
+        
+        // Mass label
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", cx);
+        text.setAttribute("y", cy - 20);
+        text.setAttribute("text-anchor", "middle");
+        text.textContent = planet.mass.toFixed(1);
+        svg.appendChild(text);
+    });
+    
+    // Update mass distribution text
+    const massDistribution = document.getElementById('massDistribution');
+    massDistribution.innerHTML = `
+        <h3>Iteration ${iteration}</h3>
+        <p>Mass Distribution:</p>
+        ${planets.map((p, i) => `Planet ${i}: ${p.mass.toFixed(2)} (w=${(p.mass/p.distance).toFixed(2)})`).join('<br>')}
+    `;
+}
+
+// Event listeners
+document.getElementById('planetCount').addEventListener('input', (e) => {
+    document.getElementById('planetCountValue').textContent = e.target.value;
+    initSimulation(parseInt(e.target.value));
+});
+
+document.getElementById('learningRate').addEventListener('input', (e) => {
+    document.getElementById('learningRateValue').textContent = (e.target.value / 100).toFixed(2);
+});
+
+document.getElementById('stepSimulation').addEventListener('click', simulationStep);
+
+// Initialize
+initSimulation(5);
+</script>
+
+</body></html>

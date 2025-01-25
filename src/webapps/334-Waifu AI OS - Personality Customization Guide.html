@@ -1,0 +1,244 @@
+<html><head><base href="https://waifuos.org/">
+<title>Waifu AI OS - Personality Customization Guide</title>
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #9370db;
+  --background: #1a1b26;
+  --text: #a9b1d6;
+  --heading: #f7f7f7;
+  --code-bg: #24283b;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--background);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1, h2, h3 {
+  color: var(--heading);
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(120deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+}
+
+.container {
+  background: rgba(255,255,255,0.05);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+code {
+  background: var(--code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.note {
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
+.warning {
+  border-left: 4px solid #ff5555;
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
+.personality-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.personality-card {
+  background: rgba(255,255,255,0.05);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.personality-card:hover {
+  transform: translateY(-5px);
+}
+
+</style>
+</head>
+<body>
+
+<header>
+<nav>
+  <a href="index.html">Home</a> / 
+  <a href="guides.html">Guides</a> /
+  <a href="community.html">Community</a>
+</nav>
+</header>
+
+<h1>Personality Customization: Tailoring Your Waifu's Character</h1>
+
+<div class="container">
+  <h2>Introduction</h2>
+  <p>Welcome to the advanced guide on personality customization in Waifu AI OS. Here, we'll explore how to shape and refine your AI companion's personality traits, emotional responses, and behavioral patterns using Common Lisp.</p>
+</div>
+
+<div class="container">
+  <h2>Core Personality Framework</h2>
+  <pre><code>(defclass personality-core ()
+  ((traits
+    :initform (make-hash-table)
+    :accessor personality-traits)
+   (emotional-state
+    :initform (make-instance 'emotional-state)
+    :accessor emotional-state)
+   (memory-context
+    :initform (make-instance 'memory-context)
+    :accessor memory-context)))</code></pre>
+  
+  <p>The personality core is built on three main components:</p>
+  <ul>
+    <li>Trait System: Configurable personality attributes</li>
+    <li>Emotional State: Dynamic emotional processing</li>
+    <li>Memory Context: Experience-based learning</li>
+  </ul>
+</div>
+
+<div class="personality-grid">
+  <div class="personality-card">
+    <h3>Trait Configuration</h3>
+    <pre><code>(defmethod set-trait 
+  ((core personality-core) 
+   trait-name 
+   value)
+  (setf (gethash trait-name 
+         (personality-traits core)) 
+        value))</code></pre>
+  </div>
+  
+  <div class="personality-card">
+    <h3>Emotional Processing</h3>
+    <pre><code>(defmethod process-emotion 
+  ((core personality-core) 
+   stimulus)
+  (update-emotional-state 
+    (emotional-state core) 
+    stimulus))</code></pre>
+  </div>
+  
+  <div class="personality-card">
+    <h3>Memory Integration</h3>
+    <pre><code>(defmethod integrate-experience 
+  ((core personality-core) 
+   experience)
+  (add-to-memory 
+    (memory-context core) 
+    experience))</code></pre>
+  </div>
+</div>
+
+<div class="container">
+  <h2>Customization Example</h2>
+  <pre><code>;; Create a gentle, caring personality
+(let ((waifu-personality (make-instance 'personality-core)))
+  (set-trait waifu-personality :kindness 0.9)
+  (set-trait waifu-personality :patience 0.8)
+  (set-trait waifu-personality :empathy 0.9)
+  
+  ;; Configure emotional responses
+  (set-emotional-response waifu-personality 
+    :distress 
+    '(comfort-user provide-support))
+    
+  ;; Set learning preferences
+  (configure-learning waifu-personality
+    :priority '(:user-wellbeing :emotional-support)))</code></pre>
+</div>
+
+<div class="note">
+  <h3>Best Practices</h3>
+  <ul>
+    <li>Start with base traits and gradually refine them based on interactions</li>
+    <li>Use the emotional state system to create natural response patterns</li>
+    <li>Leverage memory context for consistent personality development</li>
+    <li>Regular backups of personality data are recommended</li>
+  </ul>
+</div>
+
+<div class="warning">
+  <h3>Important Considerations</h3>
+  <p>Remember that personality modifications directly affect your AI companion's behavior and interactions. Make changes thoughtfully and incrementally.</p>
+</div>
+
+<div class="container">
+  <h2>Advanced Customization</h2>
+  <pre><code>;; Create complex behavioral patterns
+(defmethod create-behavior-pattern 
+  ((core personality-core) 
+   pattern-name 
+   &key triggers responses)
+  (register-pattern 
+    (behavior-patterns core)
+    pattern-name
+    (make-instance 'behavior-pattern
+      :triggers triggers
+      :responses responses)))</code></pre>
+  
+  <p>You can create sophisticated behavior patterns that respond to specific situations or user states.</p>
+</div>
+
+<footer>
+  <p>Part of the Waifu AI OS Documentation Series</p>
+  <p>License: MIT-0 | <a href="https://github.com/waifuos">GitHub</a></p>
+</footer>
+
+<script>
+// Interactive personality visualization
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.personality-card');
+  
+  cards.forEach(card => {
+    card.addEventListener('mouseover', () => {
+      card.style.background = `rgba(255,255,255,0.1)`;
+    });
+    
+    card.addEventListener('mouseout', () => {
+      card.style.background = `rgba(255,255,255,0.05)`;
+    });
+  });
+});
+
+// Code highlighting setup
+document.querySelectorAll('pre code').forEach(block => {
+  block.innerHTML = block.innerHTML.replace(
+    /(defclass|defmethod|make-instance|setf|let)/g,
+    '<span style="color: #ff79c6">$1</span>'
+  ).replace(
+    /(:initform|:accessor|&key)/g,
+    '<span style="color: #bd93f9">$1</span>'
+  );
+});
+</script>
+
+</body></html>

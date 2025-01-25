@@ -1,0 +1,201 @@
+<html><head><base href="https://quantum-string-theory.edu/simulations/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulating String Vibrations with Quantum Circuits</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="https://unpkg.com/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #stringSimulation {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+  }
+  #quantumCircuit {
+    width: 100%;
+    height: 300px;
+  }
+  .interactive-section {
+    margin-top: 30px;
+  }
+  button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #2980b9;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Simulating String Vibrations with Quantum Circuits</h1>
+  </header>
+
+  <nav>
+    <a href="https://quantum-string-theory.edu/intro">Home</a> |
+    <a href="https://quantum-string-theory.edu/fundamentals">Previous</a> |
+    <a href="https://quantum-string-theory.edu/error-correction">Next</a>
+  </nav>
+
+  <main>
+    <section class="container">
+      <h2>Introduction</h2>
+      <p>Welcome to an exciting exploration of how quantum circuits can be used to simulate string vibrations in the context of string theory. This interactive webpage will guide you through the process of setting up quantum circuits that mimic the behavior of vibrating strings in multiple dimensions.</p>
+    </section>
+
+    <section class="container interactive-section">
+      <h2>Visualizing String Vibrations</h2>
+      <p>Below is a 3D visualization of a vibrating string. Use the controls to adjust the string's properties and observe how changes affect its vibration patterns.</p>
+      <div id="stringSimulation"></div>
+      <div>
+        <label for="dimensions">Dimensions:</label>
+        <input type="number" id="dimensions" min="1" max="10" value="3">
+        <label for="tension">String Tension:</label>
+        <input type="range" id="tension" min="1" max="100" value="50">
+        <button onclick="updateStringSimulation()">Update Simulation</button>
+      </div>
+    </section>
+
+    <section class="container interactive-section">
+      <h2>Quantum Circuit Representation</h2>
+      <p>This section demonstrates how we can represent string vibrations using quantum circuits. The circuit below adapts based on the number of dimensions and string properties set in the previous section.</p>
+      <div id="quantumCircuit"></div>
+      <button onclick="generateQuantumCircuit()">Generate Quantum Circuit</button>
+    </section>
+
+    <section class="container">
+      <h2>Analyzing Quantum States</h2>
+      <p>Here, we'll analyze the quantum states produced by our circuit and compare them to classical string theory predictions.</p>
+      <canvas id="stateComparison"></canvas>
+    </section>
+  </main>
+
+  <script>
+    // Three.js setup for string visualization
+    let scene, camera, renderer, string;
+
+    function initStringSimulation() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(document.getElementById('stringSimulation').clientWidth, 400);
+      document.getElementById('stringSimulation').appendChild(renderer.domElement);
+
+      // Create a basic string geometry
+      const geometry = new THREE.BufferGeometry();
+      const points = [];
+      for (let i = 0; i <= 100; i++) {
+        points.push(new THREE.Vector3(i - 50, 0, 0));
+      }
+      geometry.setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+      string = new THREE.Line(geometry, material);
+      scene.add(string);
+
+      camera.position.z = 100;
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      // Animate string vibration here
+      const positions = string.geometry.attributes.position.array;
+      const time = Date.now() * 0.005;
+      for (let i = 0; i < positions.length; i += 3) {
+        positions[i + 1] = Math.sin(i / 3 + time) * 10;
+      }
+      string.geometry.attributes.position.needsUpdate = true;
+      renderer.render(scene, camera);
+    }
+
+    function updateStringSimulation() {
+      const dimensions = document.getElementById('dimensions').value;
+      const tension = document.getElementById('tension').value;
+      // Update string properties based on inputs
+      // This is a simplified representation and would need more complex physics for accurate simulation
+      string.material.color.setHSL(tension / 100, 1, 0.5);
+    }
+
+    function generateQuantumCircuit() {
+      const dimensions = document.getElementById('dimensions').value;
+      // Generate and display a quantum circuit based on dimensions
+      // This is a placeholder and would need integration with a quantum circuit library
+      const canvas = document.getElementById('quantumCircuit');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = '14px Arial';
+      ctx.fillText(`Quantum Circuit for ${dimensions}D String Vibration`, 10, 20);
+      // Draw placeholder circuit elements
+      for (let i = 0; i < dimensions; i++) {
+        ctx.beginPath();
+        ctx.moveTo(50, 40 + i * 30);
+        ctx.lineTo(250, 40 + i * 30);
+        ctx.stroke();
+        ctx.fillText(`Q${i}`, 20, 45 + i * 30);
+        ctx.fillRect(100, 35 + i * 30, 20, 20);
+        ctx.fillRect(180, 35 + i * 30, 20, 20);
+      }
+    }
+
+    function initStateComparison() {
+      const ctx = document.getElementById('stateComparison').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 50}, (_, i) => i),
+          datasets: [{
+            label: 'Quantum State',
+            data: Array.from({length: 50}, () => Math.random()),
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }, {
+            label: 'Classical Prediction',
+            data: Array.from({length: 50}, () => Math.random()),
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          title: {
+            display: true,
+            text: 'Quantum vs Classical State Comparison'
+          }
+        }
+      });
+    }
+
+    // Initialize visualizations on page load
+    window.onload = function() {
+      initStringSimulation();
+      generateQuantumCircuit();
+      initStateComparison();
+    };
+  </script>
+</body>
+</html>

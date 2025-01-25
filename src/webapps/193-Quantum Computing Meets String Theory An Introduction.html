@@ -1,0 +1,140 @@
+<html><head><base href="https://quantum-string-theory.edu/"><title>Quantum Computing Meets String Theory: An Introduction</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f5ff;
+  }
+  h1, h2 {
+    color: #1a237e;
+  }
+  .interactive-demo {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  #qubit-visualization {
+    width: 100%;
+    height: 300px;
+    background-color: #e8eaf6;
+  }
+  .nav-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: #3f51b5;
+    font-weight: bold;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+</head>
+<body>
+  <h1>Quantum Computing Meets String Theory: An Introduction</h1>
+  
+  <p>Welcome to the fascinating intersection of quantum computing and string theory! This introductory page aims to provide a glimpse into how these two cutting-edge fields are coming together to revolutionize our understanding of the universe.</p>
+  
+  <h2>What is Quantum Computing?</h2>
+  <p>Quantum computing harnesses the principles of quantum mechanics to process information in ways that classical computers cannot. Instead of classical bits, quantum computers use quantum bits or qubits, which can exist in superposition states.</p>
+  
+  <div class="interactive-demo">
+    <h3>Interactive Qubit Visualization</h3>
+    <div id="qubit-visualization"></div>
+    <p>Use the sliders below to adjust the qubit's state on the Bloch sphere:</p>
+    <input type="range" id="theta" min="0" max="180" value="90" step="1">
+    <label for="theta">θ (Theta)</label>
+    <input type="range" id="phi" min="0" max="360" value="0" step="1">
+    <label for="phi">φ (Phi)</label>
+  </div>
+
+  <h2>What is String Theory?</h2>
+  <p>String theory is a theoretical framework in physics that attempts to reconcile quantum mechanics and general relativity. It proposes that the fundamental constituents of the universe are tiny, vibrating strings of energy.</p>
+
+  <h2>The Convergence</h2>
+  <p>Quantum computing and string theory are converging in exciting ways:</p>
+  <ul>
+    <li>Simulating string vibrations using quantum circuits</li>
+    <li>Exploring extra dimensions through quantum algorithms</li>
+    <li>Quantum computation of scattering amplitudes in string theory</li>
+    <li>Investigating the holographic principle with quantum approaches</li>
+  </ul>
+
+  <h2>Why This Matters</h2>
+  <p>The marriage of quantum computing and string theory could potentially lead to:</p>
+  <ul>
+    <li>A deeper understanding of the fundamental nature of reality</li>
+    <li>New insights into the unification of forces</li>
+    <li>Practical applications in materials science and high-energy physics</li>
+    <li>Advancements in quantum error correction and quantum simulation techniques</li>
+  </ul>
+
+  <div class="nav-links">
+    <a href="https://quantum-string-theory.edu/overview">← Series Overview</a>
+    <a href="https://quantum-string-theory.edu/fundamentals-quantum-algorithms">Next: Fundamentals of Quantum Algorithms for High-Energy Physics →</a>
+  </div>
+
+  <script>
+    // Three.js setup for Bloch sphere visualization
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(300, 300);
+    document.getElementById('qubit-visualization').appendChild(renderer.domElement);
+
+    // Create Bloch sphere
+    const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const sphereMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc, wireframe: true});
+    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    scene.add(sphere);
+
+    // Create qubit vector
+    const arrowGeometry = new THREE.ConeGeometry(0.1, 0.5, 32);
+    const arrowMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+    const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+    scene.add(arrow);
+
+    camera.position.z = 2;
+
+    // Update qubit state based on slider values
+    function updateQubitState() {
+      const theta = document.getElementById('theta').value * Math.PI / 180;
+      const phi = document.getElementById('phi').value * Math.PI / 180;
+
+      const x = Math.sin(theta) * Math.cos(phi);
+      const y = Math.sin(theta) * Math.sin(phi);
+      const z = Math.cos(theta);
+
+      arrow.position.set(x, y, z);
+      arrow.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
+    }
+
+    document.getElementById('theta').addEventListener('input', updateQubitState);
+    document.getElementById('phi').addEventListener('input', updateQubitState);
+
+    updateQubitState();
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      sphere.rotation.x += 0.01;
+      sphere.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body></html>

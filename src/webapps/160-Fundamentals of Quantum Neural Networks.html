@@ -1,0 +1,254 @@
+<html><head><base href="https://qml-orchor.edu/fundamentals-qnn/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fundamentals of Quantum Neural Networks</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script><style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .interactive-demo {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #qubitVisualization {
+        width: 300px;
+        height: 300px;
+        margin: 0 auto;
+    }
+    .controls {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+    button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    #networkVisualization {
+        width: 100%;
+        height: 400px;
+        background-color: #fff;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+</style></head><body>
+    <h1>Fundamentals of Quantum Neural Networks</h1>
+    
+    <p>Welcome to the second installment of our series on Quantum Machine Learning in Orchestrated Objective Reduction (Orch-OR) theory. In this module, we'll explore the fascinating world of Quantum Neural Networks (QNNs) and their potential applications in consciousness studies.</p>
+
+    <h2>1. Introduction to Quantum Neural Networks</h2>
+    <p>Quantum Neural Networks (QNNs) are a cutting-edge approach that combines the principles of quantum computing with the architecture of neural networks. These networks leverage quantum superposition and entanglement to process information in ways that classical neural networks cannot.</p>
+
+    <div class="interactive-demo">
+        <h3>Interactive Qubit Visualization</h3>
+        <p>Explore the concept of a qubit, the fundamental unit of quantum information:</p>
+        <canvas id="qubitVisualization"></canvas>
+        <div class="controls">
+            <button onclick="rotateQubit('x')">Rotate X</button>
+            <button onclick="rotateQubit('y')">Rotate Y</button>
+            <button onclick="rotateQubit('z')">Rotate Z</button>
+        </div>
+    </div>
+
+    <h2>2. Quantum Perceptron</h2>
+    <p>The quantum perceptron is the building block of QNNs, analogous to neurons in classical neural networks. It processes quantum information using unitary operations and measurement.</p>
+
+    <h2>3. Quantum Activation Functions</h2>
+    <p>Quantum activation functions are crucial in QNNs. They often involve quantum gates and measurements, allowing for non-linear transformations of quantum states.</p>
+
+    <div class="interactive-demo">
+        <h3>Quantum vs. Classical Activation Functions</h3>
+        <canvas id="activationFunctions"></canvas>
+    </div>
+
+    <h2>4. Quantum Backpropagation</h2>
+    <p>Training QNNs requires a quantum version of backpropagation, which takes into account the principles of quantum mechanics during the optimization process.</p>
+
+    <h2>5. Potential Applications in Orch-OR Theory</h2>
+    <p>QNNs show promise in modeling the quantum processes hypothesized in Orch-OR theory, potentially offering new insights into the quantum nature of consciousness.</p>
+
+    <div class="interactive-demo">
+        <h3>Quantum Neural Network Architecture</h3>
+        <div id="networkVisualization"></div>
+    </div>
+
+    <script>
+        // Qubit Visualization
+        const qubitCanvas = document.getElementById('qubitVisualization');
+        const qubitCtx = qubitCanvas.getContext('2d');
+        let theta = 0;
+        let phi = 0;
+
+        function drawQubit() {
+            qubitCtx.clearRect(0, 0, 300, 300);
+            qubitCtx.beginPath();
+            qubitCtx.arc(150, 150, 100, 0, 2 * Math.PI);
+            qubitCtx.strokeStyle = '#3498db';
+            qubitCtx.stroke();
+
+            const x = 150 + 100 * Math.sin(theta) * Math.cos(phi);
+            const y = 150 + 100 * Math.sin(theta) * Math.sin(phi);
+            const z = 150 + 100 * Math.cos(theta);
+
+            qubitCtx.beginPath();
+            qubitCtx.arc(x, y, 5, 0, 2 * Math.PI);
+            qubitCtx.fillStyle = '#e74c3c';
+            qubitCtx.fill();
+
+            qubitCtx.beginPath();
+            qubitCtx.moveTo(150, 150);
+            qubitCtx.lineTo(x, y);
+            qubitCtx.strokeStyle = '#2ecc71';
+            qubitCtx.stroke();
+        }
+
+        function rotateQubit(axis) {
+            const angle = Math.PI / 4;
+            switch(axis) {
+                case 'x':
+                    phi += angle;
+                    break;
+                case 'y':
+                    theta += angle;
+                    break;
+                case 'z':
+                    phi += angle;
+                    theta += angle;
+                    break;
+            }
+            drawQubit();
+        }
+
+        drawQubit();
+
+        // Activation Functions Visualization
+        const actFuncCanvas = document.getElementById('activationFunctions');
+        const actFuncCtx = actFuncCanvas.getContext('2d');
+
+        function drawActivationFunctions() {
+            const width = actFuncCanvas.width;
+            const height = actFuncCanvas.height;
+
+            actFuncCtx.clearRect(0, 0, width, height);
+
+            // Draw axes
+            actFuncCtx.beginPath();
+            actFuncCtx.moveTo(0, height/2);
+            actFuncCtx.lineTo(width, height/2);
+            actFuncCtx.moveTo(width/2, 0);
+            actFuncCtx.lineTo(width/2, height);
+            actFuncCtx.strokeStyle = '#333';
+            actFuncCtx.stroke();
+
+            // Draw classical sigmoid
+            actFuncCtx.beginPath();
+            for (let x = -5; x <= 5; x += 0.1) {
+                const y = 1 / (1 + Math.exp(-x));
+                actFuncCtx.lineTo(width/2 + x*40, height/2 - y*80);
+            }
+            actFuncCtx.strokeStyle = '#3498db';
+            actFuncCtx.stroke();
+
+            // Draw quantum activation (simplified representation)
+            actFuncCtx.beginPath();
+            for (let x = -5; x <= 5; x += 0.1) {
+                const y = Math.sin(x) * Math.cos(x*x);
+                actFuncCtx.lineTo(width/2 + x*40, height/2 - y*80);
+            }
+            actFuncCtx.strokeStyle = '#e74c3c';
+            actFuncCtx.stroke();
+
+            // Add legend
+            actFuncCtx.font = '12px Arial';
+            actFuncCtx.fillStyle = '#3498db';
+            actFuncCtx.fillText('Classical Sigmoid', 10, 20);
+            actFuncCtx.fillStyle = '#e74c3c';
+            actFuncCtx.fillText('Quantum Activation', 10, 40);
+        }
+
+        drawActivationFunctions();
+
+        // Network Visualization
+        const networkSvg = d3.select("#networkVisualization")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%");
+
+        const width = 800;
+        const height = 400;
+
+        const nodes = [
+            {id: "input1", layer: 0, node: 0},
+            {id: "input2", layer: 0, node: 1},
+            {id: "input3", layer: 0, node: 2},
+            {id: "hidden1", layer: 1, node: 0},
+            {id: "hidden2", layer: 1, node: 1},
+            {id: "hidden3", layer: 1, node: 2},
+            {id: "output", layer: 2, node: 0}
+        ];
+
+        const links = [
+            {source: "input1", target: "hidden1"},
+            {source: "input1", target: "hidden2"},
+            {source: "input1", target: "hidden3"},
+            {source: "input2", target: "hidden1"},
+            {source: "input2", target: "hidden2"},
+            {source: "input2", target: "hidden3"},
+            {source: "input3", target: "hidden1"},
+            {source: "input3", target: "hidden2"},
+            {source: "input3", target: "hidden3"},
+            {source: "hidden1", target: "output"},
+            {source: "hidden2", target: "output"},
+            {source: "hidden3", target: "output"}
+        ];
+
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links).id(d => d.id))
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("x", d3.forceX().x(d => width * (d.layer + 1) / 4))
+            .force("y", d3.forceY().y(d => height * (d.node + 1) / 4));
+
+        const link = networkSvg.append("g")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6);
+
+        const node = networkSvg.append("g")
+            .selectAll("circle")
+            .data(nodes)
+            .enter().append("circle")
+            .attr("r", 10)
+            .attr("fill", d => d.layer === 0 ? "#3498db" : d.layer === 1 ? "#e74c3c" : "#2ecc71");
+
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+        });
+    </script>
+</body></html>

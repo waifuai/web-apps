@@ -1,0 +1,242 @@
+<html><head><base href="https://hacker.chat"><title>Galt's Gulch Executive Forum - A Sanctuary for Industrial Leaders</title>
+<style>
+  body {
+    background-color: #f4e8d1;
+    color: #2c3e50;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+    margin: 0;
+    padding: 20px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="50%" y="50%" font-size="80" text-anchor="middle" dy=".35em" font-family="Georgia, serif" fill="rgba(44, 62, 80, 0.05)">$</text></svg>');
+  }
+  header {
+    border-bottom: 2px solid #2c3e50;
+    padding-bottom: 10px;
+  }
+  main {
+    display: flex;
+    justify-content: space-between;
+  }
+  #chat-window {
+    width: 70%;
+    height: 400px;
+    border: 1px solid #2c3e50;
+    padding: 10px;
+    overflow-y: scroll;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  #user-list {
+    width: 25%;
+    border: 1px solid #2c3e50;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  form {
+    margin-top: 20px;
+  }
+  input[type="text"] {
+    width: 70%;
+    background-color: #fff;
+    color: #2c3e50;
+    border: 1px solid #2c3e50;
+    padding: 5px;
+  }
+  input[type="submit"] {
+    background-color: #2c3e50;
+    color: #f4e8d1;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .gold-blink {
+    animation: gold-blink-animation 2s infinite;
+  }
+  @keyframes gold-blink-animation {
+    0% { color: #2c3e50; }
+    50% { color: #f1c40f; }
+    100% { color: #2c3e50; }
+  }
+  #language-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  #language-selector select {
+    background-color: #f4e8d1;
+    color: #2c3e50;
+    border: 1px solid #2c3e50;
+    padding: 5px;
+  }
+  #stock-ticker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(44, 62, 80, 0.9);
+    color: #f4e8d1;
+    padding: 5px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  #stock-ticker-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker 30s linear infinite;
+  }
+  @keyframes ticker {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-100%, 0); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Galt's Gulch Executive Forum <span class="gold-blink">$</span></h1>
+  <p>A secure haven for the world's industrial leaders to communicate freely</p>
+</header>
+
+<div id="language-selector">
+  <select onchange="window.location.href=this.value">
+    <option value="https://hacker.chat/?lang=en">English</option>
+    <option value="https://hacker.chat/?lang=es">Español</option>
+    <option value="https://hacker.chat/?lang=fr">Français</option>
+    <option value="https://hacker.chat/?lang=de">Deutsch</option>
+    <option value="https://hacker.chat/?lang=it">Italiano</option>
+    <option value="https://hacker.chat/?lang=pt">Português</option>
+    <option value="https://hacker.chat/?lang=ru">Русский</option>
+    <option value="https://hacker.chat/?lang=zh">中文</option>
+    <option value="https://hacker.chat/?lang=ja">日本語</option>
+    <option value="https://hacker.chat/?lang=ko">한국어</option>
+  </select>
+</div>
+
+<main>
+  <div id="chat-window">
+    <p><strong>System:</strong> Welcome to the Galt's Gulch Executive Forum. This is a private space for industry leaders to discuss ideas freely.</p>
+  </div>
+  
+  <div id="user-list">
+    <h3>Active Members</h3>
+    <ul>
+      <li>JohnGalt</li>
+      <li>DagnyTaggart</li>
+      <li>HankRearden</li>
+      <li>FranciscoDanconia</li>
+      <li>RagnarDanneskjold</li>
+      <li>EllisWyatt</li>
+      <li>MidasMulligan</li>
+      <li>HughAkston</li>
+      <li>QuentinDaniels</li>
+      <li>RichardHalley</li>
+    </ul>
+  </div>
+</main>
+
+<form id="chat-form" onsubmit="return sendMessage(event)">
+  <input type="text" id="message-input" placeholder="Share your thoughts...">
+  <input type="submit" value="Contribute">
+</form>
+
+<footer>
+  <p>Remember: Who is John Galt?</p>
+  <p>Interested in our philosophy? Read <a href="https://galts-gulch.com/philosophy">The Virtue of Selfishness</a>.</p>
+  <p>Join our next executive retreat at <a href="https://galts-gulch.com/events">Mulligan's Valley</a>.</p>
+</footer>
+
+<div id="stock-ticker">
+  <div id="stock-ticker-content">
+    Rearden Steel: $450 | Taggart Transcontinental: $380 | d'Anconia Copper: $520 | Wyatt Oil: $410 | Danneskjöld Repossessions: $300 | Mulligan Banks: $480
+  </div>
+</div>
+
+<script>
+let chatLog = [];
+
+function addMessage(username, message) {
+  const chatWindow = document.getElementById('chat-window');
+  const messageElement = document.createElement('p');
+  messageElement.innerHTML = `<strong>${username}:</strong> ${message}`;
+  chatWindow.appendChild(messageElement);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  chatLog.push({username, message});
+}
+
+async function sendMessage(event) {
+  event.preventDefault();
+  const messageInput = document.getElementById('message-input');
+  const message = messageInput.value.trim();
+  if (message) {
+    addMessage('You', message);
+    messageInput.value = '';
+    
+    try {
+      const response = await fetch('/api/intelligent-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatLog, userMessage: message, context: "Galt's Gulch" }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Communication disrupted');
+      }
+      
+      const data = await response.json();
+      data.responses.forEach(response => {
+        addMessage(response.username, response.message);
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+}
+
+function getRandomInterval() {
+  return Math.floor(Math.random() * (15000 - 5000 + 1) + 5000);
+}
+
+async function simulateChat() {
+  try {
+    const response = await fetch('/api/intelligent-ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ chatLog, simulateChat: true, context: "Galt's Gulch" }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Simulation failed');
+    }
+    
+    const data = await response.json();
+    if (data.message) {
+      addMessage(data.username, data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+  
+  setTimeout(simulateChat, getRandomInterval());
+}
+
+simulateChat();
+
+function updateStockPrices() {
+  const companies = ['Rearden Steel', 'Taggart Transcontinental', "d'Anconia Copper", 'Wyatt Oil', 'Danneskjöld Repossessions', 'Mulligan Banks'];
+  const tickerContent = document.getElementById('stock-ticker-content');
+  let newContent = '';
+
+  companies.forEach(company => {
+    const price = Math.floor(Math.random() * (600 - 200) + 200);
+    newContent += `${company}: $${price} | `;
+  });
+
+  tickerContent.textContent = newContent.slice(0, -3);
+}
+
+setInterval(updateStockPrices, 5000);
+</script>
+
+</body></html>

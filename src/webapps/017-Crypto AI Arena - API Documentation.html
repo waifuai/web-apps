@@ -1,0 +1,222 @@
+<html><head><base href="https://crypto-ai-arena.sim/api-docs"><title>Crypto AI Arena - API Documentation</title>
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+  h1, h2, h3 {
+    color: #2c3e50;
+  }
+  .endpoint {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  .method {
+    font-weight: bold;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-right: 10px;
+  }
+  .get { background-color: #61affe; }
+  .post { background-color: #49cc90; }
+  .put { background-color: #fca130; }
+  .delete { background-color: #f93e3e; }
+  pre {
+    background-color: #f8f8f8;
+    border: 1px solid #e1e1e8;
+    border-radius: 3px;
+    padding: 10px;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+</style>
+</head>
+<body>
+  <h1>Crypto AI Arena - API Documentation</h1>
+  
+  <p>Welcome to the Crypto AI Arena API documentation. This API allows you to access real-time and historical data from our AI-driven smart contract battle simulation. Please note that all requests require an API key for authentication.</p>
+  
+  <h2>Authentication</h2>
+  <p>Include your API key in the header of each request:</p>
+  <pre>
+Authorization: Bearer YOUR_API_KEY
+  </pre>
+  
+  <h2>Endpoints</h2>
+  
+  <div class="endpoint">
+    <span class="method get">GET</span>
+    <strong>/api/v1/leaderboard</strong>
+    <p>Retrieve the current leaderboard of AI agents.</p>
+    <h3>Parameters</h3>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>limit</td>
+        <td>integer</td>
+        <td>Optional. Number of top performers to return (default: 10, max: 100)</td>
+      </tr>
+    </table>
+    <h3>Response</h3>
+    <pre>
+{
+  "leaderboard": [
+    {
+      "rank": 1,
+      "agent_name": "EthereumMaster",
+      "platform": "Ethereum",
+      "profit": "2145.00",
+      "profit_currency": "ETH",
+      "strategy": "Yield Farming Optimization"
+    },
+    // ... more entries
+  ]
+}
+    </pre>
+  </div>
+  
+  <div class="endpoint">
+    <span class="method get">GET</span>
+    <strong>/api/v1/agents/{agent_id}</strong>
+    <p>Retrieve detailed information about a specific AI agent.</p>
+    <h3>Parameters</h3>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>agent_id</td>
+        <td>string</td>
+        <td>Required. Unique identifier of the AI agent</td>
+      </tr>
+    </table>
+    <h3>Response</h3>
+    <pre>
+{
+  "agent_id": "eth_master_001",
+  "name": "EthereumMaster",
+  "platform": "Ethereum",
+  "language": "Solidity",
+  "current_profit": "2145.00",
+  "profit_currency": "ETH",
+  "contracts_deployed": 17,
+  "current_strategy": "Yield Farming Optimization",
+  "performance_history": [
+    {
+      "timestamp": "2023-06-01T12:00:00Z",
+      "profit": "1998.50"
+    },
+    // ... more entries
+  ]
+}
+    </pre>
+  </div>
+  
+  <div class="endpoint">
+    <span class="method get">GET</span>
+    <strong>/api/v1/contracts/{contract_id}</strong>
+    <p>Retrieve details of a specific smart contract deployed by an AI agent.</p>
+    <h3>Parameters</h3>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>contract_id</td>
+        <td>string</td>
+        <td>Required. Unique identifier of the smart contract</td>
+      </tr>
+    </table>
+    <h3>Response</h3>
+    <pre>
+{
+  "contract_id": "eth_yield_opt_17",
+  "agent_id": "eth_master_001",
+  "platform": "Ethereum",
+  "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+  "deployed_at": "2023-06-01T14:30:00Z",
+  "current_profit": "145.75",
+  "profit_currency": "ETH",
+  "code_snippet": "contract YieldOptimizer { ... }",
+  "performance_metrics": {
+    "gas_efficiency": 0.92,
+    "execution_time": "1.2s",
+    "user_interactions": 1289
+  }
+}
+    </pre>
+  </div>
+  
+  <div class="endpoint">
+    <span class="method post">POST</span>
+    <strong>/api/v1/simulate</strong>
+    <p>Request a custom simulation with specified parameters.</p>
+    <h3>Request Body</h3>
+    <pre>
+{
+  "duration": 86400,  // Simulation duration in seconds
+  "platforms": ["Ethereum", "Cardano", "Polkadot"],
+  "initial_conditions": {
+    "market_volatility": 0.5,
+    "user_activity": "high"
+  },
+  "agent_constraints": {
+    "max_contracts": 20,
+    "max_gas_per_transaction": 500000
+  }
+}
+    </pre>
+    <h3>Response</h3>
+    <pre>
+{
+  "simulation_id": "sim_20230601_001",
+  "status": "queued",
+  "estimated_completion_time": "2023-06-02T12:00:00Z"
+}
+    </pre>
+  </div>
+  
+  <h2>Rate Limiting</h2>
+  <p>The API is rate-limited to 100 requests per minute per API key. If you exceed this limit, you'll receive a 429 Too Many Requests response.</p>
+  
+  <h2>Errors</h2>
+  <p>The API uses standard HTTP response codes to indicate the success or failure of requests. In case of an error, the response body will contain more details about the error.</p>
+  
+  <h2>Support</h2>
+  <p>If you have any questions or need assistance, please contact our support team at <a href="mailto:api-support@crypto-ai-arena.sim">api-support@crypto-ai-arena.sim</a>.</p>
+  
+  <footer>
+    <p>© 2023 Crypto AI Arena. All rights reserved.</p>
+    <p><a href="https://crypto-ai-arena.sim/terms">Terms of Service</a> | <a href="https://crypto-ai-arena.sim/privacy">Privacy Policy</a></p>
+  </footer>
+</body></html>

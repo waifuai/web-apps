@@ -1,0 +1,208 @@
+<html><head><base href="." /><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self-Healing AI Native OS</title>
+<style>
+:root {
+  --glow: 0 0 10px rgba(0,255,200,0.5);
+  --bg: #0a0a12;
+  --text: #00ffc8;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: monospace;
+  margin: 0;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.os-container {
+  border: 1px solid var(--text);
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  min-height: 90vh;
+  box-shadow: var(--glow);
+}
+
+.neural-network {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+  z-index: -1;
+}
+
+.status-panel {
+  border: 1px solid var(--text);
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.log {
+  height: 200px;
+  overflow-y: auto;
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.healing {
+  animation: heal 1s ease-in-out;
+}
+
+@keyframes heal {
+  0% { background: rgba(0,255,0,0.2); }
+  100% { background: transparent; }
+}
+</style>
+</head>
+<body>
+
+<div class="os-container">
+  <svg class="neural-network" viewBox="0 0 1000 1000">
+    <defs>
+      <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+        <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(0,255,200,0.2)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)" />
+  </svg>
+
+  <h1>AI Native OS - Self-Healing System</h1>
+  
+  <div class="status-panel">
+    <h3>System Status</h3>
+    <div id="systemHealth"></div>
+    <div id="activeDefenses"></div>
+  </div>
+
+  <div class="status-panel">
+    <h3>Neural Activity</h3>
+    <div class="log" id="activityLog"></div>
+  </div>
+</div>
+
+<script>
+class AIOperatingSystem {
+  constructor() {
+    this.systemHealth = 100;
+    this.knownPatterns = new Set();
+    this.neuralNet = new Map();
+    this.activityLog = [];
+    
+    // Initialize self-healing monitoring
+    this.startMonitoring();
+  }
+
+  startMonitoring() {
+    // Continuous system monitoring
+    setInterval(() => this.checkSystemHealth(), 1000);
+    setInterval(() => this.analyzePatterns(), 2000);
+    setInterval(() => this.updateUI(), 500);
+  }
+
+  checkSystemHealth() {
+    // Simulate system health checks
+    const potentialThreats = this.detectAnomalies();
+    
+    if (potentialThreats.length > 0) {
+      this.healSystem(potentialThreats);
+    }
+  }
+
+  detectAnomalies() {
+    // Simulate anomaly detection
+    const threats = [];
+    if (Math.random() < 0.1) { // 10% chance of detecting an anomaly
+      threats.push({
+        type: ['memory_leak', 'unauthorized_access', 'code_injection'][Math.floor(Math.random() * 3)],
+        severity: Math.random()
+      });
+    }
+    return threats;
+  }
+
+  healSystem(threats) {
+    threats.forEach(threat => {
+      // Simulate self-healing process
+      this.systemHealth = Math.max(0, this.systemHealth - threat.severity * 10);
+      
+      const healingPower = Math.random() * 20;
+      this.systemHealth = Math.min(100, this.systemHealth + healingPower);
+
+      this.log(`Threat detected: ${threat.type}. Initiating healing sequence...`);
+      this.log(`Applied healing power: ${healingPower.toFixed(1)}%`);
+      
+      // Learn from the threat
+      this.knownPatterns.add(JSON.stringify(threat));
+    });
+
+    document.querySelector('.os-container').classList.add('healing');
+    setTimeout(() => {
+      document.querySelector('.os-container').classList.remove('healing');
+    }, 1000);
+  }
+
+  analyzePatterns() {
+    // Simulate pattern analysis and learning
+    const newPattern = Math.random().toString(36).substring(7);
+    this.neuralNet.set(newPattern, Date.now());
+    
+    // Prune old patterns
+    for (let [pattern, timestamp] of this.neuralNet) {
+      if (Date.now() - timestamp > 10000) { // Remove patterns older than 10 seconds
+        this.neuralNet.delete(pattern);
+      }
+    }
+  }
+
+  log(message) {
+    const timestamp = new Date().toLocaleTimeString();
+    this.activityLog.unshift(`[${timestamp}] ${message}`);
+    if (this.activityLog.length > 100) this.activityLog.pop();
+  }
+
+  updateUI() {
+    // Update health display
+    const healthDisplay = document.getElementById('systemHealth');
+    healthDisplay.innerHTML = `
+      <p class="pulse">System Health: ${this.systemHealth.toFixed(1)}%</p>
+      <p>Known Attack Patterns: ${this.knownPatterns.size}</p>
+    `;
+
+    // Update active defenses
+    const defensesDisplay = document.getElementById('activeDefenses');
+    defensesDisplay.innerHTML = `
+      <p>Active Neural Connections: ${this.neuralNet.size}</p>
+      <p>Defense Systems: ${this.systemHealth > 80 ? 'OPTIMAL' : 'RECOVERING'}</p>
+    `;
+
+    // Update activity log
+    const logDisplay = document.getElementById('activityLog');
+    logDisplay.innerHTML = this.activityLog.join('<br>');
+  }
+}
+
+// Initialize the AI OS
+const aiOS = new AIOperatingSystem();
+
+// Add some initial log entries
+aiOS.log('System initialized');
+aiOS.log('Neural network active');
+aiOS.log('Self-healing protocols engaged');
+</script>
+</body></html>

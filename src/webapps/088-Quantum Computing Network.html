@@ -1,0 +1,260 @@
+<html><head><base href="https://quantumnetwork.qbit/" /><title>Quantum Computing Network</title><style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #000;
+        color: #00ffff;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+        background-image: 
+            radial-gradient(#00ffff 1px, transparent 1px),
+            radial-gradient(#00ffff 1px, transparent 1px);
+        background-size: 50px 50px;
+        background-position: 0 0, 25px 25px;
+        animation: quantumFlux 10s linear infinite;
+    }
+    @keyframes quantumFlux {
+        0% { background-position: 0 0, 25px 25px; }
+        100% { background-position: 50px 50px, 75px 75px; }
+    }
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px #00ffff;
+    }
+    h1, h2 {
+        color: #00ffff;
+        text-shadow: 0 0 10px #00ffff;
+    }
+    .menu {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .menu a {
+        color: #00ffff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border: 1px solid #00ffff;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .menu a:hover {
+        background-color: #00ffff;
+        color: #000;
+        box-shadow: 0 0 15px #00ffff;
+    }
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .dashboard-item {
+        background-color: rgba(0, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #00ffff;
+    }
+    .quantum-simulator {
+        margin-top: 20px;
+    }
+    input, select, button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: rgba(0, 255, 255, 0.1);
+        border: 1px solid #00ffff;
+        color: #00ffff;
+        border-radius: 5px;
+    }
+    button {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    button:hover {
+        background-color: #00ffff;
+        color: #000;
+    }
+    #qubitVisualization {
+        width: 100%;
+        height: 300px;
+        border: 1px solid #00ffff;
+        margin-top: 20px;
+    }
+    .entanglement-network {
+        height: 200px;
+        overflow-y: scroll;
+        border: 1px solid #00ffff;
+        padding: 10px;
+        font-size: 0.9em;
+        margin-top: 20px;
+    }
+</style></head><body>
+<div class="container">
+    <h1>Quantum Computing Network</h1>
+    <div class="menu">
+        <a href="#dashboard">Quantum Dashboard</a>
+        <a href="#simulator">Quantum Simulator</a>
+        <a href="#algorithms">Quantum Algorithms</a>
+        <a href="#network">Entanglement Network</a>
+    </div>
+    
+    <div id="dashboard" class="dashboard">
+        <div class="dashboard-item">
+            <h2>Quantum Resources</h2>
+            <ul>
+                <li>Available Qubits: 128</li>
+                <li>Quantum Volume: 64</li>
+                <li>Coherence Time: 100 microseconds</li>
+                <li>Error Rate: 0.1%</li>
+            </ul>
+        </div>
+        <div class="dashboard-item">
+            <h2>Quantum Operations</h2>
+            <button onclick="performQuantumOperation('Quantum Fourier Transform')">Run Quantum Fourier Transform</button>
+            <button onclick="performQuantumOperation('Grover\'s Algorithm')">Execute Grover's Algorithm</button>
+            <button onclick="performQuantumOperation('Quantum Error Correction')">Apply Quantum Error Correction</button>
+        </div>
+    </div>
+
+    <div id="simulator" class="quantum-simulator">
+        <h2>Quantum Circuit Simulator</h2>
+        <form onsubmit="runQuantumSimulation(); return false;">
+            <select id="gateType">
+                <option value="H">Hadamard Gate</option>
+                <option value="X">Pauli-X Gate</option>
+                <option value="Y">Pauli-Y Gate</option>
+                <option value="Z">Pauli-Z Gate</option>
+                <option value="CNOT">CNOT Gate</option>
+            </select>
+            <input type="number" id="qubitIndex" min="0" max="7" placeholder="Qubit Index (0-7)" required>
+            <button type="submit">Apply Gate</button>
+        </form>
+        <div id="qubitVisualization"></div>
+    </div>
+
+    <div id="algorithms">
+        <h2>Quantum Algorithms</h2>
+        <ul>
+            <li><a href="https://quantumnetwork.qbit/algorithms/shor">Shor's Algorithm</a></li>
+            <li><a href="https://quantumnetwork.qbit/algorithms/vqe">Variational Quantum Eigensolver</a></li>
+            <li><a href="https://quantumnetwork.qbit/algorithms/qaoa">Quantum Approximate Optimization Algorithm</a></li>
+        </ul>
+    </div>
+
+    <div id="network">
+        <h2>Quantum Entanglement Network</h2>
+        <div class="entanglement-network">
+            <p>Node A entangled with Node B - Distance: 100 km</p>
+            <p>Node C entangled with Node D - Distance: 75 km</p>
+            <p>Quantum Teleportation successful between Node A and Node C</p>
+            <p>New entanglement established: Node B and Node E</p>
+            <p>Decoherence detected in Node D - Refreshing quantum state</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<script>
+    // Simulated quantum state
+    let quantumState = new Array(8).fill().map(() => ({ r: 1, theta: 0, phi: 0 }));
+
+    function performQuantumOperation(operation) {
+        console.log(`Performing quantum operation: ${operation}`);
+        // In a real implementation, this would interface with quantum hardware or advanced simulation
+        alert(`${operation} completed successfully!`);
+    }
+
+    function runQuantumSimulation() {
+        const gateType = document.getElementById('gateType').value;
+        const qubitIndex = parseInt(document.getElementById('qubitIndex').value);
+
+        // Apply quantum gate (simplified simulation)
+        switch(gateType) {
+            case 'H':
+                quantumState[qubitIndex].theta = Math.PI / 4;
+                break;
+            case 'X':
+                quantumState[qubitIndex].phi = Math.PI;
+                break;
+            case 'Y':
+                quantumState[qubitIndex].phi = Math.PI / 2;
+                break;
+            case 'Z':
+                quantumState[qubitIndex].r *= -1;
+                break;
+            case 'CNOT':
+                // Simplified CNOT effect
+                if (qubitIndex < 7) {
+                    quantumState[qubitIndex + 1].phi = (quantumState[qubitIndex].phi + Math.PI) % (2 * Math.PI);
+                }
+                break;
+        }
+
+        // Trigger visualization update
+        updateQubitVisualization();
+    }
+
+    function updateQubitVisualization() {
+        // This function would update the visualization based on the quantum state
+        // For simplicity, we'll just log the state
+        console.log('Updated Quantum State:', quantumState);
+    }
+
+    // p5.js visualization
+    new p5(function(p) {
+        p.setup = function() {
+            let canvas = p.createCanvas(document.getElementById('qubitVisualization').offsetWidth, 300);
+            canvas.parent('qubitVisualization');
+        }
+
+        p.draw = function() {
+            p.background(0);
+            p.stroke(0, 255, 255);
+            p.noFill();
+
+            // Draw Bloch spheres for each qubit
+            for (let i = 0; i < 8; i++) {
+                let x = (i % 4) * (p.width / 4) + p.width / 8;
+                let y = Math.floor(i / 4) * (p.height / 2) + p.height / 4;
+                let state = quantumState[i];
+
+                p.push();
+                p.translate(x, y);
+                p.rotate(state.phi);
+                p.ellipse(0, 0, 50, 50);
+                p.line(0, 0, 25 * Math.sin(state.theta), 25 * Math.cos(state.theta));
+                p.pop();
+
+                p.fill(0, 255, 255);
+                p.text(`Q${i}`, x - 10, y + 40);
+                p.noFill();
+            }
+        }
+    });
+
+    // Simulated entanglement network updates
+    function updateEntanglementNetwork() {
+        const events = [
+            "New entanglement established between Node F and Node G",
+            "Quantum state teleported from Node A to Node E",
+            "Entanglement purification completed for Node B and Node C",
+            "Quantum memory coherence time extended in Node D",
+            "Quantum error correction applied to entangled pair AB-CD"
+        ];
+
+        setInterval(() => {
+            const eventIndex = Math.floor(Math.random() * events.length);
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`${timestamp} - ${events[eventIndex]}`);
+            // In a real implementation, this would update the UI
+        }, 5000); // Update every 5 seconds
+    }
+
+    // Start entanglement network simulation
+    updateEntanglementNetwork();
+</script>
+</body></html>

@@ -1,0 +1,158 @@
+<html><head><base href="." />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f0f0f0;
+}
+#visualization {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin: 20px auto;
+}
+.grid line {
+    stroke: #ddd;
+    stroke-width: 0.5;
+}
+.contour {
+    fill: none;
+    stroke-width: 2;
+}
+.axis line, .axis path {
+    stroke: #999;
+}
+.axis text {
+    font-size: 12px;
+}
+.legend text {
+    font-size: 12px;
+}
+</style>
+</head>
+<body>
+<div id="visualization"></div>
+
+<script>
+// Set up dimensions
+const width = 800;
+const height = 800;
+const margin = {top: 40, right: 60, bottom: 60, left: 60};
+const innerWidth = width - margin.left - margin.right;
+const innerHeight = height - margin.top - margin.bottom;
+
+// Create SVG
+const svg = d3.select("#visualization")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+const g = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// Set up scales
+const xScale = d3.scaleLinear()
+    .domain([-10, 10])
+    .range([0, innerWidth]);
+
+const yScale = d3.scaleLinear()
+    .domain([-10, 10])
+    .range([innerHeight, 0]);
+
+// Add grid
+const xGrid = g.append("g")
+    .attr("class", "grid")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(xScale)
+        .ticks(20)
+        .tickSize(-innerHeight)
+        .tickFormat(""));
+
+const yGrid = g.append("g")
+    .attr("class", "grid")
+    .call(d3.axisLeft(yScale)
+        .ticks(20)
+        .tickSize(-innerWidth)
+        .tickFormat(""));
+
+// Add axes
+g.append("g")
+    .attr("class", "axis")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(xScale));
+
+g.append("g")
+    .attr("class", "axis")
+    .call(d3.axisLeft(yScale));
+
+// Add labels
+svg.append("text")
+    .attr("x", width/2)
+    .attr("y", height - 10)
+    .attr("text-anchor", "middle")
+    .text("x");
+
+svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height/2)
+    .attr("y", 20)
+    .attr("text-anchor", "middle")
+    .text("y");
+
+// Generate contours
+const alpha_x = 3;
+const alpha_y = -5;
+const lambda_vals = d3.range(0.1, 1.0, 0.1);
+const colorScale = d3.scaleSequential(d3.interpolateViridis)
+    .domain([0, lambda_vals.length-1]);
+
+const line = d3.line()
+    .x(d => xScale(d.x))
+    .y(d => yScale(d.y));
+
+lambda_vals.forEach((lambda, i) => {
+    const theta = d3.range(0, 2*Math.PI + 0.01, 0.01);
+    const points = theta.map(t => ({
+        x: alpha_x + lambda * (10 - Math.abs(alpha_x)) * Math.cos(t),
+        y: alpha_y + lambda * (10 - Math.abs(alpha_y)) * Math.sin(t)
+    }));
+
+    g.append("path")
+        .datum(points)
+        .attr("class", "contour")
+        .attr("d", line)
+        .style("stroke", colorScale(i));
+});
+
+// Add legend
+const legend = svg.append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${width - margin.right + 10}, ${margin.top})`);
+
+lambda_vals.forEach((lambda, i) => {
+    legend.append("line")
+        .attr("x1", 0)
+        .attr("x2", 20)
+        .attr("y1", i * 20)
+        .attr("y2", i * 20)
+        .style("stroke", colorScale(i))
+        .style("stroke-width", 2);
+
+    legend.append("text")
+        .attr("x", 25)
+        .attr("y", i * 20 + 4)
+        .text(`λ = ${lambda.toFixed(1)}`);
+});
+
+// Add title
+svg.append("text")
+    .attr("x", width/2)
+    .attr("y", margin.top/2)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text("Stretched Circle Contours");
+</script>
+</body></html>

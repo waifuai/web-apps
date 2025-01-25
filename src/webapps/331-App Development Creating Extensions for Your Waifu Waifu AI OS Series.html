@@ -1,0 +1,270 @@
+<html><head><base href="." />
+<title>App Development: Creating Extensions for Your Waifu | Waifu AI OS Series</title>
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #9370db;
+  --background: #1a1b26;
+  --text: #a9b1d6;
+  --code-bg: #24283b;
+  --highlight: #f7768e;
+}
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1, h2, h3 {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+.note {
+  border-left: 4px solid var(--highlight);
+  padding: 1rem;
+  margin: 1rem 0;
+  background: rgba(247, 118, 142, 0.1);
+}
+
+.example {
+  border: 1px solid var(--secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+nav {
+  background: var(--code-bg);
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  margin-right: 1rem;
+}
+
+nav a:hover {
+  color: var(--primary);
+}
+
+.animation-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.waifu-icon {
+  animation: float 3s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <nav>
+    <a href="https://waifuai-os.org">Home</a>
+    <a href="https://waifuai-os.org/docs">Documentation</a>
+    <a href="https://waifuai-os.org/community">Community</a>
+    <a href="https://github.com/waifuai-os">GitHub</a>
+  </nav>
+
+  <h1>App Development: Creating Extensions for Your Waifu</h1>
+
+  <div class="animation-container">
+    <svg class="waifu-icon" width="100" height="100" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="var(--primary)" stroke-width="2"/>
+      <path d="M30 40 Q50 20 70 40" stroke="var(--highlight)" fill="none" stroke-width="2"/>
+      <circle cx="35" cy="35" r="5" fill="var(--secondary)"/>
+      <circle cx="65" cy="35" r="5" fill="var(--secondary)"/>
+    </svg>
+  </div>
+
+  <h2>Introduction to Waifu AI OS Extensions</h2>
+  <p>Welcome to Part 23 of our Waifu AI OS development series! Today, we'll explore how to create extensions that enhance your AI companion's capabilities through the powerful Common Lisp extension system.</p>
+
+  <div class="note">
+    <strong>Prerequisites:</strong> Basic knowledge of Common Lisp, completion of Core Architecture (Part 4), and familiarity with the AI Personality Core (Part 11).
+  </div>
+
+  <h2>Extension System Architecture</h2>
+  <p>Waifu AI OS uses a dynamic extension system based on ASDF (Another System Definition Facility) with AI-enhanced hot-loading capabilities.</p>
+
+  <div class="code-block">
+    <pre><code>(defpackage :waifu-extension
+  (:use :cl :waifu-core :waifu-ai)
+  (:export :define-personality-trait
+           :register-capability
+           :with-waifu-context))
+
+(in-package :waifu-extension)
+
+(defmacro define-personality-trait (name &key description behavior)
+  `(progn
+     (register-trait ',name
+       :description ,description
+       :behavior (lambda (context)
+                  (with-waifu-context context
+                    ,behavior))))))</code></pre>
+  </div>
+
+  <h2>Creating Your First Extension</h2>
+  <p>Let's create a simple extension that adds cooking capabilities to your Waifu:</p>
+
+  <div class="code-block">
+    <pre><code>;; cooking-extension.lisp
+(defpackage :waifu-cooking
+  (:use :cl :waifu-extension)
+  (:export :cook-meal :suggest-recipe))
+
+(in-package :waifu-cooking)
+
+(define-personality-trait :cooking
+  :description "Enables cooking-related interactions and recipe suggestions"
+  :behavior
+  (lambda (context)
+    (case (context-action context)
+      (:suggest-recipe
+       (ai-query context
+                 :prompt "Suggest a recipe based on available ingredients"
+                 :constraints '(:healthy t :time-limit 30)))
+      (:cook-meal
+       (execute-cooking-sequence context)))))</code></pre>
+  </div>
+
+  <h2>AI Integration in Extensions</h2>
+  <p>Extensions can leverage the AI core for enhanced functionality:</p>
+
+  <div class="example">
+    <h3>Example: AI-Enhanced Recipe Suggestions</h3>
+    <div class="code-block">
+      <pre><code>(defmethod suggest-recipe ((ctx waifu-context) &key ingredients dietary-restrictions)
+  (let ((ai-response
+         (query-ai-model ctx
+           `((:system
+              "You are a helpful cooking assistant.")
+             (:user
+              ,(format nil "Suggest a recipe using: ~{~a~^, ~}"
+                      ingredients))))))
+    (parse-recipe-suggestion ai-response)))</code></pre>
+    </div>
+  </div>
+
+  <h2>Extension Testing Framework</h2>
+  <p>Ensure your extensions work correctly with our testing framework:</p>
+
+  <div class="code-block">
+    <pre><code>(defpackage :waifu-extension-test
+  (:use :cl :fiveam :waifu-extension))
+
+(in-package :waifu-extension-test)
+
+(def-suite extension-tests
+  :description "Test suite for Waifu extensions")
+
+(def-test cooking-extension-test ()
+  (let ((ctx (make-test-context)))
+    (register-extension :cooking)
+    (is (extension-loaded-p :cooking))
+    (is-true (can-handle-p ctx :suggest-recipe))))</code></pre>
+  </div>
+
+  <h2>Packaging and Distribution</h2>
+  <p>Package your extension for easy sharing:</p>
+
+  <div class="code-block">
+    <pre><code>;; waifu-cooking.asd
+(asdf:defsystem :waifu-cooking
+  :version "1.0.0"
+  :author "Your Name"
+  :license "MIT-0"
+  :depends-on (:waifu-core :waifu-ai :alexandria)
+  :components
+  ((:file "package")
+   (:file "cooking-extension" :depends-on ("package"))))</code></pre>
+  </div>
+
+  <div class="note">
+    <strong>Best Practices:</strong>
+    <ul>
+      <li>Always include comprehensive documentation</li>
+      <li>Implement error handling for graceful failures</li>
+      <li>Use the AI context system for personality consistency</li>
+      <li>Follow the Waifu AI OS coding guidelines</li>
+    </ul>
+  </div>
+
+  <h2>Next Steps</h2>
+  <p>Continue to Part 24: "Hardware Acceleration" to learn how to optimize your extensions for maximum performance. Join our community to share your extensions and collaborate with other developers!</p>
+
+  <div class="example">
+    <h3>Community Resources</h3>
+    <ul>
+      <li><a href="https://github.com/waifuai-os/extension-template">Extension Template Repository</a></li>
+      <li><a href="https://waifuai-os.org/docs/extension-guidelines">Extension Development Guidelines</a></li>
+      <li><a href="https://waifuai-os.org/community/extensions">Extension Marketplace</a></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Add syntax highlighting
+  const codeBlocks = document.querySelectorAll('pre code');
+  codeBlocks.forEach(block => {
+    block.innerHTML = block.innerHTML
+      .replace(/;.+/g, m => `<span style="color: #6272a4">${m}</span>`)
+      .replace(/\b(defpackage|defmacro|lambda|let|progn|defmethod)\b/g, 
+               m => `<span style="color: #ff79c6">${m}</span>`)
+      .replace(/:[a-zA-Z-]+/g, 
+               m => `<span style="color: #bd93f9">${m}</span>`);
+  });
+
+  // Add interactive examples
+  const examples = document.querySelectorAll('.example');
+  examples.forEach(example => {
+    example.addEventListener('click', () => {
+      example.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        example.style.transform = 'scale(1)';
+      }, 200);
+    });
+  });
+});
+</script>
+</body></html>

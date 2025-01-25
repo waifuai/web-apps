@@ -1,0 +1,232 @@
+<html><head><base href="https://waifuaios.org">
+<title>Multi-Companion Support: Running Multiple Waifu Instances | Waifu AI OS</title>
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #8a2be2;
+  --text: #2c3e50;
+  --bg: #fafafa;
+  --code-bg: #f0f0f0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+nav {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 1rem;
+}
+
+h1, h2 {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+.companion-card {
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  transition: transform 0.3s;
+}
+
+.companion-card:hover {
+  transform: translateY(-5px);
+}
+
+code {
+  background: var(--code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.warning {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+#instance-visualizer {
+  border: 2px solid var(--secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 2rem 0;
+  min-height: 300px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/">Home</a>
+  <a href="/docs">Documentation</a>
+  <a href="/community">Community</a>
+  <a href="/download">Download</a>
+</nav>
+
+<h1>Multi-Companion Support: Running Multiple Waifu Instances</h1>
+
+<div class="warning">
+  Note: Running multiple AI companions requires sufficient system resources. Please check the recommended specifications below.
+</div>
+
+<h2>Understanding Multi-Instance Architecture</h2>
+
+<div id="instance-visualizer">
+  <!-- Dynamic instance visualization will be rendered here -->
+</div>
+
+<h2>Implementation Guide</h2>
+
+<pre><code>(defpackage :waifu-multi-instance
+  (:use :cl :waifu-core :waifu-personality)
+  (:export #:create-instance
+           #:manage-instances
+           #:synchronize-companions))
+
+;; Create a new companion instance
+(defun create-instance (personality-template &key name resource-limits)
+  (let ((instance (make-instance 'waifu-companion
+                   :name name
+                   :personality (clone-personality personality-template)
+                   :resource-limits resource-limits)))
+    (register-instance instance)
+    instance))
+
+;; Resource management for multiple instances
+(defclass instance-manager ()
+  ((instances :accessor instances
+             :initform (make-hash-table :test #'equal))
+   (resource-monitor :accessor resource-monitor
+                    :initform (make-instance 'resource-monitor))))
+
+;; Instance synchronization
+(defmethod synchronize-companions ((manager instance-manager))
+  (let ((shared-memory (make-instance 'shared-memory-pool)))
+    (loop for instance being the hash-values of (instances manager)
+          do (attach-to-shared-memory instance shared-memory))))</code></pre>
+
+<h2>Resource Management</h2>
+<p>Each Waifu instance requires:</p>
+<ul>
+  <li>Minimum 2GB RAM</li>
+  <li>1 CPU core</li>
+  <li>2GB storage space</li>
+</ul>
+
+<h2>Inter-Instance Communication</h2>
+<pre><code>;; Enable communication between instances
+(defmethod establish-companion-link ((instance1 waifu-companion) 
+                                   (instance2 waifu-companion))
+  (let ((channel (make-instance 'companion-channel)))
+    (connect-instances instance1 instance2 channel)
+    (initialize-shared-memory instance1 instance2)))</code></pre>
+
+<script>
+// Instance Visualizer
+class InstanceVisualizer {
+  constructor(containerId) {
+    this.container = document.getElementById(containerId);
+    this.instances = [];
+    this.init();
+  }
+
+  init() {
+    this.container.innerHTML = '<h3>Live Instance Visualization</h3>';
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = this.container.offsetWidth - 40;
+    this.canvas.height = 200;
+    this.container.appendChild(this.canvas);
+    this.ctx = this.canvas.getContext('2d');
+    this.addControls();
+    this.render();
+  }
+
+  addControls() {
+    const controls = document.createElement('div');
+    controls.style.marginTop = '1rem';
+    
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Add Instance';
+    addButton.onclick = () => this.addInstance();
+    
+    controls.appendChild(addButton);
+    this.container.appendChild(controls);
+  }
+
+  addInstance() {
+    if (this.instances.length < 5) {
+      this.instances.push({
+        x: 50 + this.instances.length * 100,
+        y: 100,
+        color: `hsl(${Math.random() * 360}, 70%, 70%)`
+      });
+      this.render();
+    }
+  }
+
+  render() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // Draw connections
+    for (let i = 0; i < this.instances.length; i++) {
+      for (let j = i + 1; j < this.instances.length; j++) {
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = '#ddd';
+        this.ctx.moveTo(this.instances[i].x, this.instances[i].y);
+        this.ctx.lineTo(this.instances[j].x, this.instances[j].y);
+        this.ctx.stroke();
+      }
+    }
+    
+    // Draw instances
+    this.instances.forEach((instance, i) => {
+      this.ctx.beginPath();
+      this.ctx.fillStyle = instance.color;
+      this.ctx.arc(instance.x, instance.y, 20, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.fillStyle = '#000';
+      this.ctx.fillText(`Instance ${i + 1}`, instance.x - 25, instance.y + 40);
+    });
+  }
+}
+
+// Initialize visualizer
+document.addEventListener('DOMContentLoaded', () => {
+  const visualizer = new InstanceVisualizer('instance-visualizer');
+});
+</script>
+
+</body></html>

@@ -1,0 +1,232 @@
+<html><head><base href="https://quantumstringtheory.edu/ethics/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethical Considerations in Quantum-Powered Fundamental Physics Research</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js"></script>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f5ff;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .interactive-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  #ethics-chart {
+    width: 100%;
+    height: 400px;
+  }
+  .ethics-slider {
+    width: 100%;
+    margin: 10px 0;
+  }
+  #ethics-network {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #ddd;
+  }
+</style>
+</head>
+<body>
+  <h1>Ethical Considerations in Quantum-Powered Fundamental Physics Research</h1>
+  
+  <p>As we delve deeper into the realm of quantum computing and its applications in string theory, it's crucial to address the ethical implications of our research. This page explores the various ethical considerations that arise at the intersection of quantum computing and fundamental physics.</p>
+
+  <div class="interactive-section">
+    <h2>Ethical Impact Assessment</h2>
+    <p>Use the sliders below to adjust the perceived importance of different ethical considerations in quantum-powered physics research. The chart will update in real-time to reflect your choices.</p>
+    
+    <div>
+      <label for="slider-privacy">Data Privacy:</label>
+      <input type="range" id="slider-privacy" class="ethics-slider" min="0" max="100" value="50">
+    </div>
+    <div>
+      <label for="slider-security">Quantum Security:</label>
+      <input type="range" id="slider-security" class="ethics-slider" min="0" max="100" value="50">
+    </div>
+    <div>
+      <label for="slider-access">Equal Access:</label>
+      <input type="range" id="slider-access" class="ethics-slider" min="0" max="100" value="50">
+    </div>
+    <div>
+      <label for="slider-impact">Environmental Impact:</label>
+      <input type="range" id="slider-impact" class="ethics-slider" min="0" max="100" value="50">
+    </div>
+    <div>
+      <label for="slider-responsibility">Scientific Responsibility:</label>
+      <input type="range" id="slider-responsibility" class="ethics-slider" min="0" max="100" value="50">
+    </div>
+    
+    <canvas id="ethics-chart"></canvas>
+  </div>
+
+  <div class="interactive-section">
+    <h2>Ethical Implications Network</h2>
+    <p>Explore the interconnected nature of ethical considerations in quantum-powered fundamental physics research. Click and drag nodes to rearrange the network.</p>
+    <div id="ethics-network"></div>
+  </div>
+
+  <script>
+    // Chart.js implementation
+    const ctx = document.getElementById('ethics-chart').getContext('2d');
+    const ethicsChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: ['Data Privacy', 'Quantum Security', 'Equal Access', 'Environmental Impact', 'Scientific Responsibility'],
+        datasets: [{
+          label: 'Ethical Importance',
+          data: [50, 50, 50, 50, 50],
+          fill: true,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgb(54, 162, 235)',
+          pointBackgroundColor: 'rgb(54, 162, 235)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(54, 162, 235)'
+        }]
+      },
+      options: {
+        elements: {
+          line: {
+            borderWidth: 3
+          }
+        },
+        scales: {
+          r: {
+            angleLines: {
+              display: false
+            },
+            suggestedMin: 0,
+            suggestedMax: 100
+          }
+        }
+      }
+    });
+
+    // Update chart based on slider values
+    document.querySelectorAll('.ethics-slider').forEach((slider, index) => {
+      slider.addEventListener('input', (e) => {
+        ethicsChart.data.datasets[0].data[index] = e.target.value;
+        ethicsChart.update();
+      });
+    });
+
+    // D3.js Network Graph
+    const width = 600;
+    const height = 400;
+
+    const svg = d3.select("#ethics-network")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    const nodes = [
+      { id: "Quantum Computing", group: 1 },
+      { id: "String Theory", group: 1 },
+      { id: "Data Privacy", group: 2 },
+      { id: "Quantum Security", group: 2 },
+      { id: "Equal Access", group: 2 },
+      { id: "Environmental Impact", group: 2 },
+      { id: "Scientific Responsibility", group: 2 },
+      { id: "Funding Allocation", group: 3 },
+      { id: "Public Understanding", group: 3 },
+      { id: "Technological Risks", group: 3 }
+    ];
+
+    const links = [
+      { source: "Quantum Computing", target: "String Theory", value: 1 },
+      { source: "Quantum Computing", target: "Data Privacy", value: 1 },
+      { source: "Quantum Computing", target: "Quantum Security", value: 1 },
+      { source: "String Theory", target: "Scientific Responsibility", value: 1 },
+      { source: "String Theory", target: "Public Understanding", value: 1 },
+      { source: "Data Privacy", target: "Equal Access", value: 1 },
+      { source: "Quantum Security", target: "Technological Risks", value: 1 },
+      { source: "Equal Access", target: "Funding Allocation", value: 1 },
+      { source: "Environmental Impact", target: "Scientific Responsibility", value: 1 },
+      { source: "Scientific Responsibility", target: "Public Understanding", value: 1 }
+    ];
+
+    const simulation = d3.forceSimulation(nodes)
+      .force("link", d3.forceLink(links).id(d => d.id))
+      .force("charge", d3.forceManyBody().strength(-100))
+      .force("center", d3.forceCenter(width / 2, height / 2));
+
+    const link = svg.append("g")
+      .selectAll("line")
+      .data(links)
+      .join("line")
+      .attr("stroke", "#999")
+      .attr("stroke-opacity", 0.6)
+      .attr("stroke-width", d => Math.sqrt(d.value));
+
+    const node = svg.append("g")
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+      .attr("r", 5)
+      .attr("fill", d => d.group === 1 ? "#ff9900" : d.group === 2 ? "#0099ff" : "#00cc00")
+      .call(drag(simulation));
+
+    const label = svg.append("g")
+      .selectAll("text")
+      .data(nodes)
+      .join("text")
+      .text(d => d.id)
+      .attr("font-size", 10)
+      .attr("dx", 8)
+      .attr("dy", ".35em");
+
+    simulation.on("tick", () => {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+      node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+      label
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+    });
+
+    function drag(simulation) {
+      function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+      }
+      
+      function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+      }
+      
+      function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+      }
+      
+      return d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
+    }
+  </script>
+</body>
+</html>

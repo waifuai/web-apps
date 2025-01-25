@@ -1,0 +1,136 @@
+<html><head><base href="/" /><style>
+  body { margin: 0; background: #fafafa; font-family: Arial, sans-serif; }
+  .container { max-width: 800px; margin: 2rem auto; padding: 1rem; }
+  .plot { width: 100%; height: 600px; background: white; border: 1px solid #ddd; }
+  #controls { margin: 1rem 0; }
+</style>
+</head><body>
+<div class="container">
+  <h2>Interactive Contour Lines Visualization</h2>
+  <div class="plot" id="plotCanvas"></div>
+  <div id="controls">
+    <label>λ value: <input type="range" id="lambdaSlider" min="0" max="1" step="0.1" value="0.5"></label>
+    <span id="lambdaValue">0.5</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const width = 800;
+const height = 600;
+const margin = { top: 40, right: 40, bottom: 40, left: 40 };
+const plotWidth = width - margin.left - margin.right;
+const plotHeight = height - margin.top - margin.bottom;
+
+// Create SVG
+const svg = d3.select("#plotCanvas")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// Scales
+const xScale = d3.scaleLinear()
+  .domain([-10, 10])
+  .range([0, plotWidth]);
+
+const yScale = d3.scaleLinear()
+  .domain([-10, 10])
+  .range([plotHeight, 0]);
+
+// Axes
+const xAxis = d3.axisBottom(xScale);
+const yAxis = d3.axisLeft(yScale);
+
+svg.append("g")
+  .attr("transform", `translate(0,${plotHeight/2})`)
+  .call(xAxis);
+
+svg.append("g")
+  .attr("transform", `translate(${plotWidth/2},0)`)
+  .call(yAxis);
+
+// Draw grid
+const grid = svg.append("g").attr("class", "grid");
+
+// Horizontal grid lines
+grid.selectAll("line.horizontal")
+  .data(yScale.ticks())
+  .enter()
+  .append("line")
+  .attr("class", "horizontal")
+  .attr("x1", 0)
+  .attr("x2", plotWidth)
+  .attr("y1", d => yScale(d))
+  .attr("y2", d => yScale(d))
+  .style("stroke", "#ddd")
+  .style("stroke-width", 0.5);
+
+// Vertical grid lines
+grid.selectAll("line.vertical")
+  .data(xScale.ticks())
+  .enter()
+  .append("line")
+  .attr("class", "vertical")
+  .attr("y1", 0)
+  .attr("y2", plotHeight)
+  .attr("x1", d => xScale(d))
+  .attr("x2", d => xScale(d))
+  .style("stroke", "#ddd")
+  .style("stroke-width", 0.5);
+
+// Function to draw contour square
+function drawContourSquare(lambda) {
+  const size = 20 * (1 - lambda);
+  const vertices = [
+    [-size/2, -size/2],
+    [size/2, -size/2],
+    [size/2, size/2],
+    [-size/2, size/2]
+  ];
+  
+  const lineGenerator = d3.line()
+    .x(d => xScale(d[0]))
+    .y(d => yScale(d[1]))
+    .curve(d3.curveLinearClosed);
+
+  svg.selectAll(".contour-square").remove();
+  
+  svg.append("path")
+    .attr("class", "contour-square")
+    .attr("d", lineGenerator(vertices))
+    .style("fill", "none")
+    .style("stroke", "steelblue")
+    .style("stroke-width", 2);
+}
+
+// Function to draw contour circle
+function drawContourCircle(lambda) {
+  const radius = 10 * lambda;
+  
+  svg.selectAll(".contour-circle").remove();
+  
+  svg.append("circle")
+    .attr("class", "contour-circle")
+    .attr("cx", xScale(0))
+    .attr("cy", yScale(0))
+    .attr("r", xScale(radius) - xScale(0))
+    .style("fill", "none")
+    .style("stroke", "crimson")
+    .style("stroke-width", 2);
+}
+
+// Update visualization on slider change
+d3.select("#lambdaSlider").on("input", function() {
+  const lambda = +this.value;
+  d3.select("#lambdaValue").text(lambda.toFixed(1));
+  drawContourSquare(lambda);
+  drawContourCircle(lambda);
+});
+
+// Initial draw
+drawContourSquare(0.5);
+drawContourCircle(0.5);
+</script>
+</body></html>

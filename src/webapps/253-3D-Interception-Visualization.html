@@ -1,0 +1,143 @@
+<html><head><base href="https://equation-visualizer.com/"><title>3D Interception Visualization</title>
+<style>
+  body { margin: 0; background: #1a1a1a; color: #fff; font-family: Arial; overflow: hidden; }
+  #canvas { width: 100vw; height: 100vh; }
+  #controls { position: fixed; top: 20px; left: 20px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 8px; }
+  .slider { width: 200px; margin: 10px 0; }
+  .equations { position: fixed; right: 20px; top: 20px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 8px; font-family: "Computer Modern", serif; }
+  .math { font-style: italic; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div id="controls">
+  <div>Object A Starting Position</div>
+  <input type="range" class="slider" id="ax" min="-50" max="50" value="0">
+  <input type="range" class="slider" id="ay" min="-50" max="50" value="0">
+  <input type="range" class="slider" id="az" min="-50" max="50" value="0">
+  
+  <div>Object A Velocity</div>
+  <input type="range" class="slider" id="vax" min="-5" max="5" value="1">
+  <input type="range" class="slider" id="vay" min="-5" max="5" value="0">
+  <input type="range" class="slider" id="vaz" min="-5" max="5" value="0">
+  
+  <div>Object B Starting Position</div>
+  <input type="range" class="slider" id="bx" min="-50" max="50" value="-40">
+  <input type="range" class="slider" id="by" min="-50" max="50" value="0">
+  <input type="range" class="slider" id="bz" min="-50" max="50" value="0">
+  
+  <div>Object B Speed</div>
+  <input type="range" class="slider" id="sb" min="0" max="10" value="2" step="0.1">
+</div>
+
+<div class="equations">
+  <div>\[
+    \begin{aligned}
+    y_a + v_{ay} \frac{x_b - x_a}{v_{ax} - v_{bx}} &= y_b + v_{by} \frac{x_b - x_a}{v_{ax} - v_{bx}} \\
+    z_a + v_{az} \frac{x_b - x_a}{v_{ax} - v_{bx}} &= z_b + v_{bz} \frac{x_b - x_a}{v_{ax} - v_{bx}} \\
+    v_{bx}^2 + v_{by}^2 + v_{bz}^2 &= s_b^2
+    \end{aligned}
+  \]</div>
+</div>
+
+<script>
+let scene, camera, renderer;
+let objectA, objectB, pathA, pathB;
+let clock = new THREE.Clock();
+
+function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  renderer = new THREE.WebGLRenderer({canvas: document.getElementById('canvas'), antialias: true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  
+  // Grid
+  const grid = new THREE.GridHelper(100, 100, 0x888888, 0x444444);
+  scene.add(grid);
+  
+  // Objects
+  objectA = new THREE.Mesh(
+    new THREE.SphereGeometry(1),
+    new THREE.MeshBasicMaterial({color: 0xff0000})
+  );
+  
+  objectB = new THREE.Mesh(
+    new THREE.SphereGeometry(1),
+    new THREE.MeshBasicMaterial({color: 0x00ff00})
+  );
+  
+  scene.add(objectA);
+  scene.add(objectB);
+  
+  // Path lines
+  const pathMaterialA = new THREE.LineBasicMaterial({color: 0xff0000});
+  const pathMaterialB = new THREE.LineBasicMaterial({color: 0x00ff00});
+  pathA = new THREE.Line(new THREE.BufferGeometry(), pathMaterialA);
+  pathB = new THREE.Line(new THREE.BufferGeometry(), pathMaterialB);
+  scene.add(pathA);
+  scene.add(pathB);
+  
+  camera.position.set(50, 50, 50);
+  camera.lookAt(0, 0, 0);
+  
+  animate();
+}
+
+function updateSimulation() {
+  const ax = parseFloat(document.getElementById('ax').value);
+  const ay = parseFloat(document.getElementById('ay').value);
+  const az = parseFloat(document.getElementById('az').value);
+  const vax = parseFloat(document.getElementById('vax').value);
+  const vay = parseFloat(document.getElementById('vay').value);
+  const vaz = parseFloat(document.getElementById('vaz').value);
+  const bx = parseFloat(document.getElementById('bx').value);
+  const by = parseFloat(document.getElementById('by').value);
+  const bz = parseFloat(document.getElementById('bz').value);
+  const sb = parseFloat(document.getElementById('sb').value);
+  
+  // Simple numerical solving for demonstration
+  let vbx = vax - sb * (ax - bx) / Math.sqrt((ax-bx)**2 + (ay-by)**2 + (az-bz)**2);
+  let vby = vay - sb * (ay - by) / Math.sqrt((ax-bx)**2 + (ay-by)**2 + (az-bz)**2);
+  let vbz = vaz - sb * (az - bz) / Math.sqrt((ax-bx)**2 + (ay-by)**2 + (az-bz)**2);
+  
+  // Update positions
+  const t = clock.getElapsedTime();
+  objectA.position.set(ax + vax*t, ay + vay*t, az + vaz*t);
+  objectB.position.set(bx + vbx*t, by + vby*t, bz + vbz*t);
+  
+  // Update path lines
+  const pathPointsA = [];
+  const pathPointsB = [];
+  for(let t = 0; t <= 10; t += 0.1) {
+    pathPointsA.push(new THREE.Vector3(ax + vax*t, ay + vay*t, az + vaz*t));
+    pathPointsB.push(new THREE.Vector3(bx + vbx*t, by + vby*t, bz + vbz*t));
+  }
+  pathA.geometry.setFromPoints(pathPointsA);
+  pathB.geometry.setFromPoints(pathPointsB);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  updateSimulation();
+  renderer.render(scene, camera);
+}
+
+init();
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Update on slider change
+document.querySelectorAll('.slider').forEach(slider => {
+  slider.addEventListener('input', () => {
+    clock.start();
+  });
+});
+</script>
+</body></html>

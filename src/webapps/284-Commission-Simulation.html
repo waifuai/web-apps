@@ -1,0 +1,221 @@
+<html><head><base href="." />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+.simulation-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #1a1a2e;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #162447;
+    border-radius: 5px;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #1f4068;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.control-btn:hover {
+    background: #e43f5a;
+}
+
+.metrics-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background: #162447;
+    padding: 15px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #e43f5a;
+}
+
+.chart-container {
+    background: #162447;
+    padding: 20px;
+    border-radius: 5px;
+    height: 400px;
+}
+</style>
+</head>
+<body>
+<div class="simulation-container">
+    <div class="controls">
+        <button class="control-btn" id="startBtn">Start Simulation</button>
+        <button class="control-btn" id="pauseBtn">Pause</button>
+        <button class="control-btn" id="resetBtn">Reset</button>
+        <div>
+            <label style="color: white;">Zoom Level:</label>
+            <select id="zoomLevel" class="control-btn">
+                <option value="1h">1 Hour</option>
+                <option value="6h">6 Hours</option>
+                <option value="24h">24 Hours</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="metrics-panel">
+        <div class="metric-card">
+            <h3>Commission Rate</h3>
+            <div class="metric-value" id="commissionRate">0.15%</div>
+        </div>
+        <div class="metric-card">
+            <h3>Investment Volume</h3>
+            <div class="metric-value" id="investmentVolume">$0</div>
+        </div>
+        <div class="metric-card">
+            <h3>Total Earnings</h3>
+            <div class="metric-value" id="totalEarnings">$0</div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="performanceChart"></canvas>
+    </div>
+</div>
+
+<script>
+let simulationRunning = false;
+let chart;
+let dataPoints = [];
+
+function initializeChart() {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Commission Rate',
+                data: [],
+                borderColor: '#e43f5a',
+                tension: 0.4
+            }, {
+                label: 'Investment Volume',
+                data: [],
+                borderColor: '#4CAF50',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateSimulation() {
+    if (!simulationRunning) return;
+
+    // Simulate new data
+    const newCommissionRate = 0.1 + Math.random() * 0.2;
+    const newInvestmentVolume = Math.random() * 100000;
+    const newEarnings = newCommissionRate * newInvestmentVolume / 100;
+
+    // Update metrics
+    document.getElementById('commissionRate').textContent = newCommissionRate.toFixed(2) + '%';
+    document.getElementById('investmentVolume').textContent = '$' + newInvestmentVolume.toFixed(0);
+    document.getElementById('totalEarnings').textContent = '$' + newEarnings.toFixed(2);
+
+    // Update chart
+    const timestamp = new Date().toLocaleTimeString();
+    chart.data.labels.push(timestamp);
+    chart.data.datasets[0].data.push(newCommissionRate);
+    chart.data.datasets[1].data.push(newInvestmentVolume/1000);
+
+    // Remove old data points if more than 50
+    if (chart.data.labels.length > 50) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach(dataset => dataset.data.shift());
+    }
+
+    chart.update();
+    
+    // Schedule next update
+    setTimeout(updateSimulation, 1000);
+}
+
+// Event Listeners
+document.getElementById('startBtn').addEventListener('click', () => {
+    simulationRunning = true;
+    updateSimulation();
+});
+
+document.getElementById('pauseBtn').addEventListener('click', () => {
+    simulationRunning = false;
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+    simulationRunning = false;
+    chart.data.labels = [];
+    chart.data.datasets.forEach(dataset => dataset.data = []);
+    chart.update();
+    document.getElementById('commissionRate').textContent = '0.15%';
+    document.getElementById('investmentVolume').textContent = '$0';
+    document.getElementById('totalEarnings').textContent = '$0';
+});
+
+document.getElementById('zoomLevel').addEventListener('change', (e) => {
+    const value = e.target.value;
+    // Implement zoom functionality here
+    chart.options.scales.x.time = {
+        unit: value
+    };
+    chart.update();
+});
+
+// Initialize the chart when the page loads
+initializeChart();
+</script>
+</body></html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html><html><head><base href="https://quantum-consciousness-research.org/quantum-pca/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Principal Component Analysis in Orch-OR Modeling</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    @keyframes quantum-wave {
+      0% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+    .quantum-effect {
+      animation: quantum-wave 3s infinite;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <header class="bg-blue-600 text-white p-4">
+    <nav class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Quantum PCA in Orch-OR Modeling</h1>
+      <ul class="flex space-x-4">
+        <li><a href="/" class="hover:text-blue-200">Home</a></li>
+        <li><a href="/about" class="hover:text-blue-200">About</a></li>
+        <li><a href="/research" class="hover:text-blue-200">Research</a></li>
+        <li><a href="/contact" class="hover:text-blue-200">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container mx-auto mt-8 p-4">
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-4">Introduction to Quantum PCA in Orch-OR</h2>
+      <p class="mb-4">Quantum Principal Component Analysis (QPCA) is a powerful technique that leverages quantum computing to perform dimensionality reduction and feature extraction in high-dimensional datasets. In the context of Orchestrated Objective Reduction (Orch-OR) theory, QPCA offers exciting possibilities for analyzing complex patterns in microtubule dynamics and quantum coherence in neural systems.</p>
+      <div id="qpca-visualization" class="w-full h-64 bg-white shadow-lg rounded-lg overflow-hidden quantum-effect"></div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-4">QPCA vs. Classical PCA</h2>
+      <p class="mb-4">Let's compare the performance of Quantum PCA and Classical PCA in analyzing simulated microtubule data:</p>
+      <div id="pca-comparison" class="w-full h-80 bg-white shadow-lg rounded-lg overflow-hidden"></div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-4">Interactive QPCA Explorer</h2>
+      <p class="mb-4">Explore how QPCA performs on different datasets related to Orch-OR theory:</p>
+      <div class="flex space-x-4 mb-4">
+        <button id="dataset1" class="bg-blue-500 text-white px-4 py-2 rounded">Microtubule Oscillations</button>
+        <button id="dataset2" class="bg-blue-500 text-white px-4 py-2 rounded">Quantum Coherence Patterns</button>
+        <button id="dataset3" class="bg-blue-500 text-white px-4 py-2 rounded">Neural Firing Sequences</button>
+      </div>
+      <div id="qpca-explorer" class="w-full h-192 bg-white shadow-lg rounded-lg overflow-hidden"></div>
+    </section>
+  </main>
+
+  <footer class="bg-blue-600 text-white p-4 mt-12">
+    <div class="container mx-auto text-center">
+      <p>© 2023 Quantum Consciousness Research Institute. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // QPCA Visualization
+    function createQPCAVisualization() {
+      const svg = d3.select("#qpca-visualization")
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%");
+
+      const width = svg.node().getBoundingClientRect().width;
+      const height = svg.node().getBoundingClientRect().height;
+
+      const simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(d => d.id))
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+      const nodes = [
+        {id: "Data", group: 1},
+        {id: "Quantum State", group: 2},
+        {id: "QPCA", group: 3},
+        {id: "Reduced Dimensions", group: 4}
+      ];
+
+      const links = [
+        {source: "Data", target: "Quantum State"},
+        {source: "Quantum State", target: "QPCA"},
+        {source: "QPCA", target: "Reduced Dimensions"}
+      ];
+
+      const link = svg.append("g")
+        .selectAll("line")
+        .data(links)
+        .join("line")
+        .attr("stroke", "#999")
+        .attr("stroke-opacity", 0.6)
+        .attr("stroke-width", 2);
+
+      const node = svg.append("g")
+        .selectAll("circle")
+        .data(nodes)
+        .join("circle")
+        .attr("r", 20)
+        .attr("fill", d => d3.schemeCategory10[d.group])
+        .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+      node.append("title")
+        .text(d => d.id);
+
+      simulation
+        .nodes(nodes)
+        .on("tick", ticked);
+
+      simulation.force("link")
+        .links(links);
+
+      function ticked() {
+        link
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
+
+        node
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y);
+      }
+
+      function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+
+      function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+    }
+
+    // PCA Comparison
+    function createPCAComparison() {
+      const classicalData = {
+        x: [10, 100, 1000, 10000, 100000],
+        y: [0.75, 0.82, 0.88, 0.91, 0.93],
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'Classical PCA'
+      };
+
+      const quantumData = {
+        x: [10, 100, 1000, 10000, 100000],
+        y: [0.78, 0.87, 0.93, 0.96, 0.98],
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'Quantum PCA'
+      };
+
+      const layout = {
+        title: 'Classical vs Quantum PCA Performance',
+        xaxis: {
+          title: 'Dataset Size',
+          type: 'log'
+        },
+        yaxis: {
+          title: 'Accuracy',
+          range: [0.7, 1]
+        },
+        height: 400,
+        margin: {l: 50, r: 50, b: 50, t: 50, pad: 4}
+      };
+
+      Plotly.newPlot('pca-comparison', [classicalData, quantumData], layout);
+    }
+
+    // QPCA Explorer
+    function createQPCAExplorer(dataset) {
+      let data;
+      let layout;
+
+      switch(dataset) {
+        case 'microtubule':
+          data = [{
+            z: [
+              [1, 0.8, 0.6, 0.4, 0.2],
+              [0.8, 1, 0.7, 0.5, 0.3],
+              [0.6, 0.7, 1, 0.6, 0.4],
+              [0.4, 0.5, 0.6, 1, 0.5],
+              [0.2, 0.3, 0.4, 0.5, 1]
+            ],
+            type: 'heatmap',
+            colorscale: 'Viridis'
+          }];
+          layout = {
+            title: 'Microtubule Oscillations QPCA Correlation Matrix',
+            height: 500,
+            xaxis: {title: 'Microtubule Components'},
+            yaxis: {title: 'Microtubule Components'}
+          };
+          break;
+        case 'coherence':
+          data = [{
+            x: [0, 1, 2, 3, 4, 5],
+            y: [1, 0.8, 0.6, 0.4, 0.3, 0.2],
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Coherence Decay'
+          }];
+          layout = {
+            title: 'Quantum Coherence Patterns QPCA',
+            height: 500,
+            xaxis: {title: 'Time (arbitrary units)'},
+            yaxis: {title: 'Coherence Magnitude'}
+          };
+          break;
+        case 'neural':
+          data = [{
+            x: ['PC1', 'PC2', 'PC3', 'PC4', 'PC5'],
+            y: [45, 25, 15, 10, 5],
+            type: 'bar',
+            marker: {
+              color: ['rgba(77, 175, 74, 1)', 'rgba(55, 126, 184, 1)', 'rgba(228, 26, 28, 1)', 'rgba(152, 78, 163, 1)', 'rgba(255, 127, 0, 1)']
+            }
+          }];
+          layout = {
+            title: 'Neural Firing Sequences QPCA - Explained Variance',
+            height: 500,
+            xaxis: {title: 'Principal Components'},
+            yaxis: {title: 'Explained Variance (%)'}
+          };
+          break;
+      }
+
+      Plotly.newPlot('qpca-explorer', data, layout);
+    }
+
+    // Initialize visualizations
+    document.addEventListener('DOMContentLoaded', (event) => {
+      createQPCAVisualization();
+      createPCAComparison();
+      createQPCAExplorer('microtubule');
+
+      document.getElementById('dataset1').addEventListener('click', () => createQPCAExplorer('microtubule'));
+      document.getElementById('dataset2').addEventListener('click', () => createQPCAExplorer('coherence'));
+      document.getElementById('dataset3').addEventListener('click', () => createQPCAExplorer('neural'));
+    });
+  </script>
+
+</body></html>

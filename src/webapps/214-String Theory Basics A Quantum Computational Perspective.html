@@ -1,0 +1,147 @@
+<html><head><base href="https://quantum-string-orch-or.edu/string-theory-basics/"><title>String Theory Basics: A Quantum Computational Perspective</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+}
+h1, h2 {
+    color: #2c3e50;
+}
+.interactive-chart {
+    width: 100%;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.quantum-visual {
+    width: 100%;
+    height: 300px;
+    background-color: #000;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.string {
+    position: absolute;
+    background-color: #00ff00;
+    height: 2px;
+    animation: vibrate 2s infinite ease-in-out;
+}
+@keyframes vibrate {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(2); }
+}
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <h1>String Theory Basics: A Quantum Computational Perspective</h1>
+    
+    <p>Welcome to our exploration of String Theory from a quantum computational viewpoint. This page will introduce you to the fundamental concepts of String Theory and how they relate to quantum computing.</p>
+    
+    <h2>1. What is String Theory?</h2>
+    
+    <p>String Theory proposes that the fundamental constituents of the universe are not point-like particles, but tiny, vibrating strings of energy. These strings vibrate in different ways, giving rise to all the particles and forces we observe.</p>
+    
+    <div class="quantum-visual" id="string-visual"></div>
+    
+    <h2>2. Dimensions in String Theory</h2>
+    
+    <p>While we experience four dimensions (three spatial dimensions plus time), String Theory typically requires 10 or 11 dimensions to be mathematically consistent. Let's visualize how these extra dimensions might be compactified:</p>
+    
+    <div class="interactive-chart" id="dimensions-chart"></div>
+    
+    <h2>3. Quantum Computation and String Theory</h2>
+    
+    <p>Quantum computers could potentially simulate string theoretic models that are computationally intractable for classical computers. Here's a comparison of classical vs quantum computational power for string theory simulations:</p>
+    
+    <div class="interactive-chart" id="computation-chart"></div>
+    
+    <h2>4. Strings and Quantum Entanglement</h2>
+    
+    <p>String theory provides a unique perspective on quantum entanglement, a key resource in quantum computing. Let's explore how string interactions might give rise to entanglement:</p>
+    
+    <div class="quantum-visual" id="entanglement-visual"></div>
+    
+    <script>
+    // String vibration visualization
+    function createStringVisual() {
+        const container = document.getElementById('string-visual');
+        for (let i = 0; i < 10; i++) {
+            const string = document.createElement('div');
+            string.className = 'string';
+            string.style.width = `${Math.random() * 50 + 50}%`;
+            string.style.left = `${Math.random() * 50}%`;
+            string.style.top = `${Math.random() * 80 + 10}%`;
+            string.style.animationDelay = `${Math.random() * 2}s`;
+            container.appendChild(string);
+        }
+    }
+    createStringVisual();
+
+    // Dimensions chart
+    const dimensionsData = [{
+        x: ['3D', '4D', '10D', '11D'],
+        y: [3, 4, 10, 11],
+        type: 'bar',
+        marker: {color: ['#3498db', '#3498db', '#e74c3c', '#e74c3c']}
+    }];
+    const dimensionsLayout = {
+        title: 'Dimensions in Various Theories',
+        yaxis: {title: 'Number of Dimensions'}
+    };
+    Plotly.newPlot('dimensions-chart', dimensionsData, dimensionsLayout);
+
+    // Computation power chart
+    const computationData = [{
+        x: [1, 2, 3, 4, 5],
+        y: [1, 2, 4, 8, 16],
+        name: 'Classical',
+        type: 'scatter'
+    }, {
+        x: [1, 2, 3, 4, 5],
+        y: [1, 4, 9, 16, 25],
+        name: 'Quantum',
+        type: 'scatter'
+    }];
+    const computationLayout = {
+        title: 'Computational Power for String Theory Simulations',
+        xaxis: {title: 'Problem Size'},
+        yaxis: {title: 'Computational Power'}
+    };
+    Plotly.newPlot('computation-chart', computationData, computationLayout);
+
+    // Entanglement visualization
+    function createEntanglementVisual() {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(400, 300);
+        document.getElementById('entanglement-visual').appendChild(renderer.domElement);
+
+        const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+        const material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+        const torusKnot = new THREE.Mesh(geometry, material);
+        scene.add(torusKnot);
+
+        camera.position.z = 30;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            torusKnot.rotation.x += 0.01;
+            torusKnot.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+    createEntanglementVisual();
+    </script>
+</body>
+</html>

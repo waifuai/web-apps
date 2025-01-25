@@ -1,0 +1,229 @@
+<!DOCTYPE html><html><head><base href="https://quantumconsciousness.ai/brain-mapping/">
+<title>Quantum-Enhanced Brain Mapping: From Neurons to Consciousness</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+}
+
+h1, h2 {
+    color: #0066cc;
+}
+
+.interactive-chart {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.data-viz {
+    width: 100%;
+    height: 300px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+#neuron-network {
+    width: 100%;
+    height: 100%;
+}
+
+#consciousness-scale {
+    width: 100%;
+    height: 100%;
+}
+</style>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Quantum-Enhanced Brain Mapping: From Neurons to Consciousness</h1>
+    
+    <p>Welcome to the cutting-edge intersection of quantum computing and neuroscience. This page explores how our million-qubit photonic quantum computer is revolutionizing brain mapping, offering unprecedented insights into the journey from individual neurons to the emergence of consciousness.</p>
+
+    <h2>Interactive Neuron Network Visualization</h2>
+    <div class="interactive-chart" id="neuron-network"></div>
+
+    <h2>Quantum-Enhanced Resolution in Brain Imaging</h2>
+    <p>Our million-qubit system allows for quantum-enhanced imaging techniques that far surpass classical methods in both resolution and depth. This breakthrough enables us to map neural connections with unparalleled precision.</p>
+
+    <div class="data-viz">
+    <canvas id="resolution-comparison"></canvas>
+    <script>
+        const ctx = document.getElementById('resolution-comparison').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Classical Imaging', 'Quantum-Enhanced Imaging'],
+                datasets: [{
+                    label: 'Resolution (nm)',
+                    data: [100, 10],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(255, 99, 132, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Resolution (nm)'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Imaging Resolution Comparison'
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+
+    <h2>Consciousness Scale: Quantum Coherence to Subjective Experience</h2>
+    <div class="data-viz" id="consciousness-scale"></div>
+
+    <h2>Real-Time Quantum Simulation of Neural Dynamics</h2>
+    <p>Leveraging the massive parallelism of our million-qubit system, we can now simulate neural dynamics in real-time, providing insights into the quantum aspects of consciousness as proposed by the Orch-OR theory.</p>
+
+    <div class="interactive-chart" id="neural-dynamics">
+    <canvas id="simple-neural-dynamics"></canvas>
+    <script>
+        const ctx = document.getElementById('simple-neural-dynamics').getContext('2d');
+        const neuralDynamicsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Neural Activity',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Activity Level'
+                        },
+                        suggestedMin: -1,
+                        suggestedMax: 1
+                    }
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+
+        function updateSimpleNeuralDynamics() {
+            const time = Date.now() / 1000;
+            const newData = Math.sin(time) * Math.cos(time * 0.5);
+
+            neuralDynamicsChart.data.labels.push(time.toFixed(1));
+            neuralDynamicsChart.data.datasets[0].data.push(newData);
+
+            if (neuralDynamicsChart.data.labels.length > 50) {
+                neuralDynamicsChart.data.labels.shift();
+                neuralDynamicsChart.data.datasets[0].data.shift();
+            }
+
+            neuralDynamicsChart.update();
+            requestAnimationFrame(updateSimpleNeuralDynamics);
+        }
+
+        updateSimpleNeuralDynamics();
+    </script>
+</div>
+
+    <script>
+// ... (previous code remains unchanged) ...
+
+// Remove the previous Neural Dynamics Simulation code
+
+// Simple Neural Dynamics Chart
+const ctx = document.getElementById('simple-neural-dynamics').getContext('2d');
+const neuralDynamicsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Neural Activity',
+            data: [],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Time'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Activity Level'
+                },
+                suggestedMin: -1,
+                suggestedMax: 1
+            }
+        },
+        animation: {
+            duration: 0
+        }
+    }
+});
+
+function updateSimpleNeuralDynamics() {
+    const time = Date.now() / 1000;
+    const newData = Math.sin(time) * Math.cos(time * 0.5);
+
+    neuralDynamicsChart.data.labels.push(time.toFixed(1));
+    neuralDynamicsChart.data.datasets[0].data.push(newData);
+
+    if (neuralDynamicsChart.data.labels.length > 50) {
+        neuralDynamicsChart.data.labels.shift();
+        neuralDynamicsChart.data.datasets[0].data.shift();
+    }
+
+    neuralDynamicsChart.update();
+    requestAnimationFrame(updateSimpleNeuralDynamics);
+}
+
+updateSimpleNeuralDynamics();
+</script>
+</body></html>

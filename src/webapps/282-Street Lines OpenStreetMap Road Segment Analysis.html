@@ -1,0 +1,217 @@
+<html><head><base href="https://unpkg.com/leaflet">
+<title>Street Lines: OpenStreetMap Road Segment Analysis</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<style>
+#map {
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 0;
+  padding: 0;
+}
+.controls {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: white;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+.progress {
+  width: 100%;
+  height: 20px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #4285f4;
+  transition: width 0.3s ease;
+}
+</style>
+</head>
+<body>
+<div class="controls">
+  <button id="startButton">Start Analysis</button>
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+</div>
+<div id="map"></div>
+
+<script>
+let map;
+const parkingSpots = [];
+const roadSegments = [];
+const GRID_SIZE = 20;
+const SPOT_WIDTH = 2.5;
+const SPOT_LENGTH = 5.0;
+const ROAD_OFFSET = 3.0;
+
+function initMap() {
+  // Create map instance
+  map = L.map('map').setView([40.7128, -74.0060], 18);
+  
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Add click handler to start button
+  document.getElementById('startButton').addEventListener('click', startAnalysis);
+
+  // Add click handler to map
+  map.on('click', function(e) {
+    analyzePoint([e.latlng.lat, e.latlng.lng]);
+  });
+}
+
+function startAnalysis() {
+  const bounds = map.getBounds();
+  const ne = bounds.getNorthEast();
+  const sw = bounds.getSouthWest();
+  
+  const latStep = (ne.lat - sw.lat) / GRID_SIZE;
+  const lngStep = (ne.lng - sw.lng) / GRID_SIZE;
+  
+  clearExistingFeatures();
+  
+  let progress = 0;
+  const totalPoints = GRID_SIZE * GRID_SIZE;
+  
+  function processPoint(i, j) {
+    if (i >= GRID_SIZE) {
+      document.getElementById('startButton').disabled = false;
+      return;
+    }
+    
+    const lat = sw.lat + (i * latStep);
+    const lng = sw.lng + (j * lngStep);
+    
+    analyzePoint([lat, lng])
+      .then(() => {
+        progress++;
+        updateProgress(progress / totalPoints * 100);
+        
+        if (j + 1 < GRID_SIZE) {
+          setTimeout(() => processPoint(i, j + 1), 100);
+        } else {
+          setTimeout(() => processPoint(i + 1, 0), 100);
+        }
+      })
+      .catch(error => {
+        console.error('Error processing point:', error);
+        document.getElementById('startButton').disabled = false;
+      });
+  }
+  
+  document.getElementById('startButton').disabled = true;
+  processPoint(0, 0);
+}
+
+function updateProgress(percent) {
+  document.getElementById('progressBar').style.width = percent + '%';
+}
+
+function clearExistingFeatures() {
+  parkingSpots.forEach(spot => map.removeLayer(spot));
+  parkingSpots.length = 0;
+  
+  roadSegments.forEach(segment => map.removeLayer(segment));
+  roadSegments.length = 0;
+}
+
+async function analyzePoint(coord) {
+  try {
+    // Query OpenStreetMap Overpass API for nearby roads
+    const response = await fetch(`https://overpass-api.de/api/interpreter`, {
+      method: 'POST',
+      body: `[out:json];
+        way(around:50,${coord[0]},${coord[1]})[highway];
+        out geom;`
+    });
+    
+    const data = await response.json();
+    
+    if (!data.elements || data.elements.length === 0) {
+      return;
+    }
+    
+    // Process each road segment
+    data.elements.forEach(way => {
+      if (!way.geometry) return;
+      
+      // Create road line
+      const roadCoords = way.geometry.map(point => [point.lat, point.lon]);
+      const roadLine = L.polyline(roadCoords, {
+        color: '#0000FF',
+        weight: 2
+      }).addTo(map);
+      roadSegments.push(roadLine);
+      
+      // Generate parking spots along the road
+      const line = turf.lineString(roadCoords);
+      const length = turf.length(line, {units: 'meters'});
+      
+      // Place parking spots every SPOT_LENGTH meters
+      for (let distance = 0; distance < length; distance += SPOT_LENGTH) {
+        const point = turf.along(line, distance, {units: 'meters'});
+        const bearing = turf.bearing(
+          turf.point(point.geometry.coordinates),
+          turf.point(roadCoords[Math.min(Math.floor(distance/length * roadCoords.length) + 1, roadCoords.length - 1)])
+        );
+        
+        // Generate spots on both sides of the road
+        [-ROAD_OFFSET, ROAD_OFFSET].forEach(offset => {
+          const spotCenter = turf.destination(point, offset, bearing + 90, {units: 'meters'});
+          const spotCoords = generateParkingSpotPolygon(spotCenter.geometry.coordinates, bearing);
+          
+          const spot = L.polygon(spotCoords, {
+            color: '#FF0000',
+            weight: 1,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+          }).addTo(map);
+          
+          parkingSpots.push(spot);
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching road data:', error);
+  }
+}
+
+function generateParkingSpotPolygon(center, bearing) {
+  const corners = [];
+  const width = SPOT_WIDTH / 2;
+  const length = SPOT_LENGTH / 2;
+  
+  // Generate four corners of the parking spot
+  [[-width, -length], [-width, length], [width, length], [width, -length]].forEach(offset => {
+    const point = turf.destination(
+      turf.point(center),
+      Math.sqrt(offset[0]*offset[0] + offset[1]*offset[1]),
+      bearing + Math.atan2(offset[1], offset[0]) * 180 / Math.PI,
+      {units: 'meters'}
+    );
+    corners.push([point.geometry.coordinates[1], point.geometry.coordinates[0]]);
+  });
+  
+  return corners;
+}
+
+initMap();
+</script>
+</body></html>

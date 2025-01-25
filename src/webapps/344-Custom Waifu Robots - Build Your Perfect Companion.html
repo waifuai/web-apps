@@ -1,0 +1,220 @@
+<html><head><base href="/" /><title>Custom Waifu Robots - Build Your Perfect Companion</title>
+<meta charset="UTF-8">
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #4a4a7d;
+  --background: #1a1a2e;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: white;
+  font-family: 'Roboto', sans-serif;
+}
+
+.header {
+  background: var(--secondary);
+  padding: 1rem;
+  text-align: center;
+}
+
+.robot-customizer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.preview {
+  flex: 1;
+  min-width: 300px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.controls {
+  flex: 1;
+  min-width: 300px;
+}
+
+.robot-svg {
+  width: 300px;
+  height: 400px;
+  transition: all 0.3s ease;
+}
+
+.customization-option {
+  margin: 1rem 0;
+}
+
+select, input[type="color"] {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 5px;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.price {
+  font-size: 2rem;
+  color: var(--primary);
+  margin: 2rem 0;
+}
+
+.add-to-cart {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.add-to-cart:hover {
+  transform: scale(1.05);
+}
+
+@keyframes hover {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.robot-svg {
+  animation: hover 3s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Custom Waifu Robots</h1>
+  <p>Design Your Perfect Companion</p>
+</div>
+
+<div class="robot-customizer">
+  <div class="preview">
+    <svg class="robot-svg" id="robotPreview" viewBox="0 0 200 300">
+      <g id="robotBody">
+        <!-- Base body -->
+        <rect id="torso" x="60" y="100" width="80" height="120" rx="10" fill="#ff69b4"/>
+        <!-- Head -->
+        <circle id="head" cx="100" cy="70" r="30" fill="#ff69b4"/>
+        <!-- Eyes -->
+        <circle class="eyes" cx="85" cy="60" r="5" fill="white"/>
+        <circle class="eyes" cx="115" cy="60" r="5" fill="white"/>
+        <!-- Mouth -->
+        <path id="mouth" d="M85 80 Q100 90 115 80" stroke="white" fill="none"/>
+        <!-- Arms -->
+        <rect id="leftArm" x="30" y="110" width="30" height="80" rx="5" fill="#ff69b4"/>
+        <rect id="rightArm" x="140" y="110" width="30" height="80" rx="5" fill="#ff69b4"/>
+        <!-- Legs -->
+        <rect id="leftLeg" x="60" y="220" width="30" height="60" rx="5" fill="#ff69b4"/>
+        <rect id="rightLeg" x="110" y="220" width="30" height="60" rx="5" fill="#ff69b4"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div class="customization-option">
+      <label>Personality Type</label>
+      <select id="personalityType">
+        <option value="tsundere">Tsundere</option>
+        <option value="kuudere">Kuudere</option>
+        <option value="dandere">Dandere</option>
+        <option value="yandere">Yandere</option>
+      </select>
+    </div>
+
+    <div class="customization-option">
+      <label>Primary Color</label>
+      <input type="color" id="primaryColor" value="#ff69b4">
+    </div>
+
+    <div class="customization-option">
+      <label>Hair Style</label>
+      <select id="hairStyle">
+        <option value="twintails">Twin Tails</option>
+        <option value="long">Long Straight</option>
+        <option value="short">Short Bob</option>
+        <option value="ponytail">Ponytail</option>
+      </select>
+    </div>
+
+    <div class="customization-option">
+      <label>Voice Type</label>
+      <select id="voiceType">
+        <option value="sweet">Sweet</option>
+        <option value="mature">Mature</option>
+        <option value="energetic">Energetic</option>
+        <option value="shy">Shy</option>
+      </select>
+    </div>
+
+    <div class="price">
+      Total: <span id="totalPrice">₿ 2.5</span>
+    </div>
+
+    <button class="add-to-cart" onclick="addToCart()">Add to Cart</button>
+  </div>
+</div>
+
+<script>
+const robotParts = document.querySelectorAll('#robotBody rect, #robotBody circle:not(.eyes)');
+const primaryColorInput = document.getElementById('primaryColor');
+const personalitySelect = document.getElementById('personalityType');
+const totalPriceSpan = document.getElementById('totalPrice');
+
+let basePrice = 2.5;
+
+function updateRobotColor(color) {
+  robotParts.forEach(part => {
+    part.setAttribute('fill', color);
+  });
+}
+
+function updatePrice() {
+  let total = basePrice;
+  
+  // Add price modifications based on selections
+  switch(personalitySelect.value) {
+    case 'yandere':
+      total += 0.5;
+      break;
+    case 'tsundere':
+      total += 0.3;
+      break;
+    case 'kuudere':
+      total += 0.2;
+      break;
+  }
+
+  totalPriceSpan.textContent = `₿ ${total.toFixed(2)}`;
+}
+
+primaryColorInput.addEventListener('input', (e) => {
+  updateRobotColor(e.target.value);
+});
+
+personalitySelect.addEventListener('change', updatePrice);
+
+function addToCart() {
+  alert('Waifu Robot added to cart! Your perfect companion will be with you soon~ ❤️');
+}
+
+// Initialize with default color
+updateRobotColor(primaryColorInput.value);
+updatePrice();
+</script>
+</body>
+</html>

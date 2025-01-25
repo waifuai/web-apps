@@ -1,0 +1,236 @@
+<html><head><base href="/">
+<title>Sleep Time Calculator</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --primary: #6b48ff;
+  --secondary: #1a1b4b;
+  --accent: #9f86ff;
+  --background: #f5f5ff;
+  --text: #2a2a2a;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: var(--accent);
+}
+
+.data-points {
+  margin: 2rem 0;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: 8px;
+}
+
+#sleepChart {
+  margin: 2rem 0;
+}
+
+.result {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--accent);
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Sleep Time Calculator</h1>
+  <p>Track your sleep patterns and find your ideal bedtime.</p>
+  
+  <div class="input-group">
+    <label for="sleepHours">Hours Slept:</label>
+    <input type="number" id="sleepHours" min="1" max="24" step="0.5">
+    
+    <label for="wakeTime">Wake Up Time:</label>
+    <input type="time" id="wakeTime">
+    
+    <button onclick="addDataPoint()">Add Data Point</button>
+  </div>
+  
+  <div class="data-points">
+    <h3>Your Sleep Data:</h3>
+    <ul id="dataList"></ul>
+  </div>
+  
+  <canvas id="sleepChart"></canvas>
+  
+  <div class="input-group">
+    <label for="targetSleep">Desired Hours of Sleep:</label>
+    <input type="number" id="targetSleep" value="7.5" min="1" max="24" step="0.5">
+    <button onclick="calculateBedtime()">Calculate Bedtime</button>
+  </div>
+  
+  <div id="result" class="result" style="display: none;"></div>
+</div>
+
+<script>
+let sleepData = [];
+let chart = null;
+
+function timeToString(time) {
+    return time;  // Since we're already working with time strings
+}
+
+function addDataPoint() {
+  const hours = parseFloat(document.getElementById('sleepHours').value);
+  const wakeTime = document.getElementById('wakeTime').value;
+  
+  if (!hours || !wakeTime) {
+    alert('Please fill in all fields');
+    return;
+  }
+  
+  sleepData.push({ hours, wakeTime });
+  updateDataList();
+  updateChart();
+}
+
+function updateDataList() {
+  const list = document.getElementById('dataList');
+  list.innerHTML = '';
+  
+  sleepData.forEach((data, index) => {
+    const li = document.createElement('li');
+    li.textContent = `Slept ${data.hours} hours, woke up at ${timeToString(data.wakeTime)}`;
+    list.appendChild(li);
+  });
+}
+
+function updateChart() {
+  const ctx = document.getElementById('sleepChart').getContext('2d');
+  
+  if (chart) {
+    chart.destroy();
+  }
+  
+  const timeLabels = sleepData.map(d => d.wakeTime);
+  const hourData = sleepData.map(d => d.hours);
+  
+  chart = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      labels: timeLabels,
+      datasets: [{
+        label: 'Sleep Pattern',
+        data: hourData.map((hours, i) => ({
+          x: timeStringToDecimal(timeLabels[i]),
+          y: hours
+        })),
+        backgroundColor: '#6b48ff',
+        borderColor: '#9f86ff',
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Wake Up Time'
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Hours Slept'
+          }
+        }
+      }
+    }
+  });
+}
+
+function timeStringToDecimal(timeStr) {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours + minutes / 60;
+}
+
+function decimalToTimeString(decimal) {
+  const hours = Math.floor(decimal);
+  const minutes = Math.round((decimal - hours) * 60);
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+function calculateBedtime() {
+  if (sleepData.length < 2) {
+    alert('Please add at least 2 data points');
+    return;
+  }
+  
+  const targetSleep = parseFloat(document.getElementById('targetSleep').value);
+  
+  // Simple linear regression for now
+  const xValues = sleepData.map(d => timeStringToDecimal(d.wakeTime));
+  const yValues = sleepData.map(d => d.hours);
+  
+  const n = xValues.length;
+  const sumX = xValues.reduce((a, b) => a + b, 0);
+  const sumY = yValues.reduce((a, b) => a + b, 0);
+  const sumXY = xValues.reduce((sum, x, i) => sum + x * yValues[i], 0);
+  const sumXX = xValues.reduce((sum, x) => sum + x * x, 0);
+  
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  
+  // Predict wake time for target sleep hours
+  const predictedWakeTime = (targetSleep - intercept) / slope;
+  const bedtime = predictedWakeTime - targetSleep;
+  
+  const result = document.getElementById('result');
+  result.style.display = 'block';
+  result.textContent = `For ${targetSleep} hours of sleep, go to bed at ${decimalToTimeString(bedtime)}`;
+}
+</script>
+</body></html>

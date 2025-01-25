@@ -1,0 +1,205 @@
+<html><head><base href="https://quantum-consciousness.research/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridging Consciousness and Fundamental Physics: An Introduction</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding: 20px;
+  }
+  header {
+    background: #000428;
+    color: #fff;
+    padding-top: 30px;
+    min-height: 70px;
+    border-bottom: #0575E6 3px solid;
+  }
+  header a {
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 16px;
+  }
+  header .highlight, header .current a {
+    color: #0575E6;
+    font-weight: bold;
+  }
+  header a:hover {
+    color: #ffffff;
+    font-weight: bold;
+  }
+  #showcase {
+    min-height: 400px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23000428" /><stop offset="100%" stop-color="%230575E6" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g)" /><circle cx="50%" cy="50%" r="40%" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none" /><circle cx="50%" cy="50%" r="30%" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none" /><circle cx="50%" cy="50%" r="20%" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none" /></svg>') no-repeat center center/cover;
+    text-align: center;
+    color: #ffffff;
+  }
+  #showcase h1 {
+    margin-top: 100px;
+    font-size: 55px;
+    margin-bottom: 10px;
+  }
+  #showcase p {
+    font-size: 20px;
+  }
+  #newsletter {
+    padding: 15px;
+    color: #ffffff;
+    background: #0575E6;
+  }
+  #newsletter h1 {
+    float: left;
+  }
+  #newsletter form {
+    float: right;
+    margin-top: 15px;
+  }
+  #newsletter input[type="email"] {
+    padding: 4px;
+    height: 25px;
+    width: 250px;
+  }
+  .button_1 {
+    height: 38px;
+    background: #cccccc;
+    border: 0;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #0575E6;
+  }
+  #boxes {
+    margin-top: 20px;
+  }
+  #boxes .box {
+    float: left;
+    text-align: center;
+    width: 30%;
+    padding: 10px;
+  }
+  #boxes .box img {
+    width: 90px;
+  }
+  footer {
+    padding: 20px;
+    margin-top: 20px;
+    color: #ffffff;
+    background-color: #000428;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div id="branding">
+        <h1><span class="highlight">Quantum</span> Consciousness</h1>
+      </div>
+      <nav>
+        <ul>
+          <li class="current"><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="research.html">Research</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section id="showcase">
+    <div class="container">
+      <h1>Bridging Consciousness and Fundamental Physics</h1>
+      <p>Explore the fascinating intersection of quantum computing, string theory, and consciousness</p>
+    </div>
+  </section>
+
+  <section id="newsletter">
+    <div class="container">
+      <h1>Subscribe To Our Newsletter</h1>
+      <form>
+        <input type="email" placeholder="Enter Email...">
+        <button type="submit" class="button_1">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="boxes">
+    <div class="container">
+      <div class="box">
+        <img alt="Stylized quantum computer icon, blue glowing circuit" src="https://quantum-consciousness.research/images/quantum.svg" width="90" height="90">
+        <h3>Quantum Computing</h3>
+        <p>Discover how quantum algorithms are revolutionizing our understanding of consciousness.</p>
+      </div>
+      <div class="box">
+        <img alt="Abstract representation of vibrating strings, multicolored" src="https://quantum-consciousness.research/images/string-theory.svg" width="90" height="90">
+        <h3>String Theory</h3>
+        <p>Explore the implications of higher dimensions on cognitive processes.</p>
+      </div>
+      <div class="box">
+        <img alt="Neuron with microtubules highlighted, pulsing with quantum effects" src="https://quantum-consciousness.research/images/orch-or.svg" width="90" height="90">
+        <h3>Orch-OR Theory</h3>
+        <p>Unravel the mysteries of consciousness through quantum effects in brain microtubules.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Quantum Consciousness Research Group &copy; 2023</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Create a Three.js scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Create a particle system to represent quantum entanglement
+    const geometry = new THREE.BufferGeometry();
+    const particles = 5000;
+    const positions = new Float32Array(particles * 3);
+
+    for (let i = 0; i < particles * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 10;
+      positions[i + 1] = (Math.random() - 0.5) * 10;
+      positions[i + 2] = (Math.random() - 0.5) * 10;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.05 });
+    const particleSystem = new THREE.Points(geometry, material);
+    scene.add(particleSystem);
+
+    camera.position.z = 5;
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      particleSystem.rotation.x += 0.001;
+      particleSystem.rotation.y += 0.002;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

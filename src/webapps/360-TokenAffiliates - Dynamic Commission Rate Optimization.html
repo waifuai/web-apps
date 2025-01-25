@@ -1,0 +1,371 @@
+<html><head><base href="." /><title>TokenAffiliates - Dynamic Commission Rate Optimization</title><style>
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f8f9fa;
+    color: #2c3e50;
+  }
+  
+  .container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  h1, h2, h3 {
+    color: #1a237e;
+  }
+  
+  .algorithm-visualization {
+    margin: 2rem 0;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  .math {
+    font-family: 'Computer Modern', serif;
+    font-style: italic;
+  }
+  
+  .interactive-graph {
+    width: 100%;
+    height: 400px;
+    margin: 2rem 0;
+  }
+  
+  .code-sample {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+  
+  .highlight {
+    background: #fff3e0;
+    padding: 0.2rem 0.4rem;
+    border-radius: 2px;
+  }
+  
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted #666;
+    cursor: help;
+  }
+  
+  .tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    z-index: 1;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script></head>
+<body>
+  <div class="container">
+    <h1>TokenAffiliates: Dynamic Commission Rate Optimization</h1>
+    
+    <section>
+      <h2>Interactive Algorithm Visualization</h2>
+      <div class="algorithm-visualization">
+        <canvas id="optimizationGraph"></canvas>
+      </div>
+      
+      <h2>Key Components Explained</h2>
+      
+      <h3>1. Demand Modeling</h3>
+      <div class="code-sample">
+        <pre>
+// Simplified demand model
+function estimateDemand(commissionRate, marketData) {
+    return baselineDemand * 
+           (1 - elasticity * commissionRate) * 
+           marketSentimentFactor;
+}
+        </pre>
+      </div>
+      
+      <h3>2. Optimization Function</h3>
+      <div class="math">
+        E<sub>j</sub>(α<sub>j</sub>) = α<sub>j</sub> * I<sub>j</sub>(α<sub>j</sub>)
+      </div>
+      
+      <div class="interactive-graph" id="earningsGraph"></div>
+    </section>
+  </div>
+
+<script>
+// Sample data generation
+function generateSampleData() {
+    const commissionRates = Array.from({length: 100}, (_, i) => i/100);
+    const earnings = commissionRates.map(rate => {
+        const demand = 1000 * (1 - 1.5 * rate) * (1 + 0.2 * Math.random());
+        return {
+            rate,
+            earnings: rate * demand
+        };
+    });
+    return earnings;
+}
+
+// Initialize optimization graph
+const ctx = document.getElementById('optimizationGraph').getContext('2d');
+const data = generateSampleData();
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: data.map(d => (d.rate * 100).toFixed(1) + '%'),
+        datasets: [{
+            label: 'Expected Earnings',
+            data: data.map(d => d.earnings),
+            borderColor: '#1a237e',
+            backgroundColor: 'rgba(26, 35, 126, 0.1)',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Commission Rate vs Expected Earnings'
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Commission Rate (%)'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Expected Earnings'
+                }
+            }
+        }
+    }
+});
+
+// Initialize D3.js visualization for earnings
+const margin = {top: 40, right: 20, bottom: 40, left: 60};
+const width = 800 - margin.left - margin.right;
+const height = 400 - margin.top - margin.bottom;
+
+const svg = d3.select("#earningsGraph")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// Generate optimization path data
+const optimizationPath = [];
+let currentRate = 0.5; // Starting point
+const learningRate = 0.01;
+const iterations = 50;
+
+for(let i = 0; i < iterations; i++) {
+    const currentEarnings = currentRate * (1000 * (1 - 1.5 * currentRate));
+    const delta = 0.0001;
+    const nextEarnings = (currentRate + delta) * (1000 * (1 - 1.5 * (currentRate + delta)));
+    const gradient = (nextEarnings - currentEarnings) / delta;
+    
+    optimizationPath.push({
+        iteration: i,
+        rate: currentRate,
+        earnings: currentEarnings
+    });
+    
+    currentRate += learningRate * gradient;
+    currentRate = Math.max(0, Math.min(1, currentRate));
+}
+
+// Draw optimization path
+const x = d3.scaleLinear()
+    .domain([0, iterations-1])
+    .range([0, width]);
+
+const y = d3.scaleLinear()
+    .domain([0, d3.max(optimizationPath, d => d.earnings)])
+    .range([height, 0]);
+
+svg.append("path")
+    .datum(optimizationPath)
+    .attr("fill", "none")
+    .attr("stroke", "#1a237e")
+    .attr("stroke-width", 2)
+    .attr("d", d3.line()
+        .x(d => x(d.iteration))
+        .y(d => y(d.earnings))
+    );
+
+// Add axes
+svg.append("g")
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(x)
+        .ticks(5)
+        .tickFormat(d => `Step ${d}`));
+
+svg.append("g")
+    .call(d3.axisLeft(y));
+
+// Add labels
+svg.append("text")
+    .attr("x", width/2)
+    .attr("y", height + 35)
+    .style("text-anchor", "middle")
+    .text("Optimization Steps");
+
+svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height/2)
+    .attr("y", -45)
+    .style("text-anchor", "middle")
+    .text("Earnings");
+</script></body></html><html><head><title>TokenAffiliates - Part 2</title><style>
+  .optimization-steps {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f5f7fa;
+    border-radius: 8px;
+  }
+  
+  .step-card {
+    background: white;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .formula {
+    font-family: 'Computer Modern Math', serif;
+    background: #edf2f7;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  
+  .risk-meter {
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(to right, #4caf50, #ffd700, #f44336);
+    border-radius: 10px;
+    margin: 1rem 0;
+  }
+  
+  .note {
+    border-left: 4px solid #3498db;
+    padding-left: 1rem;
+    margin: 1rem 0;
+  }
+</style>
+
+<div class="container">
+  <section class="optimization-steps">
+    <h3>Risk Assessment Implementation</h3>
+    <div class="step-card">
+      <div class="formula">
+        RiskAdjustedRate = α<sub>j</sub> * (1 - β * σ<sub>j</sub>)
+        <br>
+        where:
+        <br>
+        β = risk sensitivity parameter
+        <br>
+        σ<sub>j</sub> = volatility of token j
+      </div>
+      
+      <div class="risk-meter" id="riskMeter"></div>
+    </div>
+    
+    <h3>Advanced Optimization Techniques</h3>
+    <div class="step-card">
+      <h4>Machine Learning Pipeline</h4>
+      <pre class="code-sample">
+class CommissionOptimizer:
+    def __init__(self):
+        self.model = Sequential([
+            Dense(64, activation='relu', input_shape=(10,)),
+            Dense(32, activation='relu'),
+            Dense(1, activation='sigmoid')
+        ])
+        
+    def train(self, X, y):
+        self.model.fit(X, y, epochs=100, batch_size=32)
+        
+    def predict_optimal_rate(self, market_conditions):
+        return self.model.predict(market_conditions)
+      </pre>
+    </div>
+  </section>
+  
+  <section class="implementation-notes">
+    <div class="note">
+      <h4>Real-time Monitoring System</h4>
+      <p>Implement WebSocket connections to track:</p>
+      <ul>
+        <li>Market price fluctuations</li>
+        <li>Competitor rate changes</li>
+        <li>Trading volume variations</li>
+      </ul>
+    </div>
+    
+    <div class="note">
+      <h4>Smart Contract Integration</h4>
+      <pre class="code-sample">
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract DynamicCommissionRate {
+    mapping(address => uint256) public tokenCommissionRates;
+    
+    function updateRate(address token, uint256 newRate) external {
+        require(newRate <= maxRate, "Rate exceeds maximum");
+        tokenCommissionRates[token] = newRate;
+        emit RateUpdated(token, newRate);
+    }
+}
+      </pre>
+    </div>
+  </section>
+</div>
+
+<script>
+// Risk meter animation
+const riskMeter = document.getElementById('riskMeter');
+let position = 0;
+
+function animateRiskMeter() {
+    position = (position + 1) % 100;
+    const indicator = document.createElement('div');
+    indicator.style.width = '10px';
+    indicator.style.height = '20px';
+    indicator.style.background = '#333';
+    indicator.style.position = 'relative';
+    indicator.style.left = `${position}%`;
+    indicator.style.transform = 'translateX(-50%)';
+    indicator.style.borderRadius = '50%';
+    
+    riskMeter.innerHTML = '';
+    riskMeter.appendChild(indicator);
+}
+
+setInterval(animateRiskMeter, 50);
+</script></body></html>

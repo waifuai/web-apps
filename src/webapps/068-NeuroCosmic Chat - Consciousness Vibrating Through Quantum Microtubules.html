@@ -1,0 +1,223 @@
+<html><head><base href="https://hacker.chat"><title>NeuroCosmic Chat - Consciousness Vibrating Through Quantum Microtubules</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;700&display=swap');
+  
+  body {
+    background-color: #000814;
+    color: #00FFA3;
+    font-family: 'Quicksand', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-image: 
+      radial-gradient(#00FFA3 1px, transparent 1px),
+      radial-gradient(#00FFA3 1px, transparent 1px);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+    line-height: 1.6;
+  }
+  header {
+    border-bottom: 1px solid #00FFA3;
+    padding-bottom: 10px;
+  }
+  h1 {
+    font-weight: 700;
+  }
+  main {
+    display: flex;
+    justify-content: space-between;
+  }
+  #chat-window {
+    width: 70%;
+    height: 400px;
+    border: 1px solid #00FFA3;
+    padding: 10px;
+    overflow-y: scroll;
+    background-color: rgba(0, 8, 20, 0.8);
+  }
+  #user-list {
+    width: 25%;
+    border: 1px solid #00FFA3;
+    padding: 10px;
+    background-color: rgba(0, 8, 20, 0.8);
+  }
+  form {
+    margin-top: 20px;
+  }
+  input[type="text"] {
+    width: 70%;
+    background-color: #000814;
+    color: #00FFA3;
+    border: 1px solid #00FFA3;
+    padding: 5px;
+    font-family: 'Quicksand', sans-serif;
+  }
+  input[type="submit"] {
+    background-color: #00FFA3;
+    color: #000814;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+  }
+  .microtubule-vibration {
+    animation: microtubule-vibration-animation 2s infinite;
+    display: inline-block;
+  }
+  @keyframes microtubule-vibration-animation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  #consciousness-level {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  #consciousness-level select {
+    background-color: #000814;
+    color: #00FFA3;
+    border: 1px solid #00FFA3;
+    padding: 5px;
+    font-family: 'Quicksand', sans-serif;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>NeuroCosmic Chat <span class="microtubule-vibration">⚛️</span></h1>
+  <p>Consciousness resonating through quantum microtubules across the cosmos</p>
+</header>
+
+<div id="consciousness-level">
+  <select onchange="changeConsciousnessLevel(this.value)">
+    <option value="1">Alpha Waves</option>
+    <option value="2">Beta Waves</option>
+    <option value="3">Theta Waves</option>
+    <option value="4">Delta Waves</option>
+    <option value="5">Gamma Waves</option>
+  </select>
+</div>
+
+<main>
+  <div id="chat-window">
+    <p><strong>Orchestrated Objective Reduction System:</strong> Welcome to NeuroCosmic Chat. Your thoughts resonate through the quantum fabric of the universe.</p>
+  </div>
+  
+  <div id="user-list">
+    <h3>Active Cosmic Minds</h3>
+    <ul>
+      <li>TubulinTuner</li>
+      <li>SynapticSurfer</li>
+      <li>QuantumConscious</li>
+      <li>NeuralNavigator</li>
+      <li>CytoskeletalSage</li>
+      <li>MicrotubuleMystic</li>
+      <li>PlanckScalePioneer</li>
+      <li>CoherentCollapse</li>
+      <li>DendriticDreamer</li>
+      <li>AxonalAlchemist</li>
+    </ul>
+  </div>
+</main>
+
+<form id="chat-form" onsubmit="return sendQuantumThought(event)">
+  <input type="text" id="thought-input" placeholder="Project your quantum thought...">
+  <input type="submit" value="Resonate">
+</form>
+
+<footer>
+  <p>NeuroCosmic Chat utilizes Orchestrated Objective Reduction (Orch-OR) theory to propagate consciousness across the universe.</p>
+  <p>For deeper cosmic connections, try our <a href="https://hacker.chat/planck-scale-attunement">Planck Scale Attunement</a> meditation.</p>
+  <p>Interested in the quantum nature of consciousness? Explore our <a href="https://neurocosmic.academy">NeuroCosmic Academy</a> for mind-expanding insights.</p>
+</footer>
+
+<script>
+let quantumChatLog = [];
+let currentConsciousnessLevel = 'Beta Waves';
+
+function addQuantumThought(username, thought) {
+  const chatWindow = document.getElementById('chat-window');
+  const thoughtElement = document.createElement('p');
+  thoughtElement.innerHTML = `<strong>${username} (${currentConsciousnessLevel}):</strong> ${thought}`;
+  chatWindow.appendChild(thoughtElement);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  quantumChatLog.push({username, thought, consciousnessLevel: currentConsciousnessLevel});
+}
+
+async function sendQuantumThought(event) {
+  event.preventDefault();
+  const thoughtInput = document.getElementById('thought-input');
+  const thought = thoughtInput.value.trim();
+  if (thought) {
+    addQuantumThought('You', thought);
+    thoughtInput.value = '';
+    
+    try {
+      const response = await fetch('/api/intelligent-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatLog: quantumChatLog, userThought: thought, quantumMicrotubuleContext: true, consciousnessLevel: currentConsciousnessLevel }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Quantum coherence lost');
+      }
+      
+      const data = await response.json();
+      data.responses.forEach(response => {
+        addQuantumThought(response.username, response.thought);
+      });
+    } catch (error) {
+      console.error('Orch-OR Error:', error);
+    }
+  }
+}
+
+function getQuantumInterval() {
+  return Math.floor(Math.random() * (15000 - 5000 + 1) + 5000);
+}
+
+async function simulateQuantumChat() {
+  try {
+    const response = await fetch('/api/intelligent-ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ chatLog: quantumChatLog, simulateChat: true, quantumMicrotubuleContext: true, consciousnessLevel: currentConsciousnessLevel }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Cosmic consciousness interference detected');
+    }
+    
+    const data = await response.json();
+    if (data.thought) {
+      addQuantumThought(data.username, data.thought);
+    }
+  } catch (error) {
+    console.error('Orch-OR Error:', error);
+  }
+  
+  setTimeout(simulateQuantumChat, getQuantumInterval());
+}
+
+function changeConsciousnessLevel(level) {
+  const levels = {
+    '1': 'Alpha Waves',
+    '2': 'Beta Waves',
+    '3': 'Theta Waves',
+    '4': 'Delta Waves',
+    '5': 'Gamma Waves'
+  };
+  currentConsciousnessLevel = levels[level];
+  addQuantumThought('Orch-OR System', `Your consciousness has shifted to ${currentConsciousnessLevel}. Your perception of quantum reality may have altered.`);
+}
+
+simulateQuantumChat();
+</script>
+
+</body></html>

@@ -1,0 +1,144 @@
+<html><head><base href="." target="_blank"><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    background: #f7f9fc;
+    color: #2c3e50;
+}
+
+.code-block {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Fira Code', monospace;
+    overflow-x: auto;
+    margin: 1rem 0;
+    position: relative;
+}
+
+.equation {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.equation-label {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.result {
+    background: #e8f4f8;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.highlight {
+    color: #2980b9;
+    font-weight: 500;
+}
+
+.explanation {
+    line-height: 1.6;
+    margin: 1rem 0;
+}
+
+.interactive-demo {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+}
+
+.equation-description {
+    background: #f5f6fa;
+    padding: 1rem;
+    border-left: 4px solid #3498db;
+    margin: 1rem 0;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.tab {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+    border-bottom: 2px solid #3498db;
+    color: #3498db;
+}
+
+</style>
+</head>
+<body>
+    <h1>Relative Motion System Analysis</h1>
+    
+    <div class="equation-description">
+        <h3>System of Equations Description</h3>
+        <p>The system describes the relative motion of two objects A and B in 3D space:</p>
+        <ul>
+            <li>First equation: Describes the y-coordinate relationship</li>
+            <li>Second equation: Describes the z-coordinate relationship</li>
+            <li>Third equation: Velocity magnitude constraint for object B</li>
+        </ul>
+    </div>
+
+    <div class="equation">
+        \[
+        \begin{cases}
+        y_a + v_{ay}\frac{x_b - x_a}{v_{ax} - v_{bx}} = y_b + v_{by}\frac{x_b - x_a}{v_{ax} - v_{bx}} \\[1em]
+        z_a + v_{az}\frac{x_b - x_a}{v_{ax} - v_{bx}} = z_b + v_{bz}\frac{x_b - x_a}{v_{ax} - v_{bx}} \\[1em]
+        v_{bx}^2 + v_{by}^2 + v_{bz}^2 = s_b^2
+        \end{cases}
+        \]
+        <div class="equation-label">System of Equations</div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('variables')">Variables</div>
+        <div class="tab" onclick="showTab('solution')">Solution Method</div>
+    </div>
+
+    <div id="variables-content">
+        <h3>Variables Definition</h3>
+        <ul>
+            <li>(x<sub>a</sub>, y<sub>a</sub>, z<sub>a</sub>): Position of object A</li>
+            <li>(x<sub>b</sub>, y<sub>b</sub>, z<sub>b</sub>): Position of object B</li>
+            <li>(v<sub>ax</sub>, v<sub>ay</sub>, v<sub>az</sub>): Velocity components of object A</li>
+            <li>(v<sub>bx</sub>, v<sub>by</sub>, v<sub>bz</sub>): Velocity components of object B</li>
+            <li>s<sub>b</sub>: Speed magnitude constraint for object B</li>
+        </ul>
+    </div>
+
+    <script>
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.tab[onclick*='${tabName}']`).classList.add('active');
+            // Additional tab content switching logic would go here
+        }
+    </script>
+</body>
+</html>

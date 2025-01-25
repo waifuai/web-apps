@@ -1,0 +1,227 @@
+<html><head><base href="https://websim.ai/" /><title>Advanced Tokenomics: Utility Token with Bonding Curve and Profit Margin on Solana</title><style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  h1, h2, h3 {
+    color: #4a90e2;
+  }
+  code {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-family: Consolas, monospace;
+    padding: 2px 5px;
+  }
+  pre {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 10px;
+    overflow-x: auto;
+  }
+  .note {
+    background-color: #ffffd9;
+    border-left: 5px solid #ffeb3b;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  .warning {
+    background-color: #ffebee;
+    border-left: 5px solid #f44336;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  .math {
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+  }
+</style></head><body>
+  <h1>Advanced Tokenomics: Utility Token with Bonding Curve and Profit Margin on Solana</h1>
+  
+  <p>Let's expand our Python implementation to include a profit margin, explain how to sell products using the token, and demonstrate how investors can profit from this system.</p>
+
+  <h2>1. Implementing a Profit Margin</h2>
+
+  <p>We'll modify our bonding curve calculations to include a profit margin. This will create a spread between buying and selling prices, generating profit for the contract.</p>
+
+  <pre><code>import math
+
+PROFIT_MARGIN = 0.05  # 5% profit margin
+
+def calculate_price(current_supply, amount, is_buy):
+    new_supply = current_supply + amount if is_buy else current_supply - amount
+    base_price = (new_supply / 10000) ** 2 - (current_supply / 10000) ** 2
+    
+    if is_buy:
+        return base_price * (1 + PROFIT_MARGIN)
+    else:
+        return base_price * (1 - PROFIT_MARGIN)
+
+class BondingCurveToken:
+    # ... (previous code)
+
+    async def buy_tokens(self, amount: int):
+        # ... (previous code)
+        current_supply = (await self.program.account["TokenManager"].fetch(self.token_manager.public_key)).total_supply
+        price = calculate_price(current_supply, amount, True)
+        price_lamports = int(price * 1e9)  # Convert SOL to lamports
+        # ... (rest of the function)
+
+    async def sell_tokens(self, amount: int):
+        # ... (previous code)
+        current_supply = (await self.program.account["TokenManager"].fetch(self.token_manager.public_key)).total_supply
+        price = calculate_price(current_supply, amount, False)
+        price_lamports = int(price * 1e9)  # Convert SOL to lamports
+        # ... (rest of the function)
+
+    async def get_token_price(self, amount: int, is_buy: bool):
+        current_supply = (await self.program.account["TokenManager"].fetch(self.token_manager.public_key)).total_supply
+        price = calculate_price(current_supply, amount, is_buy)
+        return price
+
+    async def get_token_supply(self):
+        return (await self.program.account["TokenManager"].fetch(self.token_manager.public_key)).total_supply</code></pre>
+
+  <h2>2. Selling Products with Tokens</h2>
+
+  <p>We'll modify the <code>purchase_product</code> function to include a product catalog and pricing:</p>
+
+  <pre><code>class BondingCurveToken:
+    # ... (previous code)
+
+    PRODUCT_CATALOG = {
+        "basic_subscription": 100,
+        "premium_subscription": 250,
+        "lifetime_access": 1000
+    }
+
+    async def purchase_product(self, product_name: str):
+        if product_name not in self.PRODUCT_CATALOG:
+            raise ValueError("Invalid product name")
+
+        amount = self.PRODUCT_CATALOG[product_name]
+        buyer = self.provider.wallet.public_key
+        buyer_token_account = get_associated_token_address(buyer, self.token_mint.public_key)
+
+        # Purchase product
+        await self.program.rpc["purchase_product"](
+            amount,
+            ctx=self.program.context.Context(
+                accounts={
+                    "buyer": buyer,
+                    "tokenManager": self.token_manager.public_key,
+                    "buyerTokenAccount": buyer_token_account,
+                    "tokenAccount": get_associated_token_address(self.token_manager.public_key, self.token_mint.public_key),
+                },
+                signers=[self.provider.wallet.payer],
+            )
+        )
+
+        print(f"Purchased {product_name} for {amount} tokens")
+
+async def main():
+    token = BondingCurveToken()
+    await token.initialize()
+    await token.buy_tokens(1000)
+    await token.purchase_product("basic_subscription")
+    await token.purchase_product("premium_subscription")</code></pre>
+
+  <h2>3. Investment and Profit Mechanisms</h2>
+
+  <p>Now, let's explain how investors can profit from this system:</p>
+
+  <h3>For Investors:</h3>
+  <ol>
+    <li><strong>Early Investment:</strong> Investors can buy tokens early when the price is lower due to the bonding curve.</li>
+    <li><strong>Price Appreciation:</strong> As more tokens are bought and the supply increases, the token price will rise, allowing early investors to sell at a profit.</li>
+    <li><strong>Product Demand:</strong> If the products or services offered are in high demand, it will drive more token purchases, further increasing the token price.</li>
+  </ol>
+
+  <p>Let's add a function to simulate this process:</p>
+
+  <pre><code>async def simulate_investment():
+    token = BondingCurveToken()
+    await token.initialize()
+
+    # Early investor buys tokens
+    initial_investment = 1000
+    await token.buy_tokens(initial_investment)
+    initial_price = await token.get_token_price(1, True)
+    
+    print(f"Initial investment: {initial_investment} tokens at {initial_price:.6f} SOL each")
+
+    # Simulate increased demand
+    for _ in range(10):
+        await token.buy_tokens(100)
+        await token.purchase_product("basic_subscription")
+
+    # Check new token price
+    new_price = await token.get_token_price(1, True)
+    print(f"New token price: {new_price:.6f} SOL")
+
+    # Calculate profit if investor sells
+    sell_price = await token.get_token_price(initial_investment, False)
+    profit = sell_price - (initial_investment * initial_price)
+    print(f"If sold now, profit would be: {profit:.6f} SOL")
+
+    # Calculate token supply
+    token_supply = await token.get_token_supply()
+    print(f"Current token supply: {token_supply}")
+
+asyncio.run(simulate_investment())</code></pre>
+
+  <h2>4. Profit Mechanisms for the Company</h2>
+
+  <p>The company benefits from this token system in several ways:</p>
+
+  <ol>
+    <li><strong>Initial Capital:</strong> The company receives funds from the initial token sales, which can be used for development and operations.</li>
+    <li><strong>Ongoing Revenue:</strong> The profit margin on token transactions provides a steady stream of income.</li>
+    <li><strong>Product Sales:</strong> The company receives tokens from product purchases, which can be sold or held for future appreciation.</li>
+  </ol>
+
+  <h2>5. Balancing the Ecosystem</h2>
+
+  <p>To create a sustainable token ecosystem:</p>
+
+  <ul>
+    <li>Ensure that the products or services offered provide real value to users.</li>
+    <li>Regularly introduce new products or features to maintain demand for tokens.</li>
+    <li>Consider implementing token burning mechanisms to manage supply.</li>
+    <li>Provide incentives for long-term holding, such as governance rights or exclusive access to certain features.</li>
+  </ul>
+
+  <div class="note">
+    <p><strong>Note:</strong> The success of this model depends on creating genuine utility and demand for the token beyond speculation. The products or services offered should solve real problems or provide significant value to users.</p>
+  </div>
+
+  <h2>6. Risks and Considerations</h2>
+
+  <ul>
+    <li><strong>Market Volatility:</strong> Token prices can be highly volatile, especially in the early stages.</li>
+    <li><strong>Regulatory Compliance:</strong> Ensure that your token system complies with relevant securities and financial regulations.</li>
+    <li><strong>Liquidity:</strong> In the early stages, there might be limited liquidity for investors wanting to sell large amounts of tokens.</li>
+    <li><strong>Whale Influence:</strong> Large token holders could significantly impact the price, potentially destabilizing the ecosystem.</li>
+  </ul>
+
+  <div class="warning">
+    <p><strong>Warning:</strong> This model, while potentially profitable, carries significant risks. Always consult with legal and financial experts before implementing such a system. Ensure thorough testing and auditing of smart contracts before deployment.</p>
+  </div>
+
+  <p>By implementing this bonding curve model with a utility token and profit margin, you create a system where the interests of the company, investors, and users are aligned. As the product ecosystem grows and attracts more users, the token value increases, benefiting both the company and early investors. Meanwhile, users can access valuable products and services using the token, creating a closed economy that can foster growth and innovation.</p>
+
+  <hr>
+
+  <p>For more information on tokenomics and Solana development:</p>
+  <ul>
+    <li><a href="https://websim.ai/c/docs.solana.com/developing/programming-model/overview">Solana Programming Model</a></li>
+    <li><a href="https://websim.ai/c/spl.solana.com/token">Solana Program Library: Token Program</a></li>
+    <li><a href="https://websim.ai/c/github.com/solana-labs/solana-program-library">Solana Program Library GitHub</a></li>
+  </ul>
+
+</body></html>

@@ -1,0 +1,240 @@
+<html>
+  <base href="https://example.com">
+  <head>
+    <meta charset="UTF-8">
+    <title>TokenAffiliates: A Formal Mathematical Model</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- MathJax for rendering equations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" integrity="sha512-UH1G2QqOYJrJLXWdJYLgWjhZDN5cEkPEO0Zkq5USXtclyeGAHco7rm5IZiQB/pw2uv7j0wMq5bTQttGvOvWyow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Custom Styles -->
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 20px;
+      }
+      header {
+        text-align: center;
+        padding: 50px 0;
+        background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+        color: white;
+        border-radius: 15px;
+        margin-bottom: 40px;
+      }
+      header h1 {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+      header p {
+        font-size: 1.2rem;
+      }
+      nav {
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      nav a {
+        margin: 0 15px;
+        text-decoration: none;
+        color: #6B73FF;
+        font-weight: bold;
+        position: relative;
+      }
+      nav a::after {
+        content: '';
+        display: block;
+        width: 0;
+        height: 2px;
+        background: #6B73FF;
+        transition: width 0.3s;
+        margin: auto;
+      }
+      nav a:hover::after {
+        width: 100%;
+      }
+      section {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      h2 {
+        color: #6B73FF;
+        cursor: pointer;
+      }
+      .content {
+        display: none;
+        margin-top: 10px;
+      }
+      .active .content {
+        display: block;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity: 1;}
+      }
+      .equation {
+        background: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      .svg-container {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .svg-container svg {
+        width: 80%;
+        height: auto;
+      }
+      footer {
+        text-align: center;
+        padding: 20px 0;
+        color: #777;
+      }
+      /* Toggle Indicator */
+      h2::after {
+        content: '\f078';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        float: right;
+        transition: transform 0.3s;
+      }
+      .active h2::after {
+        transform: rotate(180deg);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>TokenAffiliates: A Formal Mathematical Model</h1>
+      <p>Understanding Commission Structures and Token Dynamics in a Tokenized Economy</p>
+    </header>
+    
+    <nav>
+      <a href="#definitions">Definitions</a>
+      <a href="#commission">Commission Structure</a>
+      <a href="#payout">Payout Mechanism</a>
+      <a href="#impact">Impact on Token Dynamics</a>
+      <a href="#conclusion">Conclusion</a>
+    </nav>
+    
+    <section id="definitions" class="collapsible">
+      <h2>1. Definitions and Notation</h2>
+      <div class="content">
+        <ul>
+          <li><strong>I:</strong> Investment amount in tokens made through an affiliate's referral link.</li>
+          <li><strong>C:</strong> Commission earned by the affiliate, denominated in the invested token.</li>
+          <li><strong>α:</strong> Commission rate (fixed at 10%, or 0.10 in the current model).</li>
+          <li><strong>E:</strong> Total earnings of an affiliate.</li>
+          <li><strong>I<sub>total</sub>:</strong> Total investment generated through an affiliate's referral link.</li>
+          <li><strong>S:</strong> Current supply of tokens in the ecosystem (applicable for bonding curve scenarios).</li>
+          <li><strong>P(S):</strong> Price of the token as a function of supply, defined by the project's bonding curve equation.</li>
+          <li><strong>Affiliate Identifier (A<sub>ID</sub>):</strong> Unique identifier associated with an affiliate, embedded in their referral link.</li>
+        </ul>
+      </div>
+    </section>
+    
+    <section id="commission" class="collapsible">
+      <h2>2. Commission Structure</h2>
+      <div class="content">
+        <p>The commission earned by an affiliate for a single investment is a linear function of the investment amount:</p>
+        <div class="equation">
+          $$ C = \\alpha \\times I $$
+        </div>
+        <p>Where <strong>α = 0.10</strong> (fixed commission rate).</p>
+      </div>
+    </section>
+    
+    <section id="payout" class="collapsible">
+      <h2>3. Payout Mechanism (Formalized)</h2>
+      <div class="content">
+        <p>The payout mechanism is modeled as a sequence of transactions executed on the Solana blockchain via a smart contract. Let <strong>T<sub>i</sub></strong> represent the i-th transaction within the system.</p>
+        <ul>
+          <li><strong>T<sub>1</sub> (Investment):</strong> User invests <em>I</em> tokens through an affiliate link with identifier <em>A<sub>ID</sub></em>. The smart contract registers <em>A<sub>ID</sub></em>.</li>
+          <li><strong>T<sub>2</sub> (Commission Calculation):</strong> The smart contract calculates the commission <em>C</em> using Equation 1.</li>
+          <li><strong>T<sub>3</sub> (Payout):</strong> The smart contract transfers <em>C</em> tokens from the ICO's designated address to the affiliate's wallet associated with <em>A<sub>ID</sub></em>.</li>
+        </ul>
+      </div>
+    </section>
+    
+    <section id="impact" class="collapsible">
+      <h2>4. Impact on Token Dynamics</h2>
+      <div class="content">
+        <h3>4.1 Increased Demand</h3>
+        <p>Let <strong>D(x)</strong> represent the demand function for the token, where <em>x</em> represents factors influencing demand (e.g., marketing efforts, project fundamentals, market sentiment). The TokenAffiliates program aims to increase <em>x</em> through enhanced marketing, potentially leading to an increase in demand:</p>
+        <div class="equation">
+          $$ D(x + \\Delta x) > D(x) $$
+        </div>
+        <p>Where <em>Δx</em> represents the positive change in demand factors due to affiliate marketing.</p>
+        
+        <h3>4.2 Token Distribution</h3>
+        <p>The commission payout mechanism contributes to token decentralization. Let <strong>N<sub>A</sub></strong> be the number of active affiliates. The total tokens distributed through commissions are:</p>
+        <div class="equation">
+          $$ \\sum_{i=1}^{N_A} C_i $$
+        </div>
+        <p>Where <em>C<sub>i</sub></em> is the commission earned by the i-th affiliate. This distribution broadens token ownership beyond the initial investor base.</p>
+        
+        <h3>4.3 Bonding Curve Effects</h3>
+        <p>For projects employing bonding curves, the increase in demand shifts the supply and influences the price. Let the initial supply be <em>S</em>. After an investment <em>I</em>, the new supply becomes <em>S' = S + I</em>.</p>
+        <div class="equation">
+          $$ \\Delta P = P(S') - P(S) = P(S + I) - P(S) $$
+        </div>
+        <p>The specific form of <em>P(S)</em> depends on the chosen bonding curve equation (e.g., linear, exponential, sigmoid).</p>
+        
+        <h4>Example (Linear Bonding Curve):</h4>
+        <p>Let <em>P(S) = k \\times S</em>, where <em>k</em> is the slope of the linear curve. Then:</p>
+        <div class="equation">
+          $$ \\Delta P = k \\times (S + I) - k \\times S = k \\times I $$
+        </div>
+        <p>This demonstrates that for a linear bonding curve, the price increase is directly proportional to the investment amount.</p>
+        
+        <div class="svg-container">
+          <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+            <style>
+              .curve { fill: none; stroke: #6B73FF; stroke-width: 2; }
+              .axis { stroke: #333; stroke-width: 1; }
+              .point { fill: #FF5733; transition: cx 0.3s, cy 0.3s; }
+              .label { font: 14px sans-serif; fill: #333; }
+            </style>
+            <line x1="50" y1="350" x2="550" y2="350" class="axis"></line>
+            <line x1="50" y1="350" x2="50" y2="50" class="axis"></line>
+            <path class="curve" d="M50,350 Q150,250 250,150 T450,50"></path>
+            <circle cx="250" cy="150" r="8" class="point"></circle>
+            <text x="250" y="140" class="label">P(S) vs S</text>
+          </svg>
+          <p>Linear Bonding Curve Example</p>
+        </div>
+      </div>
+    </section>
+    
+    <section id="conclusion" class="collapsible">
+      <h2>7. Conclusion</h2>
+      <div class="content">
+        <p>This formal mathematical model provides a robust framework for understanding and analyzing the TokenAffiliates program. By quantifying the relationships between key variables, the model enables a deeper understanding of the program's impact on token dynamics and affiliate earnings. Future research will focus on expanding the model to incorporate more complex scenarios and explore advanced features, ultimately contributing to the development of a more sophisticated and efficient Tokenized Economy.</p>
+      </div>
+    </section>
+    
+    <footer>
+      <p>&copy; 2023 TokenAffiliates Research Team. <a href="https://example.com">Learn More</a></p>
+    </footer>
+    
+    <!-- JavaScript for Interactive Sections -->
+    <script>
+      document.querySelectorAll('.collapsible').forEach(section => {
+        const header = section.querySelector('h2');
+        header.addEventListener('click', () => {
+          section.classList.toggle('active');
+        });
+      });
+    </script>
+  </body>
+</html>

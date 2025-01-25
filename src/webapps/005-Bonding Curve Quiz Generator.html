@@ -1,0 +1,243 @@
+<html><head><base href="https://websim.ai" /><title>Bonding Curve Quiz Generator</title><style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .container {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+  }
+  h1, h2 {
+    color: #60a5fa;
+    text-align: center;
+  }
+  .quiz-container {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .question {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #a0aec0;
+  }
+  input[type="radio"] {
+    margin-right: 10px;
+  }
+  button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-top: 20px;
+  }
+  button:hover {
+    background-color: #2563eb;
+  }
+  .chart-container {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+  }
+  .result {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Bonding Curve Quiz Generator</h1>
+    <div class="quiz-container">
+      <div class="question">
+        <label>1. What's your token's primary purpose?</label>
+        <div>
+          <input type="radio" name="purpose" value="utility" id="utility">
+          <label for="utility">Utility token</label>
+        </div>
+        <div>
+          <input type="radio" name="purpose" value="governance" id="governance">
+          <label for="governance">Governance token</label>
+        </div>
+        <div>
+          <input type="radio" name="purpose" value="staking" id="staking">
+          <label for="staking">Staking token</label>
+        </div>
+      </div>
+      <div class="question">
+        <label>2. How would you describe your project's growth strategy?</label>
+        <div>
+          <input type="radio" name="growth" value="slow" id="slow">
+          <label for="slow">Slow and steady</label>
+        </div>
+        <div>
+          <input type="radio" name="growth" value="moderate" id="moderate">
+          <label for="moderate">Moderate growth</label>
+        </div>
+        <div>
+          <input type="radio" name="growth" value="fast" id="fast">
+          <label for="fast">Rapid expansion</label>
+        </div>
+      </div>
+      <div class="question">
+        <label>3. What's your preferred initial token distribution?</label>
+        <div>
+          <input type="radio" name="distribution" value="limited" id="limited">
+          <label for="limited">Limited initial supply</label>
+        </div>
+        <div>
+          <input type="radio" name="distribution" value="moderate" id="moderate-dist">
+          <label for="moderate-dist">Moderate initial supply</label>
+        </div>
+        <div>
+          <input type="radio" name="distribution" value="wide" id="wide">
+          <label for="wide">Wide initial distribution</label>
+        </div>
+      </div>
+      <div class="question">
+        <label>4. How would you like to incentivize early adopters?</label>
+        <div>
+          <input type="radio" name="incentive" value="high" id="high">
+          <label for="high">High early rewards</label>
+        </div>
+        <div>
+          <input type="radio" name="incentive" value="balanced" id="balanced">
+          <label for="balanced">Balanced rewards over time</label>
+        </div>
+        <div>
+          <input type="radio" name="incentive" value="longterm" id="longterm">
+          <label for="longterm">Long-term holding incentives</label>
+        </div>
+      </div>
+      <button id="generateCurve">Generate My Bonding Curve</button>
+    </div>
+    <div id="chart" class="chart-container"></div>
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+  <script>
+    function generateBondingCurve() {
+      const purpose = document.querySelector('input[name="purpose"]:checked').value;
+      const growth = document.querySelector('input[name="growth"]:checked').value;
+      const distribution = document.querySelector('input[name="distribution"]:checked').value;
+      const incentive = document.querySelector('input[name="incentive"]:checked').value;
+
+      let curveType, initialPrice, maxSupply, slope;
+
+      // Determine curve parameters based on quiz answers
+      if (purpose === 'utility') {
+        curveType = 'linear';
+        initialPrice = 0.1;
+      } else if (purpose === 'governance') {
+        curveType = 'exponential';
+        initialPrice = 1;
+      } else {
+        curveType = 'logarithmic';
+        initialPrice = 0.5;
+      }
+
+      if (growth === 'slow') {
+        slope = 0.5;
+        maxSupply = 1000000;
+      } else if (growth === 'moderate') {
+        slope = 1;
+        maxSupply = 10000000;
+      } else {
+        slope = 2;
+        maxSupply = 100000000;
+      }
+
+      if (distribution === 'limited') {
+        initialPrice *= 2;
+      } else if (distribution === 'wide') {
+        initialPrice /= 2;
+      }
+
+      if (incentive === 'high') {
+        slope *= 1.5;
+      } else if (incentive === 'longterm') {
+        slope /= 1.5;
+      }
+
+      // Generate curve data
+      const supplyValues = [];
+      const priceValues = [];
+
+      for (let i = 0; i <= 100; i++) {
+        const supply = (maxSupply * i) / 100;
+        supplyValues.push(supply);
+        let price;
+        switch (curveType) {
+          case 'linear':
+            price = initialPrice + (supply / maxSupply) * slope;
+            break;
+          case 'exponential':
+            price = initialPrice * Math.exp(supply * slope / maxSupply);
+            break;
+          case 'logarithmic':
+            price = initialPrice + slope * Math.log(1 + supply / maxSupply);
+            break;
+        }
+        priceValues.push(price);
+      }
+
+      // Plot the curve
+      const data = [{
+        x: supplyValues,
+        y: priceValues,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Bonding Curve',
+        line: { color: '#60a5fa' }
+      }];
+
+      const layout = {
+        title: 'Your Custom Bonding Curve',
+        xaxis: { title: 'Token Supply' },
+        yaxis: { title: 'Token Price' },
+        plot_bgcolor: '#2d3748',
+        paper_bgcolor: '#1e293b',
+        font: { color: '#e2e8f0' }
+      };
+
+      Plotly.newPlot('chart', data, layout);
+
+      // Display result summary
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `
+        <h2>Your Bonding Curve Summary</h2>
+        <p><strong>Curve Type:</strong> ${curveType.charAt(0).toUpperCase() + curveType.slice(1)}</p>
+        <p><strong>Initial Price:</strong> ${initialPrice.toFixed(4)}</p>
+        <p><strong>Max Supply:</strong> ${maxSupply.toLocaleString()}</p>
+        <p><strong>Growth Rate:</strong> ${slope.toFixed(2)}</p>
+        <p>This bonding curve is designed for a ${purpose} token with a ${growth} growth strategy, 
+        ${distribution} initial distribution, and ${incentive} adopter incentives. It should provide a good 
+        balance for your project's needs and goals.</p>
+      `;
+    }
+
+    document.getElementById('generateCurve').addEventListener('click', generateBondingCurve);
+  </script>
+</body></html>

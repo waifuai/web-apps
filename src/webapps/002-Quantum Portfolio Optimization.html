@@ -1,0 +1,233 @@
+<html><head><base href="https://websim.ai" /><title>Quantum Portfolio Optimization</title><style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .container {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 100%;
+  }
+  h1, h2 {
+    color: #60a5fa;
+    text-align: center;
+  }
+  .portfolio-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  .token-input {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 15px;
+    width: calc(33% - 10px);
+    margin-bottom: 15px;
+  }
+  .quantum-options {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .input-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #a0aec0;
+  }
+  input[type="number"], select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    background-color: #2d3748;
+    color: #e2e8f0;
+  }
+  button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  button:hover {
+    background-color: #2563eb;
+  }
+  .results {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  .chart-container {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+  }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Quantum Portfolio Optimization</h1>
+    <div class="portfolio-container">
+      <div class="token-input">
+        <label for="solAmount">SOL:</label>
+        <input type="number" id="solAmount" value="10" min="0" step="0.1">
+      </div>
+      <div class="token-input">
+        <label for="rayAmount">RAY:</label>
+        <input type="number" id="rayAmount" value="100" min="0" step="1">
+      </div>
+      <div class="token-input">
+        <label for="srmAmount">SRM:</label>
+        <input type="number" id="srmAmount" value="200" min="0" step="1">
+      </div>
+      <div class="token-input">
+        <label for="fidaAmount">FIDA:</label>
+        <input type="number" id="fidaAmount" value="50" min="0" step="1">
+      </div>
+      <div class="token-input">
+        <label for="msolAmount">MSOL:</label>
+        <input type="number" id="msolAmount" value="5" min="0" step="0.1">
+      </div>
+      <div class="token-input">
+        <label for="atlasAmount">ATLAS:</label>
+        <input type="number" id="atlasAmount" value="1000" min="0" step="1">
+      </div>
+    </div>
+    <div class="quantum-options">
+      <h2>Quantum Optimization Settings</h2>
+      <div class="input-group">
+        <label for="riskTolerance">Risk Tolerance (0-1):</label>
+        <input type="number" id="riskTolerance" value="0.5" min="0" max="1" step="0.1">
+      </div>
+      <div class="input-group">
+        <label for="quantumComputer">Quantum Computer:</label>
+        <select id="quantumComputer">
+          <option value="ibmq">IBM Quantum</option>
+          <option value="dwave">D-Wave Systems</option>
+          <option value="ionq">IonQ</option>
+          <option value="rigetti">Rigetti Computing</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="optimizationMethod">Optimization Method:</label>
+        <select id="optimizationMethod">
+          <option value="qaoa">Quantum Approximate Optimization Algorithm (QAOA)</option>
+          <option value="vqe">Variational Quantum Eigensolver (VQE)</option>
+          <option value="qaa">Quantum Adiabatic Algorithm</option>
+        </select>
+      </div>
+      <button id="runOptimization">Run Quantum Optimization</button>
+    </div>
+    <div class="results" id="results" style="display:none;">
+      <h2>Optimization Results</h2>
+      <div id="optimizedAllocation"></div>
+      <div id="chart" class="chart-container"></div>
+    </div>
+  </div>
+  <script>
+    const tokenPrices = {
+      SOL: 45.20,
+      RAY: 0.22,
+      SRM: 0.15,
+      FIDA: 0.26,
+      MSOL: 46.80,
+      ATLAS: 0.0021
+    };
+
+    function runQuantumOptimization() {
+      const portfolio = {
+        SOL: parseFloat(document.getElementById('solAmount').value),
+        RAY: parseFloat(document.getElementById('rayAmount').value),
+        SRM: parseFloat(document.getElementById('srmAmount').value),
+        FIDA: parseFloat(document.getElementById('fidaAmount').value),
+        MSOL: parseFloat(document.getElementById('msolAmount').value),
+        ATLAS: parseFloat(document.getElementById('atlasAmount').value)
+      };
+
+      const riskTolerance = parseFloat(document.getElementById('riskTolerance').value);
+      const quantumComputer = document.getElementById('quantumComputer').value;
+      const optimizationMethod = document.getElementById('optimizationMethod').value;
+
+      // Simulate quantum optimization (replace with actual quantum computation in a real scenario)
+      const optimizedAllocation = simulateQuantumOptimization(portfolio, riskTolerance, quantumComputer, optimizationMethod);
+
+      displayResults(optimizedAllocation);
+    }
+
+    function simulateQuantumOptimization(portfolio, riskTolerance, quantumComputer, optimizationMethod) {
+      // This is a simplified simulation. In reality, this would involve complex quantum algorithms.
+      const totalValue = Object.keys(portfolio).reduce((sum, token) => sum + portfolio[token] * tokenPrices[token], 0);
+      
+      // Simulate optimization based on risk tolerance
+      const optimizedAllocation = {};
+      let remainingValue = totalValue;
+      
+      Object.keys(portfolio).forEach((token, index) => {
+        if (index === Object.keys(portfolio).length - 1) {
+          optimizedAllocation[token] = remainingValue / tokenPrices[token];
+        } else {
+          const allocation = totalValue * (1 - riskTolerance) * (Math.random() * 0.5 + 0.5) / tokenPrices[token];
+          optimizedAllocation[token] = allocation;
+          remainingValue -= allocation * tokenPrices[token];
+        }
+      });
+
+      return optimizedAllocation;
+    }
+
+    function displayResults(optimizedAllocation) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.style.display = 'block';
+
+      const allocationDiv = document.getElementById('optimizedAllocation');
+      allocationDiv.innerHTML = '<h3>Optimized Token Allocation:</h3>';
+      
+      Object.keys(optimizedAllocation).forEach(token => {
+        allocationDiv.innerHTML += `<p>${token}: ${optimizedAllocation[token].toFixed(2)}</p>`;
+      });
+
+      // Create a pie chart of the optimized allocation
+      const labels = Object.keys(optimizedAllocation);
+      const values = Object.values(optimizedAllocation).map(v => v * tokenPrices[v.token]);
+
+      const data = [{
+        values: values,
+        labels: labels,
+        type: 'pie'
+      }];
+
+      const layout = {
+        title: 'Optimized Portfolio Allocation',
+        height: 400,
+        width: 500,
+        paper_bgcolor: '#2d3748',
+        plot_bgcolor: '#2d3748',
+        font: { color: '#e2e8f0' }
+      };
+
+      Plotly.newPlot('chart', data, layout);
+    }
+
+    document.getElementById('runOptimization').addEventListener('click', runQuantumOptimization);
+  </script>
+</body></html>

@@ -1,0 +1,283 @@
+<html><head><base href="https://solana-ico-tutorial.websim.ai/"><title>Advanced Solana ICO Tutorial: Bonding Curve with Commission (Python Version)</title><style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+    h1, h2, h3 {
+        color: #14F195;
+    }
+    .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    code {
+        background-color: #1E1E1E;
+        color: #D4D4D4;
+        border: 1px solid #333;
+        border-radius: 4px;
+        display: block;
+        padding: 15px;
+        white-space: pre-wrap;
+        font-family: 'Courier New', Courier, monospace;
+        margin: 15px 0;
+    }
+    .highlight {
+        background-color: #14F195;
+        color: #000;
+        padding: 2px 4px;
+        border-radius: 2px;
+    }
+    .note {
+        background-color: #E7F2FA;
+        border-left: 6px solid #00C2FF;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+    }
+    .warning {
+        background-color: #FFF3CD;
+        border-left: 6px solid #FFD700;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 20px auto;
+    }
+</style></head><body>
+    <div class="container">
+        <h1>Advanced Solana ICO Tutorial: Bonding Curve with Commission (Python Version)</h1>
+        
+        <p>Welcome to this comprehensive guide on implementing a cutting-edge Initial Coin Offering (ICO) system on Solana, now presented in Python. This tutorial will walk you through creating an ICO with three key features:</p>
+        
+        <ol>
+            <li>A bonding curve to prevent liquidity draining bots</li>
+            <li>A 10% commission on token sales for marketing purposes</li>
+            <li>Implementation on Solana for lower gas fees compared to Ethereum</li>
+        </ol>
+
+        <h2>1. Understanding the Bonding Curve Mechanism</h2>
+        
+        <p>A bonding curve is a mathematical function that defines the relationship between a token's price and its supply. In our ICO, as more tokens are purchased, the price increases according to the curve. This mechanism serves several purposes:</p>
+
+        <ul>
+            <li>Discourages large-scale buying and immediate selling</li>
+            <li>Provides price stability</li>
+            <li>Creates a fair distribution model</li>
+        </ul>
+
+        <div class="note">
+            <strong>Note:</strong> We'll use a simple linear bonding curve for this example, but you can implement more complex curves (e.g., exponential, logarithmic) for different tokenomics models.
+        </div>
+
+        <img src="bonding-curve-diagram.png" alt="Diagram of a linear bonding curve" width="500" height="300">
+
+        <h2>2. Implementing the Solana ICO Contract in Python</h2>
+
+        <p>While Solana smart contracts are typically written in Rust, we'll present a Python-like pseudocode to illustrate the logic. This can be useful for prototyping or for developers more comfortable with Python. Keep in mind that for actual Solana deployment, you'd need to translate this to Rust.</p>
+
+        <code>
+from solana.publickey import PublicKey
+from solana.transaction import AccountMeta, TransactionInstruction
+from solana.system_program import SYS_PROGRAM_ID
+from spl.token.constants import TOKEN_PROGRAM_ID
+
+class ICOState:
+    def __init__(self):
+        self.authority = None
+        self.token_mint = None
+        self.treasury = None
+        self.commission_account = None
+        self.tokens_sold = 0
+        self.current_price = 0
+        self.price_increment = 0
+
+class SolanaAdvancedICO:
+    def __init__(self, program_id: PublicKey):
+        self.program_id = program_id
+
+    def initialize(self, 
+                   ico_state: PublicKey,
+                   authority: PublicKey,
+                   token_mint: PublicKey,
+                   treasury: PublicKey,
+                   commission_account: PublicKey,
+                   initial_price: int,
+                   price_increment: int):
+        
+        instruction_data = b"\x00" + initial_price.to_bytes(8, 'little') + price_increment.to_bytes(8, 'little')
+        
+        accounts = [
+            AccountMeta(ico_state, False, True),
+            AccountMeta(authority, True, False),
+            AccountMeta(token_mint, False, False),
+            AccountMeta(treasury, False, True),
+            AccountMeta(commission_account, False, True),
+            AccountMeta(SYS_PROGRAM_ID, False, False),
+            AccountMeta(TOKEN_PROGRAM_ID, False, False),
+        ]
+        
+        return TransactionInstruction(
+            accounts=accounts,
+            program_id=self.program_id,
+            data=instruction_data
+        )
+
+    def buy_tokens(self,
+                   ico_state: PublicKey,
+                   buyer: PublicKey,
+                   buyer_token_account: PublicKey,
+                   token_mint: PublicKey,
+                   treasury: PublicKey,
+                   commission_account: PublicKey,
+                   amount: int):
+        
+        instruction_data = b"\x01" + amount.to_bytes(8, 'little')
+        
+        accounts = [
+            AccountMeta(ico_state, False, True),
+            AccountMeta(buyer, True, False),
+            AccountMeta(buyer_token_account, False, True),
+            AccountMeta(token_mint, False, True),
+            AccountMeta(treasury, False, True),
+            AccountMeta(commission_account, False, True),
+            AccountMeta(TOKEN_PROGRAM_ID, False, False),
+            AccountMeta(SYS_PROGRAM_ID, False, False),
+        ]
+        
+        return TransactionInstruction(
+            accounts=accounts,
+            program_id=self.program_id,
+            data=instruction_data
+        )
+
+def calculate_cost(current_supply: int, amount: int, current_price: int, price_increment: int) -> int:
+    total_cost = 0
+    for i in range(amount):
+        total_cost += current_price + (current_supply + i) * price_increment
+    return total_cost
+
+# This function would be part of the on-chain program logic
+def process_buy_tokens(ico_state: ICOState, amount: int, buyer: PublicKey, treasury: PublicKey, commission_account: PublicKey):
+    total_cost = calculate_cost(ico_state.tokens_sold, amount, ico_state.current_price, ico_state.price_increment)
+    
+    # Transfer SOL from buyer to treasury
+    # (This is pseudocode, actual implementation would use Solana's system program)
+    transfer_sol(buyer, treasury, total_cost)
+    
+    # Calculate and transfer commission
+    commission = total_cost // 10  # 10% commission
+    transfer_sol(treasury, commission_account, commission)
+    
+    # Mint tokens to buyer
+    # (This is pseudocode, actual implementation would use SPL Token program)
+    mint_tokens(ico_state.token_mint, buyer, amount)
+    
+    # Update ICO state
+    ico_state.tokens_sold += amount
+    ico_state.current_price += ico_state.price_increment * amount
+
+    return ico_state
+        </code>
+
+        <h2>3. Key Features Explained</h2>
+
+        <h3>Bonding Curve Implementation</h3>
+        <p>The <span class="highlight">calculate_cost</span> function implements our linear bonding curve. The price increases by <code>price_increment</code> for each token sold, creating a gradual price increase as more tokens are purchased.</p>
+
+        <h3>Commission Mechanism</h3>
+        <p>In the <span class="highlight">process_buy_tokens</span> function, we calculate a 10% commission from the total purchase amount and transfer it to a designated commission account for marketing purposes.</p>
+
+        <h3>Solana Integration</h3>
+        <p>While this is a Python-like representation, it demonstrates how we would structure our program to interact with Solana. The <code>TransactionInstruction</code> objects represent the instructions that would be sent to the Solana blockchain.</p>
+
+        <h2>4. Deploying and Interacting with the Contract</h2>
+
+        <p>To deploy this contract on Solana, you would need to:</p>
+        <ol>
+            <li>Translate this Python-like code to Rust using the Solana and Anchor frameworks</li>
+            <li>Set up your Solana development environment (install Solana CLI, Anchor, etc.)</li>
+            <li>Build the project using Anchor: <code>anchor build</code></li>
+            <li>Deploy to your chosen Solana cluster:
+                <code>anchor deploy --provider.cluster devnet</code> (for testing)
+            </li>
+        </ol>
+
+        <p>Interaction with the contract would typically be done using JavaScript with the Solana web3.js library, or using the Solana CLI for testing purposes.</p>
+
+        <div class="warning">
+            <strong>Important:</strong> This Python-like code is for illustration purposes only. Actual Solana programs must be written in Rust. Always thoroughly test your contract on devnet before deploying to mainnet. Consider professional auditing for production-ready contracts.
+        </div>
+
+        <h2>5. Front-end Integration</h2>
+
+        <p>The front-end integration would remain largely the same as in the Rust version, using web3.js and Anchor client libraries. Here's a basic React component to interact with your ICO:</p>
+
+        <code>
+import React, { useState } from 'react';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { Program, Provider, web3 } from '@project-serum/anchor';
+import idl from './idl.json';
+
+const ICOInterface = () => {
+    const [amount, setAmount] = useState(0);
+
+    const buyTokens = async () => {
+        const connection = new Connection("https://api.devnet.solana.com");
+        const provider = new Provider(connection, window.solana, 'processed');
+        const program = new Program(idl, NEW_PROGRAM_ID, provider);
+
+        try {
+            await program.rpc.buyTokens(new BN(amount), {
+                accounts: {
+                    icoState: ICO_STATE_PUBKEY,
+                    buyer: provider.wallet.publicKey,
+                    buyerTokenAccount: BUYER_TOKEN_ACCOUNT,
+                    tokenMint: TOKEN_MINT_PUBKEY,
+                    treasury: TREASURY_PUBKEY,
+                    commissionAccount: COMMISSION_ACCOUNT_PUBKEY,
+                    tokenProgram: TOKEN_PROGRAM_ID,
+                    systemProgram: web3.SystemProgram.programId,
+                },
+            });
+            console.log("Transaction successful");
+        } catch (error) {
+            console.error("Transaction failed:", error);
+        }
+    };
+
+    return (
+        <div>
+            <input 
+                type="number" 
+                value={amount} 
+                onChange={(e) => setAmount(e.target.value)} 
+                placeholder="Amount of tokens"
+            />
+            <button onClick={buyTokens}>Buy Tokens</button>
+        </div>
+    );
+};
+
+export default ICOInterface;
+        </code>
+
+        <h2>Conclusion</h2>
+
+        <p>This Python-like representation of an advanced ICO system on Solana demonstrates the core concepts of implementing a bonding curve and commission system. While the actual implementation would need to be in Rust, this pseudocode can serve as a valuable planning and prototyping tool, especially for developers more familiar with Python.</p>
+
+        <div class="note">
+            <strong>Remember:</strong> The final implementation must be in Rust for deployment on Solana. This Python version is for conceptual understanding only.
+        </div>
+
+        <p>As you move forward with your Solana development, always prioritize security, thorough testing, and adherence to best practices in blockchain development.</p>
+    </div>
+</body></html>

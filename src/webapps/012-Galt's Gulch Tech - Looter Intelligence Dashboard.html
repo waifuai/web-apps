@@ -1,0 +1,289 @@
+<html><head><base href="https://objectivist-techmobilization.net/looter-hq">
+<title>Galt's Gulch Tech - Looter Intelligence Dashboard</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    background-color: #0a0a0a;
+    color: #d4af37;
+    height: 100%;
+    overflow: hidden;
+  }
+  #dashboard {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    grid-template-rows: 60px 1fr 100px;
+    height: 100vh;
+  }
+  header {
+    grid-column: 1 / 4;
+    background-color: #1a1a1a;
+    border-bottom: 2px solid #d4af37;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+  }
+  nav {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    background-color: #1a1a1a;
+    border-right: 2px solid #d4af37;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  #map-container {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    overflow: hidden;
+    padding: 40px;
+  }
+  #map {
+    width: 100%;
+    height: 100%;
+    background: #1a1a1a;
+    position: relative;
+    border: 2px solid #d4af37;
+  }
+  .axis {
+    position: absolute;
+    background-color: #d4af37;
+  }
+  .axis-x {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }
+  .axis-y {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+  }
+  .axis-label {
+    position: absolute;
+    color: #d4af37;
+    font-size: 12px;
+  }
+  aside {
+    grid-column: 3;
+    grid-row: 2 / 4;
+    background-color: #1a1a1a;
+    border-left: 2px solid #d4af37;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  footer {
+    grid-column: 2;
+    grid-row: 3;
+    background-color: #1a1a1a;
+    border-top: 2px solid #d4af37;
+    padding: 10px 20px;
+  }
+  h1, h2, h3 {
+    margin: 0 0 15px 0;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  a {
+    color: #d4af37;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .looter-node {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .looter-label {
+    position: absolute;
+    color: #d4af37;
+    font-size: 12px;
+    pointer-events: none;
+  }
+  #analysis-tool input, #analysis-tool button {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #2a2a2a;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+  }
+  #analysis-tool button:hover {
+    background-color: #d4af37;
+    color: #0a0a0a;
+  }
+  .blinking {
+    animation: blink 1s linear infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="dashboard">
+  <header>
+    <h1>Looter Intelligence Dashboard</h1>
+    <div id="status" class="blinking">SCANNING ACTIVE</div>
+  </header>
+  <nav>
+    <h2>Intelligence Categories</h2>
+    <ul>
+      <li><a href="#" onclick="filterLooters('government')">Government Entities</a></li>
+      <li><a href="#" onclick="filterLooters('media')">Media Manipulators</a></li>
+      <li><a href="#" onclick="filterLooters('corporations')">Crony Corporations</a></li>
+      <li><a href="#" onclick="filterLooters('ngos')">Collectivist NGOs</a></li>
+    </ul>
+  </nav>
+  <div id="map-container">
+    <div id="map">
+  <div class="axis axis-x"></div>
+  <div class="axis axis-y"></div>
+</div>
+  </div>
+  <aside>
+    <h2>Live Looter Activity</h2>
+    <div id="activity-feed"></div>
+    <div id="analysis-tool">
+  <h3>Looter Analysis Tool</h3>
+  <select id="looter-input">
+    <option value="">Select looter activity</option>
+    <option value="regulate">Propose new regulation</option>
+    <option value="tax">Increase tax rate</option>
+    <option value="mislead">Publish misleading article</option>
+    <option value="censor">Censor opposing viewpoint</option>
+    <option value="lobby">Lobby for subsidy</option>
+    <option value="subsidy">Seek regulatory capture</option>
+    <option value="collective">Promote wealth redistribution</option>
+    <option value="redistribute">Undermine property rights</option>
+  </select>
+  <button onclick="analyzeLooterActivity()">Analyze</button>
+  <div id="analysis-result"></div>
+</div>
+  </aside>
+  <footer>
+    <p>"The question isn't who is going to let me; it's who is going to stop me." - Ayn Rand</p>
+  </footer>
+</div>
+
+<script>
+const looters = [
+  { id: 1, type: 'government', x: 30, y: 60, label: 'State Dept' },
+  { id: 2, type: 'media', x: 70, y: 80, label: 'MSM Corp' },
+  { id: 3, type: 'corporations', x: 50, y: 40, label: 'Subsidy Inc' },
+  { id: 4, type: 'ngos', x: 80, y: 20, label: 'Altruists United' }
+];
+
+function initializeMap() {
+  const map = document.getElementById('map');
+  
+  // Add axis labels
+  const xLabels = ['Low', 'Economic Impact', 'High'];
+  const yLabels = ['Low', 'Ideological Influence', 'High'];
+  
+  xLabels.forEach((label, index) => {
+    const xLabel = document.createElement('div');
+    xLabel.className = 'axis-label';
+    xLabel.textContent = label;
+    xLabel.style.bottom = '-25px';
+    xLabel.style.left = `${index * 50}%`;
+    map.appendChild(xLabel);
+  });
+  
+  yLabels.forEach((label, index) => {
+    const yLabel = document.createElement('div');
+    yLabel.className = 'axis-label';
+    yLabel.textContent = label;
+    yLabel.style.left = '-40px';
+    yLabel.style.top = `${(2-index) * 50}%`;
+    yLabel.style.transform = 'rotate(-90deg)';
+    map.appendChild(yLabel);
+  });
+
+  looters.forEach(looter => {
+    const node = document.createElement('div');
+    node.className = 'looter-node';
+    node.style.left = `${looter.x}%`;
+    node.style.top = `${100 - looter.y}%`;
+    node.onclick = () => showLooterInfo(looter);
+    map.appendChild(node);
+
+    const label = document.createElement('div');
+    label.className = 'looter-label';
+    label.textContent = looter.label;
+    label.style.left = `${looter.x + 1}%`;
+    label.style.top = `${100 - looter.y - 2}%`;
+    map.appendChild(label);
+  });
+}
+
+function showLooterInfo(looter) {
+  const activityFeed = document.getElementById('activity-feed');
+  activityFeed.innerHTML = `
+    <h3>${looter.label}</h3>
+    <p>Type: ${looter.type}</p>
+    <p>Economic Impact: ${looter.x}%</p>
+    <p>Ideological Influence: ${looter.y}%</p>
+    <p>Recent Activity: ${generateRandomActivity(looter.type)}</p>
+  `;
+}
+
+function generateRandomActivity(type) {
+  const activities = {
+    government: ['Proposed new regulation', 'Increased tax rate', 'Expanded bureaucracy'],
+    media: ['Published misleading article', 'Censored opposing viewpoint', 'Launched propaganda campaign'],
+    corporations: ['Lobbied for subsidy', 'Sought regulatory capture', 'Stifled competition'],
+    ngos: ['Promoted wealth redistribution', 'Advocated for collectivism', 'Undermined property rights']
+  };
+  return activities[type][Math.floor(Math.random() * activities[type].length)];
+}
+
+function filterLooters(type) {
+  document.querySelectorAll('.looter-node, .looter-label').forEach(el => {
+    el.style.display = 'none';
+  });
+  looters.filter(looter => looter.type === type).forEach(looter => {
+    document.querySelector(`.looter-node:nth-child(${looter.id + 8})`).style.display = 'block';
+    document.querySelector(`.looter-label:nth-child(${looter.id + 12})`).style.display = 'block';
+  });
+}
+
+function analyzeLooterActivity() {
+  const input = document.getElementById('looter-input').value.toLowerCase();
+  const result = document.getElementById('analysis-result');
+  if (input.includes('regulate') || input.includes('tax')) {
+    result.innerHTML = 'ALERT: High probability of government looter activity detected.';
+  } else if (input.includes('mislead') || input.includes('censor')) {
+    result.innerHTML = 'WARNING: Potential media manipulation identified.';
+  } else if (input.includes('lobby') || input.includes('subsidy')) {
+    result.innerHTML = 'CAUTION: Suspected crony capitalist behavior observed.';
+  } else if (input.includes('collective') || input.includes('redistribute')) {
+    result.innerHTML = 'NOTICE: Collectivist NGO tactics recognized.';
+  } else {
+    result.innerHTML = 'Analysis inconclusive. Continue monitoring.';
+  }
+}
+
+initializeMap();
+
+// Simulate real-time updates
+setInterval(() => {
+  const randomLooter = looters[Math.floor(Math.random() * looters.length)];
+  showLooterInfo(randomLooter);
+}, 5000);
+</script>
+</body></html>

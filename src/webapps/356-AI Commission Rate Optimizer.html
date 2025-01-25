@@ -1,0 +1,288 @@
+<html><head><base href="." /><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Commission Rate Optimizer</title>
+
+<style>
+:root {
+    --primary: #2c3e50;
+    --secondary: #3498db;
+    --accent: #e74c3c;
+    --background: #ecf0f1;
+    --text: #2c3e50;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.range-value {
+    text-align: center;
+    font-weight: bold;
+    color: var(--secondary);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 0.5rem;
+    cursor: help;
+}
+
+.tooltip-icon {
+    color: var(--secondary);
+    font-size: 1.2rem;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.graph-container {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.submit-btn {
+    background: var(--secondary);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    background: #2980b9;
+}
+
+#volatilityGraph {
+    width: 100%;
+    height: 200px;
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-header">
+        <h1>AI Commission Rate Optimizer</h1>
+        <p>Configure your simulation parameters below</p>
+    </div>
+
+    <form id="simulationForm">
+        <div class="form-group">
+            <label for="tokenName">Token Name 
+                <span class="tooltip">ⓘ
+                    <span class="tooltip-text">Enter the name or symbol of the token you want to simulate</span>
+                </span>
+            </label>
+            <input type="text" id="tokenName" name="tokenName" required placeholder="e.g., BTC">
+        </div>
+
+        <div class="form-group">
+            <label for="commissionRate">Initial Commission Rate (%) 
+                <span class="tooltip">ⓘ
+                    <span class="tooltip-text">Set the starting commission rate for your simulation</span>
+                </span>
+            </label>
+            <input type="range" id="commissionRate" name="commissionRate" min="0" max="10" step="0.1" value="2.5">
+            <div class="range-value"><span id="commissionValue">2.5</span>%</div>
+        </div>
+
+        <div class="form-group">
+            <label for="volatility">Market Volatility 
+                <span class="tooltip">ⓘ
+                    <span class="tooltip-text">Higher volatility means more price fluctuations</span>
+                </span>
+            </label>
+            <select id="volatility" name="volatility">
+                <option value="low">Low (0-30% annual)</option>
+                <option value="medium" selected>Medium (30-60% annual)</option>
+                <option value="high">High (60%+ annual)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="algorithm">Algorithm Choice 
+                <span class="tooltip">ⓘ
+                    <span class="tooltip-text">Select the AI algorithm that best fits your optimization goals</span>
+                </span>
+            </label>
+            <select id="algorithm" name="algorithm">
+                <option value="reinforcement">Reinforcement Learning</option>
+                <option value="genetic">Genetic Algorithm</option>
+                <option value="neural">Neural Network</option>
+                <option value="bayesian">Bayesian Optimization</option>
+            </select>
+        </div>
+
+        <div class="graph-container">
+            <h3>Volatility Impact Visualization</h3>
+            <canvas id="volatilityGraph"></canvas>
+        </div>
+
+        <button type="submit" class="submit-btn">Start Simulation</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Commission Rate Slider
+    const commissionSlider = document.getElementById('commissionRate');
+    const commissionValue = document.getElementById('commissionValue');
+    
+    commissionSlider.addEventListener('input', function() {
+        commissionValue.textContent = this.value;
+    });
+
+    // Volatility Graph
+    const ctx = document.getElementById('volatilityGraph').getContext('2d');
+    
+    const generateVolatilityData = (volatility) => {
+        const data = [];
+        let value = 100;
+        for(let i = 0; i < 100; i++) {
+            const random = Math.random() - 0.5;
+            const change = random * volatility;
+            value = value * (1 + change/100);
+            data.push(value);
+        }
+        return data;
+    };
+
+    const volatilityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 100}, (_, i) => i + 1),
+            datasets: [{
+                label: 'Low Volatility',
+                data: generateVolatilityData(1),
+                borderColor: 'rgba(46, 204, 113, 0.8)',
+                borderWidth: 1,
+                fill: false
+            },
+            {
+                label: 'Medium Volatility',
+                data: generateVolatilityData(2),
+                borderColor: 'rgba(52, 152, 219, 0.8)',
+                borderWidth: 1,
+                fill: false
+            },
+            {
+                label: 'High Volatility',
+                data: generateVolatilityData(3),
+                borderColor: 'rgba(231, 76, 60, 0.8)',
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Form Submission
+    document.getElementById('simulationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        console.log('Simulation parameters:', data);
+        // Here you would typically send the data to your backend
+        alert('Simulation configuration submitted successfully!');
+    });
+
+    // Update graph on volatility change
+    document.getElementById('volatility').addEventListener('change', function() {
+        const multiplier = this.value === 'low' ? 1 : this.value === 'medium' ? 2 : 3;
+        volatilityChart.data.datasets.forEach((dataset, index) => {
+            dataset.data = generateVolatilityData(multiplier);
+        });
+        volatilityChart.update();
+    });
+});
+</script>
+
+</body></html>

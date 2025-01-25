@@ -1,0 +1,130 @@
+<html><head><base href="https://tokenomics.bancor.ai/"><title>Bancor Bonding Curve Explorer</title><script src="https://cdn.plot.ly/plotly-latest.min.js"></script><style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+    }
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+    }
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input[type="number"], select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    #chart {
+        margin-top: 20px;
+    }
+</style></head><body>
+    <h1>Bancor Bonding Curve Explorer</h1>
+    <div class="container">
+        <div class="form-group">
+            <label for="reserveRatio">Reserve Ratio (%):</label>
+            <input type="number" id="reserveRatio" value="50" min="1" max="100">
+        </div>
+        <div class="form-group">
+            <label for="initialSupply">Initial Token Supply:</label>
+            <input type="number" id="initialSupply" value="1000000" min="1">
+        </div>
+        <div class="form-group">
+            <label for="initialPrice">Initial Token Price:</label>
+            <input type="number" id="initialPrice" value="0.1" min="0.000001" step="0.000001">
+        </div>
+        <div class="form-group">
+            <label for="curveType">Curve Type:</label>
+            <select id="curveType">
+                <option value="linear">Linear</option>
+                <option value="exponential">Exponential</option>
+                <option value="logarithmic">Logarithmic</option>
+            </select>
+        </div>
+        <button onclick="generateChart()">Generate Chart</button>
+    </div>
+    <div id="chart"></div>
+
+    <script>
+        function generateChart() {
+            const reserveRatio = parseFloat(document.getElementById('reserveRatio').value) / 100;
+            const initialSupply = parseFloat(document.getElementById('initialSupply').value);
+            const initialPrice = parseFloat(document.getElementById('initialPrice').value);
+            const curveType = document.getElementById('curveType').value;
+
+            const supplyRange = Array.from({length: 100}, (_, i) => initialSupply * (i + 1) / 100);
+            let prices, totalSupply, reserveBalance;
+
+            switch(curveType) {
+                case 'linear':
+                    prices = supplyRange.map(s => initialPrice * (s / initialSupply) ** (1 / reserveRatio));
+                    break;
+                case 'exponential':
+                    prices = supplyRange.map(s => initialPrice * Math.exp((s - initialSupply) / (initialSupply * reserveRatio)));
+                    break;
+                case 'logarithmic':
+                    prices = supplyRange.map(s => initialPrice * (1 + Math.log(s / initialSupply) / reserveRatio));
+                    break;
+            }
+
+            totalSupply = supplyRange;
+            reserveBalance = prices.map((p, i) => p * totalSupply[i] * reserveRatio);
+
+            const trace1 = {
+                x: totalSupply,
+                y: prices,
+                mode: 'lines',
+                name: 'Price',
+                line: {color: '#3498db'}
+            };
+
+            const trace2 = {
+                x: totalSupply,
+                y: reserveBalance,
+                mode: 'lines',
+                name: 'Reserve Balance',
+                line: {color: '#2ecc71'}
+            };
+
+            const layout = {
+                title: 'Bancor Bonding Curve',
+                xaxis: {title: 'Total Supply'},
+                yaxis: {title: 'Price / Reserve Balance'},
+                legend: {x: 0, y: 1}
+            };
+
+            Plotly.newPlot('chart', [trace1, trace2], layout);
+        }
+
+        // Generate initial chart
+        generateChart();
+    </script>
+</body></html>

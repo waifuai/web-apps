@@ -1,0 +1,458 @@
+<html><head><base href="https://www.mathlive.io/">
+<meta charset="UTF-8">
+<title>Advanced Equation Editor</title>
+<script src="https://unpkg.com/mathlive"></script>
+<style>
+:root {
+    --primary-color: #2962ff;
+    --hover-color: #1565c0;
+    --background: #fafafa;
+    --text: #212121;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: var(--background);
+    color: var(--text);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.equation-editor {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: var(--hover-color);
+}
+
+.output {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 100px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.format-options {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 4px;
+    display: none;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.annotation {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 1000;
+    max-width: 300px;
+    display: none;
+}
+
+.equation-part:hover + .annotation {
+    display: block;
+}
+
+.equation-part {
+    cursor: help;
+    transition: color 0.3s ease;
+}
+
+.equation-part:hover {
+    color: var(--primary-color);
+}
+
+/* Add new zoom functionality styles */
+.zoom-container {
+    overflow: hidden;
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.zoom-viewport {
+    width: 100%;
+    height: 600px;
+    overflow: auto;
+    position: relative;
+}
+
+.zoom-content {
+    transform-origin: 0 0;
+    transition: transform 0.3s ease;
+    min-width: 100%;
+    padding: 20px;
+}
+
+.zoom-controls {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.zoom-level {
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
+}
+
+/* Minimap styles */
+.minimap {
+    position: fixed;
+    right: 20px;
+    bottom: 60px;
+    width: 200px;
+    height: 150px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.minimap-content {
+    transform-origin: 0 0;
+    background: white;
+    position: relative;
+}
+
+.minimap-viewport {
+    position: absolute;
+    border: 2px solid var(--primary-color);
+    background: rgba(41, 98, 255, 0.1);
+    pointer-events: none;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Advanced Equation Editor</h1>
+    <div class="zoom-container">
+        <div class="zoom-viewport" id="viewport">
+            <div class="zoom-content" id="zoomContent">
+                <math-field id="formula" style="width: 100%; font-size: 20px;"></math-field>
+            </div>
+        </div>
+    </div>
+
+    <div class="zoom-controls">
+        <button onclick="zoomIn()">🔍+</button>
+        <button onclick="zoomOut()">🔍-</button>
+        <button onclick="resetZoom()">Reset</button>
+    </div>
+
+    <div class="zoom-level" id="zoomLevel">100%</div>
+    <div class="minimap" id="minimap">
+        <div class="minimap-content" id="minimapContent">
+            <div class="minimap-viewport" id="minimapViewport"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="copyLatex()">Copy LaTeX</button>
+        <button onclick="copyMathML()">Copy MathML</button>
+        <button onclick="copyAsciiMath()">Copy AsciiMath</button>
+        <button onclick="clearEditor()">Clear</button>
+    </div>
+
+    <div class="format-options">
+        <button onclick="increaseFontSize()">Increase Size</button>
+        <button onclick="decreaseFontSize()">Decrease Size</button>
+    </div>
+
+    <div class="output" id="output">
+        <!-- Output will be displayed here -->
+    </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+let currentFontSize = 20;
+let currentZoom = 1;
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 100;
+const ZOOM_STEP = 1.2;
+
+const mf = document.getElementById('formula');
+const viewport = document.getElementById('viewport');
+const zoomContent = document.getElementById('zoomContent');
+const zoomLevelDisplay = document.getElementById('zoomLevel');
+const minimap = document.getElementById('minimap');
+const minimapContent = document.getElementById('minimapContent');
+const minimapViewport = document.getElementById('minimapViewport');
+
+function showToast() {
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 2000);
+}
+
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        showToast();
+    } catch (err) {
+        console.error('Failed to copy: ', err);
+    }
+}
+
+function copyLatex() {
+    const latex = mf.value;
+    copyToClipboard(latex);
+    document.getElementById('output').innerText = `LaTeX: ${latex}`;
+}
+
+function copyMathML() {
+    const mathml = mf.getMathMLContent();
+    copyToClipboard(mathml);
+    document.getElementById('output').innerText = `MathML: ${mathml}`;
+}
+
+function copyAsciiMath() {
+    const ascii = mf.value; // This is simplified - you might want to convert LaTeX to AsciiMath
+    copyToClipboard(ascii);
+    document.getElementById('output').innerText = `AsciiMath: ${ascii}`;
+}
+
+function clearEditor() {
+    mf.value = '';
+    document.getElementById('output').innerText = '';
+}
+
+function increaseFontSize() {
+    currentFontSize += 2;
+    mf.style.fontSize = `${currentFontSize}px`;
+}
+
+function decreaseFontSize() {
+    if (currentFontSize > 12) {
+        currentFontSize -= 2;
+        mf.style.fontSize = `${currentFontSize}px`;
+    }
+}
+
+function updateZoom() {
+    zoomContent.style.transform = `scale(${currentZoom})`;
+    zoomLevelDisplay.textContent = `${Math.round(currentZoom * 100)}%`;
+    updateMinimap();
+}
+
+function zoomIn() {
+    currentZoom = Math.min(currentZoom * ZOOM_STEP, MAX_ZOOM);
+    updateZoom();
+}
+
+function zoomOut() {
+    currentZoom = Math.max(currentZoom / ZOOM_STEP, MIN_ZOOM);
+    updateZoom();
+}
+
+function resetZoom() {
+    currentZoom = 1;
+    updateZoom();
+}
+
+function updateMinimap() {
+    const scale = 200 / zoomContent.scrollWidth;
+    minimapContent.style.transform = `scale(${scale})`;
+    minimapContent.style.width = `${zoomContent.scrollWidth}px`;
+    minimapContent.style.height = `${zoomContent.scrollHeight}px`;
+
+    const viewportRect = viewport.getBoundingClientRect();
+    const contentRect = zoomContent.getBoundingClientRect();
+
+    minimapViewport.style.width = `${(viewportRect.width * scale)}px`;
+    minimapViewport.style.height = `${(viewportRect.height * scale)}px`;
+    minimapViewport.style.left = `${(viewport.scrollLeft * scale)}px`;
+    minimapViewport.style.top = `${(viewport.scrollTop * scale)}px`;
+}
+
+// Add mouse wheel zoom
+viewport.addEventListener('wheel', (e) => {
+    if (e.ctrlKey) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            zoomIn();
+        } else {
+            zoomOut();
+        }
+    }
+});
+
+// Add drag functionality
+let isDragging = false;
+let lastX, lastY;
+
+viewport.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    viewport.style.cursor = 'grabbing';
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+        const deltaX = e.clientX - lastX;
+        const deltaY = e.clientY - lastY;
+        viewport.scrollLeft -= deltaX;
+        viewport.scrollTop -= deltaY;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        updateMinimap();
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    viewport.style.cursor = 'default';
+});
+
+// Update minimap on scroll
+viewport.addEventListener('scroll', updateMinimap);
+
+// Initialize annotations when the page loads
+function initializeAnnotations() {
+    const mf = document.getElementById('formula');
+    
+    const annotations = {
+        'frac{-b \\pm \\sqrt{b^2-4ac}}{2a}': 'Quadratic Formula: Used to find roots of quadratic equations ax² + bx + c = 0',
+        '\\sum_{n=1}^{\\infty} \\frac{1}{n^2}': 'Basel Problem: The sum converges to π²/6',
+        '\\int_{0}^{\\infty} e^{-x^2}': 'Gaussian Integral: Evaluates to √(π/2)',
+        '\\nabla^2\\phi': 'Laplacian operator: Sum of all unmixed second partial derivatives',
+        '\\oint_{\\partial \\Omega}': 'Line integral around a closed curve',
+        '\\binom{n}{k}': 'Binomial coefficient: Number of ways to choose k items from n items',
+        '\\det\\begin{pmatrix}': '3x3 Determinant: Used to find volume scaling and linear independence',
+        '\\frac{d}{dx}\\int': 'Leibniz Integral Rule: Differentiating under the integral sign'
+    };
+
+    mf.addEventListener('mouseover', (evt) => {
+        const latex = evt.target.getValue();
+        Object.keys(annotations).forEach(key => {
+            if (latex.includes(key)) {
+                const annotation = document.createElement('div');
+                annotation.className = 'annotation';
+                annotation.textContent = annotations[key];
+                
+                // Position annotation near the cursor
+                annotation.style.left = `${evt.clientX + 10}px`;
+                annotation.style.top = `${evt.clientY + 10}px`;
+                
+                document.body.appendChild(annotation);
+                
+                // Remove annotation when mouse leaves
+                evt.target.addEventListener('mouseout', () => {
+                    annotation.remove();
+                }, { once: true });
+            }
+        });
+    });
+}
+
+// Initialize with previous code
+document.addEventListener('DOMContentLoaded', () => {
+    initializeAnnotations();
+    updateMinimap();
+    
+    // Set the initial complex equation
+    mf.value = `\\begin{align*}
+        f(x) &= \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a} \\cdot \\sum_{n=1}^{\\infty} \\frac{1}{n^2} \\\\
+        &= \\int_{0}^{\\infty} e^{-x^2} dx \\cdot \\prod_{k=1}^{n} \\frac{\\Gamma(k)}{\\sqrt{2\\pi}} \\\\
+        &= \\left(\\frac{\\partial^2}{\\partial x^2} + \\frac{\\partial^2}{\\partial y^2}\\right) \\phi(x,y) = \\nabla^2\\phi = \\frac{4\\pi G\\rho}{c^2} \\\\
+        &= \\oint_{\\partial \\Omega} \\mathbf{F} \\cdot d\\mathbf{r} = \\iint_{\\Omega} \\left(\\frac{\\partial Q}{\\partial x} - \\frac{\\partial P}{\\partial y}\\right) dx dy \\\\
+        &= \\lim_{n \\to \\infty} \\sum_{k=1}^{n} \\binom{n}{k} x^k(1-x)^{n-k} = \\frac{1}{\\sqrt{2\\pi\\sigma^2}} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}} \\\\
+        &= \\det\\begin{pmatrix} 
+            a_{11} & a_{12} & a_{13} \\\\
+            a_{21} & a_{22} & a_{23} \\\\
+            a_{31} & a_{32} & a_{33}
+        \\end{pmatrix} \\cdot \\oint_C \\frac{f(z)}{z-z_0}dz = 2\\pi i f(z_0) \\\\
+        &= \\frac{d}{dx}\\int_{a(x)}^{b(x)} f(x,t)dt = \\int_{a(x)}^{b(x)} \\frac{\\partial f}{\\partial x}dt + f(x,b(x))\\frac{d}{dx}b(x) - f(x,a(x))\\frac{d}{dx}a(x)
+    \\end{align*}`;
+});
+
+// Configure MathLive field
+mf.addEventListener('change', (evt) => {
+    console.log('Equation changed:', evt.target.value);
+});
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'c') {
+        if (document.activeElement === mf) {
+            copyLatex();
+        }
+    }
+});
+</script>
+</body></html>

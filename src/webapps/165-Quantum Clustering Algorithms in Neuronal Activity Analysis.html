@@ -1,0 +1,182 @@
+<html><head><base href="https://quantum.consciousness.studies/quantum-clustering/"><title>Quantum Clustering Algorithms in Neuronal Activity Analysis</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f8ff;
+}
+h1, h2 {
+  color: #1e90ff;
+}
+.interactive-chart {
+  width: 100%;
+  height: 400px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <h1>Quantum Clustering Algorithms in Neuronal Activity Analysis</h1>
+  
+  <p>Welcome to the eighth installment in our series on quantum machine learning in Orchestrated Objective Reduction (Orch-OR) theory. This page explores the fascinating intersection of quantum clustering algorithms and neuronal activity analysis, offering new insights into consciousness studies.</p>
+  
+  <h2>1. Introduction to Quantum Clustering</h2>
+  <p>Quantum clustering algorithms leverage the principles of quantum mechanics to perform clustering tasks more efficiently than classical methods. In the context of neuronal activity analysis, these algorithms can reveal hidden patterns and structures that may be crucial to understanding consciousness.</p>
+  
+  <div id="quantum-vs-classical" class="interactive-chart"></div>
+  
+  <h2>2. Quantum K-Means for Neuronal Spike Sorting</h2>
+  <p>One application of quantum clustering in neuroscience is the use of quantum K-means for neuronal spike sorting. This technique can help distinguish between different neurons firing in a recorded signal, potentially uncovering quantum effects in neural processing.</p>
+  
+  <div id="spike-sorting" class="interactive-chart"></div>
+  
+  <h2>3. Quantum Spectral Clustering in Brain Network Analysis</h2>
+  <p>Quantum spectral clustering algorithms can be applied to brain network analysis, potentially revealing quantum-like behaviors in neural connectivity patterns. This approach may offer new perspectives on the emergence of consciousness from complex neural networks.</p>
+  
+  <div id="brain-network" class="interactive-chart"></div>
+  
+  <h2>4. Quantum Fuzzy C-Means for EEG Data Analysis</h2>
+  <p>Quantum fuzzy C-means clustering can be used to analyze EEG data, potentially uncovering quantum effects in brain wave patterns. This technique may provide insights into the role of quantum processes in conscious experiences.</p>
+  
+  <div id="eeg-clustering" class="interactive-chart"></div>
+  
+  <script>
+  // Quantum vs Classical Clustering Comparison
+  var traceQuantum = {
+    x: [1, 2, 3, 4, 5],
+    y: [2, 4, 6, 8, 10],
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Quantum Clustering',
+    marker: { size: 12, color: 'rgba(30, 144, 255, 0.7)' }
+  };
+  
+  var traceClassical = {
+    x: [1, 2, 3, 4, 5],
+    y: [1, 3, 5, 7, 9],
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Classical Clustering',
+    marker: { size: 12, color: 'rgba(255, 69, 0, 0.7)' }
+  };
+  
+  var layout = {
+    title: 'Quantum vs Classical Clustering Performance',
+    xaxis: { title: 'Dataset Size (log scale)' },
+    yaxis: { title: 'Clustering Accuracy (%)' }
+  };
+  
+  Plotly.newPlot('quantum-vs-classical', [traceQuantum, traceClassical], layout);
+  
+  // Neuronal Spike Sorting
+  var trace1 = {
+    y: Array(100).fill().map(() => Math.random() * 10 - 5),
+    type: 'scatter',
+    mode: 'lines',
+    line: {color: 'blue'},
+    name: 'Neuron 1'
+  };
+  
+  var trace2 = {
+    y: Array(100).fill().map(() => Math.random() * 8 - 4),
+    type: 'scatter',
+    mode: 'lines',
+    line: {color: 'red'},
+    name: 'Neuron 2'
+  };
+  
+  var trace3 = {
+    y: Array(100).fill().map(() => Math.random() * 6 - 3),
+    type: 'scatter',
+    mode: 'lines',
+    line: {color: 'green'},
+    name: 'Neuron 3'
+  };
+  
+  var layout2 = {
+    title: 'Quantum K-Means Neuronal Spike Sorting',
+    xaxis: { title: 'Time (ms)' },
+    yaxis: { title: 'Amplitude (mV)' }
+  };
+  
+  Plotly.newPlot('spike-sorting', [trace1, trace2, trace3], layout2);
+  
+  // Brain Network Analysis
+  var nodes = Array(20).fill().map((_, i) => ({
+    id: i,
+    label: `Node ${i}`,
+    x: Math.random(),
+    y: Math.random(),
+    z: Math.random()
+  }));
+  
+  var edges = [];
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      if (Math.random() > 0.7) {
+        edges.push({source: i, target: j});
+      }
+    }
+  }
+  
+  var trace = {
+    x: nodes.map(n => n.x),
+    y: nodes.map(n => n.y),
+    z: nodes.map(n => n.z),
+    mode: 'markers',
+    type: 'scatter3d',
+    marker: {
+      size: 8,
+      color: nodes.map(n => n.id),
+      colorscale: 'Viridis'
+    },
+    text: nodes.map(n => n.label),
+    hoverinfo: 'text'
+  };
+  
+  var layout3 = {
+    title: 'Quantum Spectral Clustering of Brain Network',
+    scene: {
+      xaxis: {title: 'X'},
+      yaxis: {title: 'Y'},
+      zaxis: {title: 'Z'}
+    }
+  };
+  
+  Plotly.newPlot('brain-network', [trace], layout3);
+  
+  // EEG Data Clustering
+  var eegData = [
+    {wave: 'Delta', power: Math.random() * 10},
+    {wave: 'Theta', power: Math.random() * 10},
+    {wave: 'Alpha', power: Math.random() * 10},
+    {wave: 'Beta', power: Math.random() * 10},
+    {wave: 'Gamma', power: Math.random() * 10}
+  ];
+  
+  var trace4 = {
+    x: eegData.map(d => d.wave),
+    y: eegData.map(d => d.power),
+    type: 'bar',
+    marker: {
+      color: ['#FF6E33', '#FFC300', '#DAF7A6', '#33FF57', '#33FFFC']
+    }
+  };
+  
+  var layout4 = {
+    title: 'Quantum Fuzzy C-Means Clustering of EEG Data',
+    xaxis: { title: 'Brain Wave Type' },
+    yaxis: { title: 'Power Spectrum Density' }
+  };
+  
+  Plotly.newPlot('eeg-clustering', [trace4], layout4);
+  </script>
+</body></html>

@@ -1,0 +1,200 @@
+<html><head><base href="https://galtsretreat.com/exchange/portfolio/chart" /><title>Portfolio Performance Chart | Galt's Exchange</title>
+<style>
+  body {
+    font-family: 'Georgia', serif;
+    background-color: #f4f1e8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  header {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px 0;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .nav-links a {
+    color: #ecf0f1;
+    text-decoration: none;
+    margin-left: 20px;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .chart-container {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .chart {
+    width: 100%;
+    height: 500px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+  }
+  .chart-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  .chart-controls button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .chart-legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+  }
+  .legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+  }
+  footer {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">Galt's Exchange</div>
+        <div class="nav-links">
+          <a href="https://galtsretreat.com/exchange/">Home</a>
+          <a href="https://galtsretreat.com/exchange/marketplace">Marketplace</a>
+          <a href="https://galtsretreat.com/exchange/portfolio">Portfolio</a>
+          <a href="https://galtsretreat.com/exchange/account">My Account</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Portfolio Performance Chart</h1>
+
+    <div class="chart-container">
+      <h2>Value Over Time</h2>
+      <div class="chart">
+        <svg width="100%" height="100%" viewBox="0 0 1000 500">
+          <defs>
+            <linearGradient id="gradientGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:rgb(65,164,105);stop-opacity:0.4" />
+              <stop offset="100%" style="stop-color:rgb(65,164,105);stop-opacity:0" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1000" height="500" fill="#f9f9f9" />
+          <g transform="translate(50, 20)">
+            <g class="x-axis" transform="translate(0, 450)">
+              <line x1="0" y1="0" x2="900" y2="0" stroke="#ccc" />
+              <text x="0" y="20" fill="#666">Jan</text>
+              <text x="225" y="20" fill="#666">Apr</text>
+              <text x="450" y="20" fill="#666">Jul</text>
+              <text x="675" y="20" fill="#666">Oct</text>
+              <text x="900" y="20" fill="#666">Dec</text>
+            </g>
+            <g class="y-axis">
+              <line x1="0" y1="0" x2="0" y2="450" stroke="#ccc" />
+              <text x="-30" y="450" fill="#666">0 GC</text>
+              <text x="-40" y="337.5" fill="#666">5,000 GC</text>
+              <text x="-40" y="225" fill="#666">10,000 GC</text>
+              <text x="-40" y="112.5" fill="#666">15,000 GC</text>
+              <text x="-40" y="0" fill="#666">20,000 GC</text>
+            </g>
+            <path d="M0,450 L150,400 L300,420 L450,350 L600,300 L750,200 L900,150" fill="none" stroke="#41a469" stroke-width="3" />
+            <path d="M0,450 L150,400 L300,420 L450,350 L600,300 L750,200 L900,150 L900,450 Z" fill="url(#gradientGreen)" />
+          </g>
+        </svg>
+      </div>
+      <div class="chart-controls">
+        <button onclick="alert('Chart would update to show 1 month view')">1M</button>
+        <button onclick="alert('Chart would update to show 3 month view')">3M</button>
+        <button onclick="alert('Chart would update to show 6 month view')">6M</button>
+        <button onclick="alert('Chart would update to show 1 year view')">1Y</button>
+        <button onclick="alert('Chart would update to show all-time view')">All</button>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #41a469;"></div>
+          <span>Portfolio Value</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <h2>Portfolio Composition</h2>
+      <div class="chart">
+        <svg width="100%" height="100%" viewBox="0 0 1000 500">
+          <g transform="translate(500, 250)">
+            <path d="M0,-200 A200,200 0 0,1 173.2,-100 L0,0 Z" fill="#e74c3c" />
+            <path d="M173.2,-100 A200,200 0 0,1 173.2,100 L0,0 Z" fill="#3498db" />
+            <path d="M173.2,100 A200,200 0 0,1 0,200 L0,0 Z" fill="#2ecc71" />
+            <path d="M0,200 A200,200 0 0,1 -173.2,100 L0,0 Z" fill="#f39c12" />
+            <path d="M-173.2,100 A200,200 0 0,1 -173.2,-100 L0,0 Z" fill="#9b59b6" />
+            <path d="M-173.2,-100 A200,200 0 0,1 0,-200 L0,0 Z" fill="#1abc9c" />
+          </g>
+        </svg>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #e74c3c;"></div>
+          <span>ReardenMetal (20%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #3498db;"></div>
+          <span>AtlantisEnergy (23%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #2ecc71;"></div>
+          <span>WyattOil (18%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #f39c12;"></div>
+          <span>DAgnyAir (25%)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #9b59b6;"></div>
+          <span>MulligenWheat (14%)</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2023 Galt's Exchange. All rights reserved. | <a href="https://galtsretreat.com/exchange/terms" style="color: #ecf0f1;">Terms of Service</a> | <a href="https://galtsretreat.com/exchange/privacy" style="color: #ecf0f1;">Privacy Policy</a></p>
+      <p>Disclaimer: Charts are for illustrative purposes only. Past performance does not guarantee future results.</p>
+    </div>
+  </footer>
+</body>
+</html>

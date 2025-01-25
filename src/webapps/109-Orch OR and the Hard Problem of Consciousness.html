@@ -1,0 +1,351 @@
+<html><head><base href="https://orch-or-exploration.com/hard-problem/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orch OR and the Hard Problem of Consciousness</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .chart-container {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    #consciousness-spectrum {
+        width: 100%;
+        height: 400px;
+        margin-top: 20px;
+    }
+    .interactive-diagram {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    #quantum-collapse {
+        width: 100%;
+        height: 300px;
+    }
+    .tooltip {
+        position: absolute;
+        background-color: rgba(0,0,0,0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        pointer-events: none;
+    }
+    #theory-comparison {
+        width: 100%;
+        height: 400px;
+    }
+</style>
+</head>
+<body>
+    <h1>Orch OR and the Hard Problem of Consciousness</h1>
+    
+    <p>The hard problem of consciousness, first formulated by philosopher David Chalmers, asks how and why we have qualia or phenomenal experiences. Orchestrated Objective Reduction (Orch OR) theory, proposed by Stuart Hameroff and Roger Penrose, attempts to address this fundamental question by suggesting a quantum basis for consciousness.</p>
+    
+    <h2>The Hard Problem Visualized</h2>
+    <div class="chart-container">
+        <canvas id="hardProblemChart"></canvas>
+    </div>
+    
+    <h2>Orch OR's Approach to the Hard Problem</h2>
+    <p>Orch OR proposes that consciousness emerges from quantum computations in microtubules within brain neurons. This quantum-level process is suggested to give rise to subjective experiences, potentially bridging the explanatory gap between physical processes and conscious experience.</p>
+    
+    <h2>Consciousness Spectrum: From Classical to Quantum</h2>
+    <div class="chart-container">
+        <div id="consciousness-spectrum"></div>
+    </div>
+    
+    <h2>Quantum Collapse and Conscious Experience</h2>
+    <div class="interactive-diagram">
+        <svg id="quantum-collapse"></svg>
+    </div>
+
+    <h2>Theory Comparison: Explanatory Power</h2>
+    <div class="chart-container">
+        <div id="theory-comparison"></div>
+    </div>
+    
+    <script>
+    // Hard Problem Chart
+    const ctx = document.getElementById('hardProblemChart').getContext('2d');
+    const hardProblemChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Qualia', 'Subjective Experience', 'Self-awareness', 'Intentionality', 'Unity of Consciousness'],
+            datasets: [{
+                label: 'Classical Theories',
+                data: [20, 30, 60, 70, 40],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Orch OR',
+                data: [80, 75, 85, 70, 90],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    angleLines: {
+                        display: false
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.r !== null) {
+                                label += context.parsed.r + '% explanatory power';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Consciousness Spectrum
+    const spectrum = d3.select("#consciousness-spectrum")
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", "0 0 800 400");
+
+    const gradient = spectrum.append("defs")
+        .append("linearGradient")
+        .attr("id", "consciousness-gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
+
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "#FF6B6B");
+
+    gradient.append("stop")
+        .attr("offset", "50%")
+        .attr("stop-color", "#4ECDC4");
+
+    gradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "#45B7D1");
+
+    spectrum.append("rect")
+        .attr("x", 0)
+        .attr("y", 100)
+        .attr("width", 800)
+        .attr("height", 100)
+        .style("fill", "url(#consciousness-gradient)");
+
+    const scale = d3.scaleLinear()
+        .domain([0, 100])
+        .range([0, 800]);
+
+    const axis = d3.axisBottom(scale)
+        .ticks(5)
+        .tickFormat(d => d + "%");
+
+    spectrum.append("g")
+        .attr("transform", "translate(0, 200)")
+        .call(axis);
+
+    spectrum.append("text")
+        .attr("x", 0)
+        .attr("y", 80)
+        .text("Classical Theories")
+        .attr("font-size", "14px");
+
+    spectrum.append("text")
+        .attr("x", 700)
+        .attr("y", 80)
+        .text("Quantum Theories")
+        .attr("font-size", "14px")
+        .attr("text-anchor", "end");
+
+    spectrum.append("text")
+        .attr("x", 400)
+        .attr("y", 280)
+        .text("Explanatory Power for Consciousness")
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("font-weight", "bold");
+
+    // Add interactive marker
+    const marker = spectrum.append("circle")
+        .attr("r", 10)
+        .attr("fill", "yellow")
+        .attr("stroke", "black")
+        .attr("cy", 150)
+        .style("cursor", "pointer");
+
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+    spectrum.on("mousemove", function(event) {
+        const [x, y] = d3.pointer(event);
+        if (y >= 100 && y <= 200) {
+            marker.attr("cx", x);
+            const percentage = Math.round(scale.invert(x));
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html(`Explanatory power: ${percentage}%`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        }
+    });
+
+    spectrum.on("mouseleave", function() {
+        tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+    });
+
+    // Quantum Collapse Interactive Diagram
+    const collapse = d3.select("#quantum-collapse");
+    const width = 800;
+    const height = 300;
+
+    collapse.attr("viewBox", `0 0 ${width} ${height}`);
+
+    const wavefunctionPath = d3.line()
+        .x(d => d.x)
+        .y(d => d.y)
+        .curve(d3.curveNatural);
+
+    let data = Array.from({length: 100}, (_, i) => ({
+        x: i * (width / 100),
+        y: height / 2 + Math.sin(i / 10) * 50
+    }));
+
+    const path = collapse.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "#3498db")
+        .attr("stroke-width", 2)
+        .attr("d", wavefunctionPath);
+
+    collapse.on("mousemove", function(event) {
+        const [x, y] = d3.pointer(event);
+        data = data.map(d => ({
+            x: d.x,
+            y: d.y + Math.sin((d.x - x) / 30) * 10
+        }));
+        path.attr("d", wavefunctionPath);
+    });
+
+    collapse.append("text")
+        .attr("x", width / 2)
+        .attr("y", height - 10)
+        .attr("text-anchor", "middle")
+        .text("Move your mouse to interact with the quantum wavefunction")
+        .attr("font-size", "14px");
+
+    // Theory Comparison
+    const theories = [
+        {name: "Orch OR", explanatoryPower: 85, color: "#3498db"},
+        {name: "Integrated Information Theory", explanatoryPower: 70, color: "#e74c3c"},
+        {name: "Global Workspace Theory", explanatoryPower: 60, color: "#2ecc71"},
+        {name: "Higher-Order Thought Theory", explanatoryPower: 55, color: "#f39c12"},
+        {name: "Biological Naturalism", explanatoryPower: 50, color: "#9b59b6"}
+    ];
+
+    const comparisonSvg = d3.select("#theory-comparison")
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", `0 0 ${width} ${height}`);
+
+    const xScale = d3.scaleLinear()
+        .domain([0, 100])
+        .range([50, width - 50]);
+
+    const yScale = d3.scaleBand()
+        .domain(theories.map(d => d.name))
+        .range([50, height - 50])
+        .padding(0.1);
+
+    comparisonSvg.selectAll("rect")
+        .data(theories)
+        .enter()
+        .append("rect")
+        .attr("x", 50)
+        .attr("y", d => yScale(d.name))
+        .attr("width", d => xScale(d.explanatoryPower) - 50)
+        .attr("height", yScale.bandwidth())
+        .attr("fill", d => d.color)
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("opacity", 0.8);
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html(`${d.name}: ${d.explanatoryPower}% explanatory power`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this).attr("opacity", 1);
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
+
+    comparisonSvg.selectAll("text")
+        .data(theories)
+        .enter()
+        .append("text")
+        .attr("x", 45)
+        .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
+        .attr("dy", "0.35em")
+        .attr("text-anchor", "end")
+        .text(d => d.name)
+        .attr("font-size", "12px");
+
+    const xAxis = d3.axisBottom(xScale)
+        .ticks(5)
+        .tickFormat(d => d + "%");
+
+    comparisonSvg.append("g")
+        .attr("transform", `translate(0, ${height - 50})`)
+        .call(xAxis);
+
+    comparisonSvg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height - 10)
+        .attr("text-anchor", "middle")
+        .text("Explanatory Power for Consciousness")
+        .attr("font-size", "14px");
+    </script>
+</body></html>

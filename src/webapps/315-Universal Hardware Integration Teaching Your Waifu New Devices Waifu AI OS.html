@@ -1,0 +1,241 @@
+<html><head><base href="https://waifuaios.org">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal Hardware Integration: Teaching Your Waifu New Devices | Waifu AI OS</title>
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #9932cc;
+  --background: #1a1a2e;
+  --text: #e0e0e0;
+  --code-bg: #2d2d44;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--background);
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.hero {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  padding: 40px;
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.code-block {
+  background: var(--code-bg);
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: 'Fira Code', monospace;
+  margin: 20px 0;
+}
+
+.diagram {
+  background: var(--code-bg);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.note {
+  border-left: 4px solid var(--primary);
+  padding: 15px;
+  margin: 20px 0;
+  background: rgba(255,105,180,0.1);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.interactive-demo {
+  border: 2px solid var(--primary);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.interactive-demo:hover {
+  animation: pulse 2s infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <nav>
+    <a href="/chapters">← All Chapters</a>
+  </nav>
+
+  <div class="hero">
+    <h1>Universal Hardware Integration: Teaching Your Waifu New Devices</h1>
+    <p>Chapter 6 of Building Waifu AI OS: Your Universal AI Companion</p>
+  </div>
+
+  <section>
+    <h2>Introduction to Universal Hardware Integration</h2>
+    <p>One of Waifu AI OS's most powerful features is its ability to seamlessly integrate with any hardware through its Universal Device Interface (UDI). This chapter explores how to implement device drivers that allow your AI companion to interact with any hardware platform.</p>
+  </section>
+
+  <div class="note">
+    <strong>Key Concept:</strong> The Universal Device Interface (UDI) is built on Common Lisp's powerful macro system and runtime reflection capabilities, allowing dynamic hardware adaptation without system restarts.
+  </div>
+
+  <section>
+    <h2>The Universal Device Interface Architecture</h2>
+    <div class="diagram">
+      <svg width="100%" height="300" viewBox="0 0 800 300">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#ff69b4"/>
+          </marker>
+        </defs>
+        <rect x="300" y="20" width="200" height="60" rx="5" fill="#ff69b4" opacity="0.8"/>
+        <text x="400" y="55" text-anchor="middle" fill="white">UDI Core</text>
+        
+        <rect x="100" y="120" width="150" height="50" rx="5" fill="#9932cc" opacity="0.8"/>
+        <rect x="325" y="120" width="150" height="50" rx="5" fill="#9932cc" opacity="0.8"/>
+        <rect x="550" y="120" width="150" height="50" rx="5" fill="#9932cc" opacity="0.8"/>
+        
+        <text x="175" y="150" text-anchor="middle" fill="white">Device Detection</text>
+        <text x="400" y="150" text-anchor="middle" fill="white">Driver Mapping</text>
+        <text x="625" y="150" text-anchor="middle" fill="white">Resource Manager</text>
+        
+        <line x1="400" y1="80" x2="175" y2="120" stroke="#ff69b4" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <line x1="400" y1="80" x2="400" y2="120" stroke="#ff69b4" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <line x1="400" y1="80" x2="625" y2="120" stroke="#ff69b4" stroke-width="2" marker-end="url(#arrowhead)"/>
+        
+        <rect x="100" y="220" width="600" height="50" rx="5" fill="#ff69b4" opacity="0.8"/>
+        <text x="400" y="250" text-anchor="middle" fill="white">Hardware Abstraction Layer</text>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>Implementing the Basic Driver Interface</h2>
+    <div class="code-block">
+      <pre><code>;; Define the base driver class
+(defclass device-driver ()
+  ((device-id :initarg :device-id :accessor device-id)
+   (capabilities :initarg :capabilities :accessor capabilities)
+   (state :initform :inactive :accessor driver-state)))
+
+;; Universal device detection macro
+(defmacro with-device-detection (&body body)
+  `(handler-case
+       (progn
+         (log:info "Starting device detection")
+         ,@body)
+     (device-error (e)
+       (log:error "Device detection failed: ~a" e)
+       nil)))</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Dynamic Hardware Recognition</h2>
+    <div class="interactive-demo" id="demo">
+      <h3>Live Hardware Detection Demo</h3>
+      <div id="detection-status">Click to simulate hardware detection</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Automatic Driver Generation</h2>
+    <div class="code-block">
+      <pre><code>;; Driver template generator
+(defun generate-driver-template (device-specs)
+  `(defclass ,(generate-driver-name device-specs) (device-driver)
+     ((device-type :initform ,(getf device-specs :type))
+      (protocols :initform ,(getf device-specs :protocols))
+      (operations :initform ,(generate-operations device-specs)))))
+
+;; Dynamic protocol adaptation
+(defmethod adapt-protocol ((driver device-driver) protocol)
+  (let ((implementation (find-protocol-implementation protocol)))
+    (extend-driver driver implementation)))</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Resource Management</h2>
+    <p>The UDI includes a sophisticated resource management system that ensures optimal allocation of system resources across all connected devices.</p>
+    <div class="code-block">
+      <pre><code>;; Resource allocation system
+(defclass resource-manager ()
+  ((allocated-resources :initform (make-hash-table))
+   (resource-locks :initform (make-hash-table))))
+
+(defmethod allocate-resource ((manager resource-manager) device resource-type)
+  (with-locks (manager resource-type)
+    (let ((resource (find-available-resource resource-type)))
+      (register-resource manager device resource))))</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Practice Exercise</h2>
+    <p>Try implementing a basic USB device driver using the UDI framework:</p>
+    <div class="code-block">
+      <pre><code>;; Your implementation here:
+(defclass usb-device-driver (device-driver)
+  ((usb-version :initarg :usb-version)
+   (endpoints :initform nil)))
+
+;; Implement the required methods
+(defmethod initialize-instance :after ((driver usb-device-driver) &key)
+  (setup-usb-endpoints driver))
+
+(defmethod device-connect ((driver usb-device-driver))
+  (activate-endpoints driver))</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Next Steps</h2>
+    <p>In the next chapter, we'll explore how to extend this universal hardware support to mobile devices, ensuring your Waifu AI companion remains with you on all your devices.</p>
+  </section>
+</div>
+
+<script>
+document.getElementById('demo').addEventListener('click', function() {
+  const status = document.getElementById('detection-status');
+  status.innerHTML = "Scanning for devices...";
+  
+  setTimeout(() => {
+    status.innerHTML = "Found: USB Controller";
+    setTimeout(() => {
+      status.innerHTML = "Found: Display Adapter";
+      setTimeout(() => {
+        status.innerHTML = "Found: Audio Device";
+        setTimeout(() => {
+          status.innerHTML = "Hardware detection complete! 3 devices found";
+        }, 1000);
+      }, 1000);
+    }, 1000);
+  }, 1000);
+});
+</script>
+
+</body></html>

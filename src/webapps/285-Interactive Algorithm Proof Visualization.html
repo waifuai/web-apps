@@ -1,0 +1,406 @@
+<html><head><base href="/">
+<title>Interactive Algorithm Proof Visualization</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+body {
+  font-family: 'Arial', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.proof-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.visualization {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+svg {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.matrix {
+  font-family: monospace;
+  margin: 10px 0;
+  padding: 10px;
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.step-button {
+  padding: 8px 16px;
+  margin: 5px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.step-button:hover {
+  background: #0056b3;
+}
+
+.controls {
+  margin: 20px 0;
+  text-align: center;
+}
+
+#explanation {
+  margin-top: 20px;
+  padding: 15px;
+  background: #e9ecef;
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+<h1>Interactive Algorithm Proof Visualization</h1>
+
+<div class="container">
+  <div class="proof-section">
+    <h2>Key Components</h2>
+    <div id="matrices">
+      <h3>Matrix M:</h3>
+      <div class="matrix" id="matrix-m"></div>
+      
+      <h3>Transformation Matrices:</h3>
+      <div class="matrix" id="matrix-t"></div>
+      
+      <h3>Sign Matrices:</h3>
+      <div class="matrix" id="matrix-a"></div>
+    </div>
+  </div>
+  
+  <div class="visualization">
+    <h2>Visual Representation</h2>
+    <svg id="visualization" width="500" height="400"></svg>
+    <div class="controls">
+      <button class="step-button" onclick="showStep(1)">Step 1: Initial Point</button>
+      <button class="step-button" onclick="showStep(2)">Step 2: Apply M</button>
+      <button class="step-button" onclick="showStep(3)">Step 3: Apply T</button>
+      <button class="step-button" onclick="showStep(4)">Step 4: Final Result</button>
+    </div>
+  </div>
+</div>
+
+<div id="explanation">
+  <h3>Current Step Explanation</h3>
+  <p id="step-text">Click the buttons above to step through the algorithm visualization.</p>
+</div>
+
+<script>
+const svg = d3.select('#visualization');
+const width = 500;
+const height = 400;
+let currentStep = 0;
+
+// Initialize matrices
+const matrixM = [
+  [1, 0, 0],
+  [1, 1, 0],
+  [1, 1, 1],
+  [1, 0, 1]
+];
+
+// Display matrices
+function displayMatrix(matrix, elementId) {
+  const element = document.getElementById(elementId);
+  element.innerHTML = matrix.map(row => 
+    '[' + row.join(' ') + ']'
+  ).join('<br>');
+}
+
+displayMatrix(matrixM, 'matrix-m');
+
+// Visualization steps
+function showStep(step) {
+  currentStep = step;
+  svg.selectAll('*').remove();
+  
+  // Draw coordinate system
+  const centerX = width / 2;
+  const centerY = height / 2;
+  
+  // Draw axes
+  svg.append('line')
+    .attr('x1', 0)
+    .attr('y1', centerY)
+    .attr('x2', width)
+    .attr('y2', centerY)
+    .attr('stroke', '#999')
+    .attr('stroke-width', 1);
+    
+  svg.append('line')
+    .attr('x1', centerX)
+    .attr('y1', 0)
+    .attr('x2', centerX)
+    .attr('y2', height)
+    .attr('stroke', '#999')
+    .attr('stroke-width', 1);
+    
+  switch(step) {
+    case 1:
+      // Show initial point
+      svg.append('circle')
+        .attr('cx', centerX)
+        .attr('cy', centerY)
+        .attr('r', 5)
+        .attr('fill', 'blue');
+      
+      document.getElementById('step-text').textContent = 
+        'Step 1: Starting with the street center point P(x,y)';
+      break;
+      
+    case 2:
+      // Show rectangle outline
+      const points = [
+        [centerX-50, centerY-30],
+        [centerX+50, centerY-30],
+        [centerX+50, centerY+30],
+        [centerX-50, centerY+30]
+      ];
+      
+      svg.append('path')
+        .attr('d', d3.line()(points.concat([points[0]])))
+        .attr('stroke', 'blue')
+        .attr('fill', 'none')
+        .attr('stroke-width', 2);
+        
+      document.getElementById('step-text').textContent = 
+        'Step 2: Matrix M determines the basic rectangle shape';
+      break;
+      
+    case 3:
+      // Show rotated rectangle
+      const theta = Math.PI / 6;
+      const rotatedPoints = [
+        [centerX-50*Math.cos(theta), centerY-30*Math.sin(theta)],
+        [centerX+50*Math.cos(theta), centerY+30*Math.sin(theta)],
+        [centerX+50*Math.cos(theta)-30*Math.sin(theta), centerY+30*Math.sin(theta)+50*Math.cos(theta)],
+        [centerX-50*Math.cos(theta)-30*Math.sin(theta), centerY-30*Math.sin(theta)+50*Math.cos(theta)]
+      ];
+      
+      svg.append('path')
+        .attr('d', d3.line()(rotatedPoints.concat([rotatedPoints[0]])))
+        .attr('stroke', 'blue')
+        .attr('fill', 'none')
+        .attr('stroke-width', 2);
+        
+      document.getElementById('step-text').textContent = 
+        'Step 3: Matrix T applies rotation based on street orientation θ';
+      break;
+      
+    case 4:
+      // Show final result with both rectangles
+      const finalPoints1 = [
+        [centerX-60, centerY-40],
+        [centerX+60, centerY-40],
+        [centerX+60, centerY],
+        [centerX-60, centerY]
+      ];
+      
+      const finalPoints2 = [
+        [centerX-60, centerY],
+        [centerX+60, centerY],
+        [centerX+60, centerY+40],
+        [centerX-60, centerY+40]
+      ];
+      
+      svg.append('path')
+        .attr('d', d3.line()(finalPoints1.concat([finalPoints1[0]])))
+        .attr('stroke', 'blue')
+        .attr('fill', 'rgba(0,0,255,0.2)')
+        .attr('stroke-width', 2);
+        
+      svg.append('path')
+        .attr('d', d3.line()(finalPoints2.concat([finalPoints2[0]])))
+        .attr('stroke', 'red')
+        .attr('fill', 'rgba(255,0,0,0.2)')
+        .attr('stroke-width', 2);
+        
+      document.getElementById('step-text').textContent = 
+        'Step 4: Final result shows parking rectangles on both sides of the street';
+      break;
+  }
+}
+
+// Initialize with first step
+showStep(1);
+</script>
+</body></html>
+<script>
+// Continue matrix calculations
+const calculateOffsets = (dimensions, theta) => {
+  // Create dimension vector B
+  const B = dimensions;
+  
+  // Create transformation matrices T1 and T2
+  const T1 = [
+    Math.cos(theta),
+    Math.sin(theta),
+    Math.cos(theta)
+  ];
+  
+  const T2 = [
+    Math.sin(theta),
+    Math.cos(theta),
+    Math.sin(theta)
+  ];
+  
+  // Create sign matrices A1 and A2
+  const A1 = [-1, -1, -1];
+  const A2 = [1, -1, 1];
+  
+  // Multiply matrices according to formula
+  return multiplyMatrices(B, T1, T2, A1, A2);
+};
+
+// Add draggable street center point
+svg.append('circle')
+  .attr('cx', width/2)
+  .attr('cy', height/2)
+  .attr('r', 8)
+  .attr('fill', '#2196F3')
+  .attr('cursor', 'move')
+  .call(d3.drag()
+    .on('drag', function(event) {
+      d3.select(this)
+        .attr('cx', event.x)
+        .attr('cy', event.y);
+      updateRectangles(event.x, event.y);
+    }));
+
+// Add angle slider control  
+const angleSlider = document.createElement('input');
+angleSlider.type = 'range';
+angleSlider.min = 0;
+angleSlider.max = 360;
+angleSlider.value = 0;
+angleSlider.className = 'angle-slider';
+angleSlider.addEventListener('input', (e) => {
+  const angle = e.target.value * Math.PI / 180;
+  updateRectangles(width/2, height/2, angle);
+});
+
+document.querySelector('.controls').appendChild(angleSlider);
+
+// Add dimension controls
+const dimensions = {
+  K: 40, // Distance from street center
+  H: 60, // Height along street
+  W: 20  // Width perpendicular to street
+};
+
+Object.keys(dimensions).forEach(dim => {
+  const control = document.createElement('div');
+  control.innerHTML = `
+    <label>${dim}: </label>
+    <input type="number" value="${dimensions[dim]}" 
+           min="10" max="100" step="5"/>
+  `;
+  control.querySelector('input').addEventListener('change', (e) => {
+    dimensions[dim] = parseFloat(e.target.value);
+    updateRectangles(width/2, height/2, angleSlider.value * Math.PI / 180);
+  });
+  document.querySelector('.controls').appendChild(control);
+});
+
+function updateRectangles(x, y, theta = 0) {
+  const offsets = calculateOffsets([dimensions.K, dimensions.H, dimensions.W], theta);
+  
+  // Update first rectangle
+  const rect1Points = offsets.map(offset => [
+    x + offset[0],
+    y + offset[1]
+  ]);
+  
+  svg.select('.rect1')
+    .attr('d', d3.line()(rect1Points.concat([rect1Points[0]])));
+    
+  // Update second rectangle using permutation matrix
+  const rect2Points = offsets.map(offset => [
+    x - offset[0],
+    y - offset[1] 
+  ]);
+  
+  svg.select('.rect2')
+    .attr('d', d3.line()(rect2Points.concat([rect2Points[0]])));
+}
+
+// Add mathematical notation display
+const mathDiv = document.createElement('div');
+mathDiv.innerHTML = `
+  \\[
+  dv = G \\cdot (B \\cdot M^T) \\cdot (T \\cdot A)
+  \\]
+  \\[
+  \\text{where } G = \\begin{bmatrix}
+  g_{\\text{lat}} \\\\
+  g_{\\text{lon}}
+  \\end{bmatrix}
+  \\]
+`;
+
+document.getElementById('explanation').appendChild(mathDiv);
+MathJax.typeset();
+
+// Add tooltips for matrices
+const addMatrixTooltip = (matrixId, explanation) => {
+  const element = document.getElementById(matrixId);
+  element.title = explanation;
+  element.style.cursor = 'help';
+};
+
+addMatrixTooltip('matrix-m', 'Combines dimensions K, H, W to generate vertex offsets');
+addMatrixTooltip('matrix-t', 'Applies rotation based on street orientation θ');
+addMatrixTooltip('matrix-a', 'Applies sign changes for both sides of street');
+
+</script>
+<style>
+.angle-slider {
+  width: 200px;
+  margin: 10px;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+input[type="number"] {
+  width: 60px;
+  margin: 5px;
+}
+
+.matrix:hover {
+  background: #e3e3e3;
+}
+
+.visualization svg {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+</style>

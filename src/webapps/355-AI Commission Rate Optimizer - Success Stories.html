@@ -1,0 +1,210 @@
+<html><head><base href="/" />
+<meta charset="UTF-8">
+<title>AI Commission Rate Optimizer - Success Stories</title>
+<style>
+:root {
+    --primary: #2A4365;
+    --secondary: #4299E1;
+    --text: #2D3748;
+    --light: #EDF2F7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.testimonials-section {
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: #4A5568;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.testimonial-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+}
+
+.quote {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.author-details {
+    flex: 1;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.author-role {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.metrics {
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.testimonial-card {
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.testimonial-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.testimonial-card:nth-child(3) {
+    animation-delay: 0.4s;
+}
+</style>
+</head>
+<body>
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Success Stories</h2>
+                <p class="section-subtitle">See how leading businesses are optimizing their commission structures with our AI-powered platform</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="quote">"The AI Commission Optimizer helped us increase our sales team's performance by <span class="metrics">47%</span> while maintaining fair and motivating commission structures. It's been a game-changer for our organization."</p>
+                    <div class="author-info">
+                        <div class="author-avatar">SJ</div>
+                        <div class="author-details">
+                            <div class="author-name">Sarah Johnson</div>
+                            <div class="author-role">Sales Director, TechCorp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="quote">"We saw a <span class="metrics">32%</span> improvement in sales representative retention after implementing the AI-optimized commission rates. The platform's recommendations were spot-on."</p>
+                    <div class="author-info">
+                        <div class="author-avatar">MR</div>
+                        <div class="author-details">
+                            <div class="author-name">Michael Rodriguez</div>
+                            <div class="author-role">HR Manager, Global Solutions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="quote">"The platform paid for itself within the first quarter. Our revenue increased by <span class="metrics">28%</span> while our commission structure became more transparent and fair."</p>
+                    <div class="author-info">
+                        <div class="author-avatar">AL</div>
+                        <div class="author-details">
+                            <div class="author-name">Amanda Liu</div>
+                            <div class="author-role">CEO, Innovation Labs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.testimonial-card');
+    
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        observer.observe(card);
+    });
+});
+</script>
+</body>
+</html>

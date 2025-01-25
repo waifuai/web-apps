@@ -1,0 +1,195 @@
+<html><head><base href="https://orch-or.quantum-mind.org/philosophy-of-mind/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Philosophy of Mind and Orch OR | Quantum Consciousness</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .chart-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    #mind-body-chart {
+        width: 100%;
+        height: 400px;
+    }
+    #qualia-spectrum {
+        width: 100%;
+        height: 300px;
+    }
+    .interactive-demo {
+        background-color: #e6f3ff;
+        border: 1px solid #b3d9ff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+    #consciousness-slider {
+        width: 100%;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+    <h1>The Philosophy of Mind and Orch OR</h1>
+    
+    <p>The Orchestrated Objective Reduction (Orch OR) theory, proposed by Stuart Hameroff and Roger Penrose, offers a unique perspective on the age-old philosophical problem of consciousness. This page explores how Orch OR intersects with various philosophical positions in the philosophy of mind, and how it attempts to bridge the gap between physical processes and subjective experience.</p>
+
+    <h2>Mind-Body Problem and Orch OR</h2>
+    <p>The mind-body problem, a central issue in the philosophy of mind, questions the relationship between mental phenomena and physical processes. Orch OR proposes a solution by suggesting that consciousness emerges from quantum computations in brain microtubules, effectively bridging the gap between the physical brain and subjective experience.</p>
+
+    <div class="chart-container">
+        <canvas id="mind-body-chart"></canvas>
+    </div>
+
+    <h2>Qualia and Quantum States</h2>
+    <p>Qualia, the subjective, conscious experiences we have, have long been a puzzle for philosophers. Orch OR suggests that the collapse of quantum superpositions in microtubules gives rise to moments of conscious experience, potentially explaining the emergence of qualia from physical processes.</p>
+
+    <div class="chart-container">
+        <div id="qualia-spectrum"></div>
+    </div>
+
+    <h2>Free Will and Quantum Indeterminacy</h2>
+    <p>The question of free will has been debated for centuries. Orch OR introduces quantum indeterminacy at the neural level, potentially providing a mechanism for free will that is neither purely deterministic nor random.</p>
+
+    <div class="interactive-demo">
+        <h3>Interactive Consciousness Slider</h3>
+        <p>Move the slider to explore different levels of consciousness according to the Orch OR theory:</p>
+        <input type="range" id="consciousness-slider" min="0" max="100" value="50">
+        <p id="consciousness-description"></p>
+    </div>
+
+    <script>
+    // Mind-Body Chart
+    const ctx = document.getElementById('mind-body-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Dualism', 'Materialism', 'Idealism', 'Panpsychism', 'Orch OR'],
+            datasets: [{
+                label: 'Alignment with Mind-Body Theories',
+                data: [30, 70, 40, 80, 95],
+                fill: true,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                pointBackgroundColor: 'rgb(54, 162, 235)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(54, 162, 235)'
+            }]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        display: false
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            }
+        }
+    });
+
+    // Qualia Spectrum
+    const width = document.getElementById('qualia-spectrum').clientWidth;
+    const height = 300;
+    const svg = d3.select("#qualia-spectrum")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    const gradient = svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "qualia-gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
+
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "blue");
+
+    gradient.append("stop")
+        .attr("offset", "50%")
+        .attr("stop-color", "green");
+
+    gradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", "red");
+
+    svg.append("rect")
+        .attr("x", 0)
+        .attr("y", 50)
+        .attr("width", width)
+        .attr("height", 100)
+        .style("fill", "url(#qualia-gradient)");
+
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 30)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .text("Qualia Spectrum in Orch OR");
+
+    svg.append("text")
+        .attr("x", 10)
+        .attr("y", 180)
+        .style("font-size", "14px")
+        .text("Simple Sensations");
+
+    svg.append("text")
+        .attr("x", width - 10)
+        .attr("y", 180)
+        .attr("text-anchor", "end")
+        .style("font-size", "14px")
+        .text("Complex Experiences");
+
+    // Consciousness Slider
+    const slider = document.getElementById('consciousness-slider');
+    const description = document.getElementById('consciousness-description');
+
+    slider.addEventListener('input', updateConsciousness);
+
+    function updateConsciousness() {
+        const value = slider.value;
+        let text = '';
+
+        if (value < 20) {
+            text = "Minimal consciousness: Basic quantum events in microtubules.";
+        } else if (value < 40) {
+            text = "Low consciousness: Increased quantum coherence, simple sensations emerging.";
+        } else if (value < 60) {
+            text = "Moderate consciousness: Sustained quantum states, more complex qualia forming.";
+        } else if (value < 80) {
+            text = "High consciousness: Widespread quantum coherence, rich subjective experiences.";
+        } else {
+            text = "Peak consciousness: Global quantum coherence across brain regions, profound awareness and qualia.";
+        }
+
+        description.textContent = text;
+    }
+
+    updateConsciousness();
+    </script>
+</body></html>

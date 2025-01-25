@@ -1,0 +1,157 @@
+<html><head><base href="https://quantum-consciousness-unified-theory.com/part-v/14-free-will-quantum-indeterminacy/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Will and Quantum Indeterminacy: A Consciousness-Centric Perspective</title>
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .interactive-demo {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #quantum-dice {
+        width: 100px;
+        height: 100px;
+        background-color: #3498db;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        margin: 20px auto;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    #quantum-dice:hover {
+        transform: scale(1.1);
+    }
+    #decision-tree {
+        width: 100%;
+        height: 400px;
+        background-color: #ecf0f1;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+</style>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <h1>Free Will and Quantum Indeterminacy: A Consciousness-Centric Perspective</h1>
+    
+    <p>Welcome to the 14th installment of our series on quantum computing and consciousness. In this exploration, we delve into the fascinating intersection of free will, quantum indeterminacy, and consciousness.</p>
+    
+    <h2>The Quantum Nature of Decision-Making</h2>
+    
+    <p>Quantum indeterminacy suggests that the universe is inherently probabilistic at its smallest scales. This concept challenges the classical deterministic view of the world and opens up new possibilities for understanding free will. Let's explore this with an interactive demonstration.</p>
+    
+    <div class="interactive-demo">
+        <h3>Quantum Decision Maker</h3>
+        <p>Click the quantum dice to simulate a decision influenced by quantum indeterminacy:</p>
+        <div id="quantum-dice">Roll</div>
+        <p id="decision-result"></p>
+    </div>
+    
+    <h2>Consciousness and Quantum Wave Function Collapse</h2>
+    
+    <p>One intriguing theory proposes that consciousness plays a role in the collapse of quantum wave functions. This perspective suggests that our conscious observations and decisions may influence quantum states, potentially providing a mechanism for free will.</p>
+    
+    <div class="interactive-demo">
+        <h3>Decision Tree Visualization</h3>
+        <p>Explore how quantum indeterminacy might influence a series of decisions:</p>
+        <div id="decision-tree"></div>
+    </div>
+    
+    <h2>Implications for Ethics and Responsibility</h2>
+    
+    <p>If our decisions are influenced by quantum indeterminacy and consciousness, what does this mean for concepts of personal responsibility and ethics? This question opens up profound philosophical debates about the nature of choice and accountability in a quantum universe.</p>
+    
+    <script>
+    // Quantum Decision Maker
+    const quantumDice = document.getElementById('quantum-dice');
+    const decisionResult = document.getElementById('decision-result');
+    
+    quantumDice.addEventListener('click', () => {
+        const outcomes = ['Yes', 'No', 'Maybe'];
+        const result = outcomes[Math.floor(Math.random() * outcomes.length)];
+        decisionResult.textContent = `The quantum decision is: ${result}`;
+        quantumDice.style.transform = 'rotate(360deg)';
+        setTimeout(() => {
+            quantumDice.style.transform = 'rotate(0deg)';
+        }, 300);
+    });
+    
+    // Decision Tree Visualization
+    const width = 700;
+    const height = 400;
+    
+    const svg = d3.select("#decision-tree")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+    
+    const data = {
+        name: "Start",
+        children: [
+            {
+                name: "Option A",
+                children: [
+                    { name: "Outcome 1", size: 100 },
+                    { name: "Outcome 2", size: 80 }
+                ]
+            },
+            {
+                name: "Option B",
+                children: [
+                    { name: "Outcome 3", size: 90 },
+                    { name: "Outcome 4", size: 70 }
+                ]
+            }
+        ]
+    };
+    
+    const treeLayout = d3.tree().size([width - 100, height - 100]);
+    const root = d3.hierarchy(data);
+    treeLayout(root);
+    
+    const link = svg.selectAll(".link")
+        .data(root.links())
+        .enter().append("path")
+        .attr("class", "link")
+        .attr("d", d3.linkHorizontal()
+            .x(d => d.y + 50)
+            .y(d => d.x + 50))
+        .attr("fill", "none")
+        .attr("stroke", "#ccc");
+    
+    const node = svg.selectAll(".node")
+        .data(root.descendants())
+        .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", d => `translate(${d.y + 50},${d.x + 50})`);
+    
+    node.append("circle")
+        .attr("r", 5)
+        .attr("fill", "#4CAF50");
+    
+    node.append("text")
+        .attr("dy", "0.31em")
+        .attr("x", d => d.children ? -6 : 6)
+        .attr("text-anchor", d => d.children ? "end" : "start")
+        .text(d => d.data.name)
+        .attr("font-size", "12px");
+    </script>
+</body>
+</html>

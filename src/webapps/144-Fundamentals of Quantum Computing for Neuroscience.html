@@ -1,0 +1,189 @@
+<html><head><base href="https://quantum-consciousness-exploration.org/fundamentals/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fundamentals of Quantum Computing for Neuroscience</title><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.min.js"></script><style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f7ff;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .interactive-section {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .qubit-visualization {
+        width: 300px;
+        height: 300px;
+        margin: 0 auto;
+    }
+    #bloch-sphere {
+        width: 100%;
+        height: 100%;
+    }
+    .controls {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+    .slider-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    input[type="range"] {
+        width: 200px;
+    }
+    #quantum-circuit {
+        width: 100%;
+        height: 200px;
+        background-color: #e6e6e6;
+        margin-top: 20px;
+        position: relative;
+    }
+    .gate {
+        width: 50px;
+        height: 50px;
+        background-color: #3498db;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    .gate:hover {
+        transform: scale(1.1);
+    }
+    #output {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+</style></head><body>
+    <h1>Fundamentals of Quantum Computing for Neuroscience</h1>
+    
+    <p>Welcome to the second chapter of our exploration into quantum computing and consciousness. In this section, we'll dive into the core concepts of quantum computing that are essential for understanding its potential applications in neuroscience, particularly in the context of the Orchestrated Objective Reduction (Orch-OR) theory.</p>
+    
+    <div class="interactive-section">
+        <h2>1. Qubits and Superposition</h2>
+        <p>At the heart of quantum computing lies the qubit, the quantum analog of a classical bit. Unlike classical bits, qubits can exist in a superposition of states, allowing for powerful parallel processing capabilities.</p>
+        
+        <div class="qubit-visualization">
+            <svg id="bloch-sphere" viewBox="-150 -150 300 300">
+                <circle cx="0" cy="0" r="100" fill="none" stroke="#ccc" stroke-width="1" />
+                <line x1="-100" y1="0" x2="100" y2="0" stroke="#ccc" stroke-width="1" />
+                <line x1="0" y1="-100" x2="0" y2="100" stroke="#ccc" stroke-width="1" />
+                <line x1="0" y1="0" x2="0" y2="-100" stroke="#2ecc71" stroke-width="2" />
+                <circle cx="0" cy="-100" r="5" fill="#2ecc71" />
+                <text x="10" y="-95" fill="#2ecc71">|0⟩</text>
+                <line x1="0" y1="0" x2="0" y2="100" stroke="#e74c3c" stroke-width="2" />
+                <circle cx="0" cy="100" r="5" fill="#e74c3c" />
+                <text x="10" y="105" fill="#e74c3c">|1⟩</text>
+                <line id="qubit-state" x1="0" y1="0" x2="70.71" y2="-70.71" stroke="#3498db" stroke-width="2" />
+                <circle id="qubit-point" cx="70.71" cy="-70.71" r="5" fill="#3498db" />
+            </svg>
+        </div>
+        
+        <div class="controls">
+            <div class="slider-container">
+                <label for="theta">θ (Theta)</label>
+                <input type="range" id="theta" min="0" max="180" value="45">
+            </div>
+            <div class="slider-container">
+                <label for="phi">φ (Phi)</label>
+                <input type="range" id="phi" min="0" max="360" value="0">
+            </div>
+        </div>
+        
+        <p>Adjust the sliders to explore different qubit states on the Bloch sphere. The blue point represents the current state of the qubit, which is a superposition of |0⟩ (green) and |1⟩ (red) states.</p>
+    </div>
+    
+    <div class="interactive-section">
+        <h2>2. Quantum Gates and Circuits</h2>
+        <p>Quantum computations are performed using quantum gates, which manipulate qubits. Let's explore a simple quantum circuit and see how it affects the state of a qubit.</p>
+        
+        <div id="quantum-circuit"></div>
+        
+        <div id="output"></div>
+        
+        <p>Click on the gates to apply them to the qubit. Observe how each gate transforms the qubit's state on the Bloch sphere above.</p>
+    </div>
+    
+    <script>
+        const blochSphere = document.getElementById('bloch-sphere');
+        const qubitState = document.getElementById('qubit-state');
+        const qubitPoint = document.getElementById('qubit-point');
+        const thetaSlider = document.getElementById('theta');
+        const phiSlider = document.getElementById('phi');
+        const quantumCircuit = document.getElementById('quantum-circuit');
+        const output = document.getElementById('output');
+        
+        let theta = Math.PI / 4;
+        let phi = 0;
+        
+        function updateBlochSphere() {
+            const x = 100 * Math.sin(theta) * Math.cos(phi);
+            const y = 100 * Math.sin(theta) * Math.sin(phi);
+            const z = -100 * Math.cos(theta);
+            
+            qubitState.setAttribute('x2', x);
+            qubitState.setAttribute('y2', z);
+            qubitPoint.setAttribute('cx', x);
+            qubitPoint.setAttribute('cy', z);
+            
+            const state = math.complex(Math.cos(theta / 2), Math.sin(theta / 2) * Math.exp(1i * phi));
+            output.textContent = `Qubit state: ${state.format(4)}|0⟩ + ${state.mul(math.complex(-1)).format(4)}|1⟩`;
+        }
+        
+        thetaSlider.addEventListener('input', () => {
+            theta = thetaSlider.value * Math.PI / 180;
+            updateBlochSphere();
+        });
+        
+        phiSlider.addEventListener('input', () => {
+            phi = phiSlider.value * Math.PI / 180;
+            updateBlochSphere();
+        });
+        
+        const gates = [
+            { name: 'H', x: 20, action: () => { theta = Math.PI / 2; phi = 0; } },
+            { name: 'X', x: 90, action: () => { theta = Math.PI - theta; } },
+            { name: 'Y', x: 160, action: () => { theta = Math.PI - theta; phi = (phi + Math.PI) % (2 * Math.PI); } },
+            { name: 'Z', x: 230, action: () => { phi = (phi + Math.PI) % (2 * Math.PI); } }
+        ];
+        
+        gates.forEach(gate => {
+            const gateElement = document.createElement('div');
+            gateElement.className = 'gate';
+            gateElement.textContent = gate.name;
+            gateElement.style.left = `${gate.x}px`;
+            gateElement.style.top = '75px';
+            gateElement.addEventListener('click', () => {
+                gate.action();
+                updateBlochSphere();
+                thetaSlider.value = theta * 180 / Math.PI;
+                phiSlider.value = phi * 180 / Math.PI;
+            });
+            quantumCircuit.appendChild(gateElement);
+        });
+        
+        updateBlochSphere();
+    </script>
+    
+    <h2>Relevance to Neuroscience and Orch-OR Theory</h2>
+    <p>Understanding these fundamental concepts of quantum computing is crucial for exploring the potential quantum processes in the brain, as proposed by the Orch-OR theory. The ability of qubits to exist in superposition and the transformative effects of quantum gates may have analogues in the quantum behavior of microtubules within neurons.</p>
+    
+    <p>In the next sections, we'll delve deeper into how these quantum computing principles can be applied to model and simulate aspects of consciousness according to the Orch-OR theory, potentially shedding new light on the intricate workings of the human mind.</p>
+    
+    <nav>
+        <a href="https://quantum-consciousness-exploration.org/introduction/">Previous: Introduction</a> |
+        <a href="https://quantum-consciousness-exploration.org/orch-or-theory/">Next: Orch-OR Theory</a>
+    </nav>
+</body></html>

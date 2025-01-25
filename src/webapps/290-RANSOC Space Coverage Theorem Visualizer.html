@@ -1,0 +1,196 @@
+<html><head><base href="https://example.com">
+<title>RANSOC Space Coverage Theorem Visualizer</title>
+<style>
+:root {
+  --bg: #0a0a2a;
+  --text: #e0e0ff;
+  --star: #ffff80;
+  --planet: #80a0ff;
+  --hit: #ff8080;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+#visualization {
+  width: 100%;
+  height: 600px;
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--star);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px var(--star);
+}
+
+.planet {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--planet);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.5s ease-out;
+}
+
+.planet.hit {
+  background: var(--hit);
+  box-shadow: 0 0 20px var(--hit);
+}
+
+.mass-label {
+  position: absolute;
+  color: var(--text);
+  font-size: 12px;
+  transform: translate(-50%, -100%);
+  white-space: nowrap;
+}
+
+.controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text);
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>RANSOC Space Coverage Theorem Visualizer</h1>
+  <div id="visualization"></div>
+  <div class="controls">
+    <button onclick="step()">Step Simulation</button>
+    <button onclick="reset()">Reset</button>
+  </div>
+</div>
+
+<script>
+const NUM_PLANETS = 8;
+const ALPHA = 0.2;
+let planets = [];
+let star = { x: 0, y: 0 };
+
+class Planet {
+  constructor(x, y, mass) {
+    this.x = x;
+    this.y = y;
+    this.mass = mass;
+    this.hitCount = 0;
+  }
+
+  weight(star) {
+    const dist = Math.hypot(this.x - star.x, this.y - star.y);
+    return this.mass / Math.max(0.1, dist);
+  }
+}
+
+function initializeSimulation() {
+  planets = [];
+  star.x = window.innerWidth / 4;
+  star.y = window.innerHeight / 4;
+  
+  for(let i = 0; i < NUM_PLANETS; i++) {
+    const angle = (i / NUM_PLANETS) * Math.PI * 2;
+    const radius = 150 + Math.random() * 100;
+    const x = star.x + Math.cos(angle) * radius;
+    const y = star.y + Math.sin(angle) * radius;
+    planets.push(new Planet(x, y, 1.0));
+  }
+  
+  render();
+}
+
+function step() {
+  // Find planet with highest weight
+  let maxWeight = -Infinity;
+  let hitPlanet = null;
+  
+  planets.forEach(planet => {
+    const weight = planet.weight(star);
+    if(weight > maxWeight) {
+      maxWeight = weight;
+      hitPlanet = planet;
+    }
+  });
+
+  // Update masses
+  if(hitPlanet) {
+    hitPlanet.mass *= (1 - ALPHA);
+    hitPlanet.hitCount++;
+    
+    planets.forEach(planet => {
+      if(planet !== hitPlanet) {
+        planet.mass *= (1 + ALPHA/(NUM_PLANETS-1));
+      }
+    });
+  }
+  
+  render();
+}
+
+function render() {
+  const viz = document.getElementById('visualization');
+  viz.innerHTML = '';
+  
+  // Add star
+  const starElem = document.createElement('div');
+  starElem.className = 'star';
+  starElem.style.left = `${star.x}px`;
+  starElem.style.top = `${star.y}px`;
+  viz.appendChild(starElem);
+  
+  // Add planets
+  planets.forEach((planet, i) => {
+    const planetElem = document.createElement('div');
+    planetElem.className = 'planet';
+    planetElem.style.left = `${planet.x}px`;
+    planetElem.style.top = `${planet.y}px`;
+    
+    const label = document.createElement('div');
+    label.className = 'mass-label';
+    label.textContent = `m=${planet.mass.toFixed(2)} (${planet.hitCount})`;
+    label.style.left = `${planet.x}px`;
+    label.style.top = `${planet.y}px`;
+    
+    viz.appendChild(planetElem);
+    viz.appendChild(label);
+  });
+}
+
+function reset() {
+  initializeSimulation();
+}
+
+initializeSimulation();
+</script>
+</body></html>

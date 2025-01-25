@@ -1,0 +1,245 @@
+<html><head><base href="file:///" />
+<style>
+:root {
+  --main-bg: #1a1a1a;
+  --text: #33ff33;
+  --cursor: #33ff33;
+  --link: #66ff66;
+  --link-selected: #99ff99;
+}
+
+body {
+  background: var(--main-bg);
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.2;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+#terminal {
+  width: 100%;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.link {
+  color: var(--link);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link.selected {
+  color: var(--link-selected);
+  background: rgba(102, 255, 102, 0.2);
+}
+
+#input-line {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+}
+
+#prompt {
+  margin-right: 10px;
+}
+
+#cursor {
+  width: 8px;
+  height: 15px;
+  background: var(--cursor);
+  animation: blink 1s infinite;
+  display: inline-block;
+  margin-left: 2px;
+}
+
+#input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  outline: none;
+  flex-grow: 1;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+</style></head>
+<body>
+
+<div id="terminal"></div>
+<div id="input-line">
+  <span id="prompt">$</span>
+  <input type="text" id="input" autofocus>
+  <div id="cursor"></div>
+</div>
+
+<script>
+const terminal = document.getElementById('terminal');
+const input = document.getElementById('input');
+let history = [];
+let historyIndex = 0;
+let currentLinks = [];
+let selectedLinkIndex = -1;
+let browsing = false;
+
+const commands = {
+  help: () => `Available commands:
+  help - Show this help message
+  clear - Clear terminal
+  browse <url> - Browse a website in text mode
+  ls - List files
+  pwd - Print working directory
+  date - Show current date/time`,
+  
+  clear: () => {
+    terminal.textContent = '';
+    return '';
+  },
+  
+  browse: async (url) => {
+    if (!url) return 'Usage: browse <url>';
+    browsing = true;
+    try {
+      const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: `Generate a text representation of the webpage at ${url}. Include main content, navigation, and important text elements. Format as text with HTML links. Include at least 3-5 clickable links to other pages.
+
+          <typescript-interface>
+          interface Response {
+            content: string;
+            links: Array<{text: string, url: string}>;
+          }
+          </typescript-interface>
+          
+          <example>
+          {
+            "content": "Homepage - Example.com\n\nNavigation:\n[Home](https://example.com)\n[About](https://example.com/about)\n[Contact](https://example.com/contact)\n\nMain Content:\nWelcome to Example.com\nWe are a leading provider of example services...\n\nFooter:\nCopyright 2024 Example.com",
+            "links": [
+              {"text": "Home", "url": "https://example.com"},
+              {"text": "About", "url": "https://example.com/about"},
+              {"text": "Contact", "url": "https://example.com/contact"}
+            ]
+          }
+          </example>`,
+          data: url
+        })
+      });
+      const data = await response.json();
+      currentLinks = data.links;
+      selectedLinkIndex = -1;
+      
+      // Convert markdown-style links to HTML
+      const formattedContent = data.content.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, 
+        (match, text, url) => `<span class="link" data-url="${url}">${text}</span>`);
+      
+      terminal.innerHTML = formattedContent;
+      return '';
+    } catch (e) {
+      return `Error browsing ${url}: ${e.message}`;
+    }
+  },
+
+  ls: () => `Documents/
+Downloads/
+Pictures/
+Desktop/
+.config/`,
+
+  pwd: () => '/home/user',
+  
+  date: () => new Date().toString()
+};
+
+function printOutput(text) {
+  terminal.textContent += text + '\n';
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+async function handleCommand(cmd) {
+  const parts = cmd.trim().split(' ');
+  const command = parts[0].toLowerCase();
+  const args = parts.slice(1);
+
+  if (command === '') return;
+  
+  history.push(cmd);
+  historyIndex = history.length;
+
+  printOutput(`$ ${cmd}`);
+  
+  if (commands[command]) {
+    const output = await commands[command](...args);
+    if (output) printOutput(output);
+  } else {
+    printOutput(`Command not found: ${command}`);
+  }
+}
+
+function updateSelectedLink() {
+  document.querySelectorAll('.link').forEach(link => link.classList.remove('selected'));
+  if (selectedLinkIndex >= 0 && currentLinks[selectedLinkIndex]) {
+    const links = document.querySelectorAll('.link');
+    links[selectedLinkIndex]?.classList.add('selected');
+  }
+}
+
+document.addEventListener('keydown', async (e) => {
+  if (browsing && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+    e.preventDefault();
+    if (e.key === 'ArrowUp') {
+      selectedLinkIndex = Math.max(0, selectedLinkIndex - 1);
+    } else {
+      selectedLinkIndex = Math.min(currentLinks.length - 1, selectedLinkIndex + 1);
+    }
+    updateSelectedLink();
+  } else if (browsing && e.key === 'Enter' && selectedLinkIndex >= 0) {
+    e.preventDefault();
+    const selectedLink = currentLinks[selectedLinkIndex];
+    if (selectedLink) {
+      await commands.browse(selectedLink.url);
+    }
+  }
+});
+
+input.addEventListener('keydown', async (e) => {
+  if (e.key === 'Enter') {
+    const cmd = input.value;
+    input.value = '';
+    await handleCommand(cmd);
+  } else if (e.key === 'ArrowUp' && !browsing) {
+    e.preventDefault();
+    if (historyIndex > 0) {
+      historyIndex--;
+      input.value = history[historyIndex];
+    }
+  } else if (e.key === 'ArrowDown' && !browsing) {
+    e.preventDefault();
+    if (historyIndex < history.length) {
+      historyIndex++;
+      input.value = history[historyIndex] || '';
+    }
+  }
+});
+
+// Initial welcome message
+printOutput(`Terminal v1.0.0
+Type 'help' for available commands.
+`);
+</script>
+</body></html>

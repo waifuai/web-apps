@@ -1,0 +1,142 @@
+<html><head><base href="https://superconductingbrain.com/resonance/"><title>Resonant Antennas in Neural Networks - The Superconducting Brain</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .interactive-demo {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #resonance-demo, #network-demo {
+        width: 100%;
+        height: 400px;
+    }
+</style>
+</head>
+<body>
+    <h1>Resonant Antennas in Neural Networks</h1>
+    
+    <h2>Principles of Resonant Antennas</h2>
+    <p>Resonant antennas are designed to operate efficiently at specific frequencies, maximizing their ability to transmit or receive electromagnetic signals. In the context of neural networks, we explore how microtubule structures might function as resonant antennas, potentially playing a crucial role in neural information processing.</p>
+    
+    <div class="interactive-demo">
+        <h3>Interactive Resonance Demonstration</h3>
+        <p>Adjust the frequency to see how it affects the resonance of a simulated antenna:</p>
+        <input type="range" id="frequency-slider" min="1" max="100" value="50">
+        <div id="resonance-demo"></div>
+    </div>
+
+    <h2>How Microtubule Structures Might Create Resonant Networks</h2>
+    <p>Microtubules, key components of the cellular cytoskeleton, have been proposed to act as quantum-coherent oscillators. Their unique structure and potential for quantum effects could allow them to form intricate networks of resonant antennas within neurons.</p>
+
+    <div class="interactive-demo">
+        <h3>Microtubule Network Simulation</h3>
+        <p>Explore a simplified model of microtubule resonance in a neural network:</p>
+        <button id="simulate-btn">Simulate Network Activity</button>
+        <div id="network-demo"></div>
+    </div>
+
+    <h2>Potential Impact on Neural Information Processing</h2>
+    <p>If microtubules indeed function as resonant antennas, it could revolutionize our understanding of neural information processing. This model suggests a level of computational and communicative capacity within neurons far beyond what is explained by traditional neuroscience.</p>
+
+    <script>
+        // Resonance Demonstration
+        const frequencySlider = document.getElementById('frequency-slider');
+        const resonancePlot = document.getElementById('resonance-demo');
+
+        function updateResonancePlot() {
+            const frequency = parseFloat(frequencySlider.value);
+            const x = Array.from({length: 100}, (_, i) => i);
+            const y = x.map(t => Math.sin(2 * Math.PI * frequency * t / 1000) * Math.exp(-t / 50));
+
+            Plotly.newPlot(resonancePlot, [{
+                x: x,
+                y: y,
+                type: 'scatter',
+                mode: 'lines',
+                line: {color: '#2980b9'}
+            }], {
+                title: 'Antenna Resonance',
+                xaxis: {title: 'Time'},
+                yaxis: {title: 'Amplitude'}
+            });
+        }
+
+        frequencySlider.addEventListener('input', updateResonancePlot);
+        updateResonancePlot();
+
+        // Network Simulation
+        const simulateBtn = document.getElementById('simulate-btn');
+        const networkPlot = document.getElementById('network-demo');
+
+        function simulateNetwork() {
+            const nodes = 50;
+            const edges = 100;
+            const positions = Array.from({length: nodes}, () => ({
+                x: Math.random(),
+                y: Math.random(),
+                z: Math.random()
+            }));
+
+            const connections = Array.from({length: edges}, () => ({
+                source: Math.floor(Math.random() * nodes),
+                target: Math.floor(Math.random() * nodes)
+            }));
+
+            const trace = {
+                x: positions.map(p => p.x),
+                y: positions.map(p => p.y),
+                z: positions.map(p => p.z),
+                mode: 'markers',
+                type: 'scatter3d',
+                marker: {
+                    size: 5,
+                    color: positions.map(p => p.z),
+                    colorscale: 'Viridis'
+                }
+            };
+
+            const layout = {
+                title: 'Microtubule Network',
+                scene: {
+                    xaxis: {title: ''},
+                    yaxis: {title: ''},
+                    zaxis: {title: ''}
+                }
+            };
+
+            Plotly.newPlot(networkPlot, [trace], layout);
+
+            // Animate network activity
+            let frame = 0;
+            const interval = setInterval(() => {
+                const newZ = positions.map(p => {
+                    const phase = (p.x + p.y + frame / 50) % 1;
+                    return 0.5 + 0.5 * Math.sin(2 * Math.PI * phase);
+                });
+                Plotly.restyle(networkPlot, {'z': [newZ], 'marker.color': [newZ]});
+                frame++;
+                if (frame > 200) clearInterval(interval);
+            }, 50);
+        }
+
+        simulateBtn.addEventListener('click', simulateNetwork);
+    </script>
+</body>
+</html>

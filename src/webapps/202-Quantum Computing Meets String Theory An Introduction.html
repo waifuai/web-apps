@@ -1,0 +1,186 @@
+<html><head><base href="https://quantum-string-theory.edu/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Quantum Computing Meets String Theory: An Introduction</title><script src="https://cdn.plot.ly/plotly-latest.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script><style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .interactive-element {
+        margin: 20px 0;
+        padding: 20px;
+        background-color: #ecf0f1;
+        border-radius: 5px;
+    }
+    #qubit-visual-container {
+        width: 100%;
+        height: 300px;
+    }
+    #string-vibration {
+        width: 100%;
+        height: 200px;
+    }
+    .button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .button:hover {
+        background-color: #2980b9;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quantum Computing Meets String Theory: An Introduction</h1>
+        
+        <p>Welcome to the fascinating intersection of quantum computing and string theory. This introductory page will guide you through the basics of how these two cutting-edge fields of physics are coming together to revolutionize our understanding of the universe.</p>
+        
+        <h2>1. What is Quantum Computing?</h2>
+        <p>Quantum computing harnesses the principles of quantum mechanics to process information in ways that classical computers cannot. At its core are quantum bits, or qubits, which can exist in multiple states simultaneously due to superposition.</p>
+        
+        <div class="interactive-element">
+            <h3>Interactive Qubit Visualization</h3>
+            <div id="qubit-visual-container"></div>
+            <button class="button" onclick="updateQubitState()">Randomize Qubit State</button>
+        </div>
+
+        <h2>2. String Theory: A Brief Overview</h2>
+        <p>String theory proposes that the fundamental constituents of the universe are tiny, vibrating strings of energy. These strings vibrate in different ways, giving rise to all the particles and forces we observe.</p>
+
+        <div class="interactive-element">
+            <h3>String Vibration Modes</h3>
+            <div id="string-vibration"></div>
+            <button class="button" onclick="changeVibrationMode()">Change Vibration Mode</button>
+        </div>
+
+        <h2>3. The Quantum-String Theory Connection</h2>
+        <p>Quantum computing offers powerful new tools for simulating and exploring the complex mathematics of string theory. By leveraging quantum algorithms, researchers can probe higher-dimensional spaces and complex string configurations that are computationally intractable for classical computers.</p>
+
+        <div class="interactive-element">
+            <h3>Quantum Advantage in String Theory Calculations</h3>
+            <div id="quantum-advantage-chart"></div>
+        </div>
+
+        <h2>4. Future Directions</h2>
+        <p>As quantum computers become more powerful, they will enable us to test string theory predictions, explore the string theory landscape, and perhaps even uncover a unified theory of quantum gravity. The journey has just begun, and the potential for discovery is enormous.</p>
+
+        <p>In the following pages of this series, we'll delve deeper into specific quantum algorithms, string theory concepts, and the groundbreaking research happening at this interdisciplinary frontier.</p>
+    </div>
+
+    <script>
+        // Qubit Visualization
+        function updateQubitState() {
+            const theta = Math.random() * Math.PI;
+            const phi = Math.random() * 2 * Math.PI;
+            
+            const x = Math.sin(theta) * Math.cos(phi);
+            const y = Math.sin(theta) * Math.sin(phi);
+            const z = Math.cos(theta);
+            
+            const data = [{
+                type: "scatter3d",
+                mode: "markers",
+                x: [0, x],
+                y: [0, y],
+                z: [0, z],
+                marker: {size: 5, color: ["#3498db", "#e74c3c"]},
+            }, {
+                type: "scatter3d",
+                mode: "lines",
+                x: [0, x],
+                y: [0, y],
+                z: [0, z],
+                line: {color: "#2c3e50", width: 3},
+            }];
+
+            const layout = {
+                margin: {l: 0, r: 0, b: 0, t: 0},
+                scene: {
+                    xaxis: {range: [-1, 1]},
+                    yaxis: {range: [-1, 1]},
+                    zaxis: {range: [-1, 1]},
+                }
+            };
+
+            Plotly.newPlot('qubit-visual-container', data, layout);
+        }
+
+        // String Vibration Visualization
+        let vibrationMode = 1;
+        function changeVibrationMode() {
+            vibrationMode = (vibrationMode % 3) + 1;
+            updateStringVibration();
+        }
+
+        function updateStringVibration() {
+            const x = Array.from({length: 100}, (_, i) => i / 99);
+            const y = x.map(xi => Math.sin(vibrationMode * Math.PI * xi) * Math.sin(Date.now() / 200));
+
+            const data = [{
+                x: x,
+                y: y,
+                mode: 'lines',
+                line: {color: '#3498db', width: 3},
+            }];
+
+            const layout = {
+                title: `Vibration Mode ${vibrationMode}`,
+                xaxis: {range: [0, 1], title: 'String Position'},
+                yaxis: {range: [-1, 1], title: 'Displacement'},
+                margin: {l: 50, r: 10, b: 50, t: 50},
+            };
+
+            Plotly.newPlot('string-vibration', data, layout);
+            requestAnimationFrame(updateStringVibration);
+        }
+
+        // Quantum Advantage Chart
+        function createQuantumAdvantageChart() {
+            const classicalComplexity = Array.from({length: 20}, (_, i) => Math.pow(2, i));
+            const quantumComplexity = Array.from({length: 20}, (_, i) => i * i);
+
+            const data = [{
+                x: Array.from({length: 20}, (_, i) => i + 1),
+                y: classicalComplexity,
+                name: 'Classical',
+                type: 'scatter'
+            }, {
+                x: Array.from({length: 20}, (_, i) => i + 1),
+                y: quantumComplexity,
+                name: 'Quantum',
+                type: 'scatter'
+            }];
+
+            const layout = {
+                title: 'Computational Complexity: Classical vs Quantum',
+                xaxis: {title: 'Problem Size'},
+                yaxis: {title: 'Computation Time', type: 'log'},
+                margin: {l: 50, r: 10, b: 50, t: 50},
+            };
+
+            Plotly.newPlot('quantum-advantage-chart', data, layout);
+        }
+
+        // Initialize visualizations
+        updateQubitState();
+        updateStringVibration();
+        createQuantumAdvantageChart();
+    </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<html><head><base href="https://neuralelectromagnetics.org/oxytocin-resonance/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oxytocin and Electromagnetic Resonance: The Science of Connection</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #oxytocin-model {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+  }
+  #em-field-visualization {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+  }
+  .interactive-button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  .interactive-button:hover {
+    background-color: #2980b9;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Oxytocin and Electromagnetic Resonance: The Science of Connection</h1>
+    
+    <h2>Overview of Oxytocin's Role in Social Bonding</h2>
+    <p>Oxytocin, often referred to as the "love hormone" or "bonding hormone," plays a crucial role in social interactions and emotional connections. This section explores the known biological effects of oxytocin and its impact on human behavior.</p>
+    
+    <div id="oxytocin-model"></div>
+    <button class="interactive-button" onclick="toggleOxytocinRelease()">Simulate Oxytocin Release</button>
+    
+    <h2>Hypothetical Link Between Oxytocin Release and EM Field Resonance</h2>
+    <p>Recent theories propose a fascinating connection between oxytocin release and electromagnetic field resonance in the brain. This section delves into the potential mechanisms by which oxytocin might influence or be influenced by neural EM fields.</p>
+    
+    <div id="em-field-visualization"></div>
+    <button class="interactive-button" onclick="toggleEMFieldVisualization()">Toggle EM Field Visualization</button>
+    
+    <h2>Exploring the Physical Basis of Emotional Connections</h2>
+    <p>Building on the concepts of oxytocin and EM field resonance, we examine how these phenomena might contribute to the physical basis of emotional connections between individuals. This section discusses experimental evidence and theoretical models that support this intriguing hypothesis.</p>
+    
+    <canvas id="connectionStrengthChart"></canvas>
+  </div>
+
+  <script>
+    // Three.js Oxytocin Model
+    let scene, camera, renderer, molecule;
+    let animationId;
+
+    function initOxytocinModel() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(document.getElementById('oxytocin-model').clientWidth, 300);
+      document.getElementById('oxytocin-model').appendChild(renderer.domElement);
+
+      // Create a simplified oxytocin molecule model
+      molecule = new THREE.Group();
+      const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+      const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+      
+      for (let i = 0; i < 5; i++) {
+        const atom = new THREE.Mesh(geometry, material);
+        atom.position.set(Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 4 - 2);
+        molecule.add(atom);
+      }
+
+      scene.add(molecule);
+      camera.position.z = 5;
+    }
+
+    function animateOxytocin() {
+      animationId = requestAnimationFrame(animateOxytocin);
+      molecule.rotation.x += 0.01;
+      molecule.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+
+    function toggleOxytocinRelease() {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      } else {
+        animateOxytocin();
+      }
+    }
+
+    // EM Field Visualization
+    let emFieldChart;
+
+    function initEMFieldVisualization() {
+      const ctx = document.getElementById('em-field-visualization').getContext('2d');
+      emFieldChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 50}, (_, i) => i),
+          datasets: [{
+            label: 'EM Field Strength',
+            data: Array.from({length: 50}, () => Math.random() * 100),
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          animation: {
+            duration: 0
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function updateEMFieldVisualization() {
+      emFieldChart.data.datasets[0].data = emFieldChart.data.datasets[0].data.map(() => Math.random() * 100);
+      emFieldChart.update();
+    }
+
+    let emFieldInterval;
+
+    function toggleEMFieldVisualization() {
+      if (emFieldInterval) {
+        clearInterval(emFieldInterval);
+        emFieldInterval = null;
+      } else {
+        emFieldInterval = setInterval(updateEMFieldVisualization, 100);
+      }
+    }
+
+    // Connection Strength Chart
+    function initConnectionStrengthChart() {
+      const ctx = document.getElementById('connectionStrengthChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Physical Touch', 'Eye Contact', 'Verbal Communication', 'Emotional Synchrony', 'EM Field Resonance'],
+          datasets: [{
+            label: 'Connection Strength',
+            data: [85, 70, 60, 75, 90],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Initialize all visualizations
+    initOxytocinModel();
+    initEMFieldVisualization();
+    initConnectionStrengthChart();
+  </script>
+</body>
+</html>

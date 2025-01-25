@@ -1,0 +1,245 @@
+<html><head><base href="https://quantum-mind.org/orch-or/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparing Orch OR to Other Theories of Consciousness</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .chart-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+  #theory-comparison {
+    width: 100%;
+    height: 400px;
+  }
+  .interactive-element {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .interactive-element:hover {
+    transform: scale(1.05);
+  }
+</style>
+</head>
+<body>
+  <h1>Comparing Orch OR to Other Theories of Consciousness</h1>
+  
+  <p>In this exploration, we'll compare the Orchestrated Objective Reduction (Orch OR) theory to other prominent theories of consciousness. We'll examine their key features, strengths, and limitations through interactive visualizations and comprehensive analysis.</p>
+
+  <h2>1. Theory Comparison Chart</h2>
+  <div class="chart-container">
+    <canvas id="theory-comparison"></canvas>
+  </div>
+
+  <h2>2. Key Features of Consciousness Theories</h2>
+  <div id="feature-comparison" class="chart-container"></div>
+
+  <h2>3. Experimental Support for Different Theories</h2>
+  <div class="chart-container">
+    <canvas id="experimental-support"></canvas>
+  </div>
+
+  <script>
+    // Theory Comparison Chart
+    const ctx = document.getElementById('theory-comparison').getContext('2d');
+    new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: ['Quantum Mechanics', 'Biological Plausibility', 'Explanatory Power', 'Testability', 'Philosophical Coherence'],
+        datasets: [{
+          label: 'Orch OR',
+          data: [95, 80, 85, 70, 90],
+          fill: true,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(255, 99, 132)'
+        }, {
+          label: 'Global Workspace Theory',
+          data: [20, 90, 75, 85, 80],
+          fill: true,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgb(54, 162, 235)',
+          pointBackgroundColor: 'rgb(54, 162, 235)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(54, 162, 235)'
+        }, {
+          label: 'Integrated Information Theory',
+          data: [40, 70, 90, 60, 95],
+          fill: true,
+          backgroundColor: 'rgba(255, 206, 86, 0.2)',
+          borderColor: 'rgb(255, 206, 86)',
+          pointBackgroundColor: 'rgb(255, 206, 86)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(255, 206, 86)'
+        }]
+      },
+      options: {
+        elements: {
+          line: {
+            borderWidth: 3
+          }
+        },
+        scales: {
+          r: {
+            angleLines: {
+              display: false
+            },
+            suggestedMin: 0,
+            suggestedMax: 100
+          }
+        }
+      }
+    });
+
+    // Key Features Comparison
+    const featureData = [
+      {theory: "Orch OR", feature: "Quantum Coherence", value: 95},
+      {theory: "Orch OR", feature: "Microtubules", value: 90},
+      {theory: "Orch OR", feature: "Gravity", value: 85},
+      {theory: "Global Workspace", feature: "Information Integration", value: 90},
+      {theory: "Global Workspace", feature: "Neuronal Workspace", value: 95},
+      {theory: "Global Workspace", feature: "Accessibility", value: 85},
+      {theory: "Integrated Information", feature: "Information Integration", value: 95},
+      {theory: "Integrated Information", feature: "Causal Power", value: 90},
+      {theory: "Integrated Information", feature: "Qualia Space", value: 85}
+    ];
+
+    const width = 700;
+    const height = 400;
+    const margin = {top: 20, right: 20, bottom: 30, left: 40};
+
+    const svg = d3.select("#feature-comparison")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    const x = d3.scaleBand()
+      .range([margin.left, width - margin.right])
+      .padding(0.1);
+
+    const y = d3.scaleLinear()
+      .range([height - margin.bottom, margin.top]);
+
+    const color = d3.scaleOrdinal()
+      .domain(["Orch OR", "Global Workspace", "Integrated Information"])
+      .range(["#ff6384", "#36a2eb", "#ffce56"]);
+
+    x.domain(featureData.map(d => d.feature));
+    y.domain([0, 100]);
+
+    svg.selectAll(".bar")
+      .data(featureData)
+      .enter().append("rect")
+      .attr("class", "bar interactive-element")
+      .attr("x", d => x(d.feature))
+      .attr("y", d => y(d.value))
+      .attr("width", x.bandwidth())
+      .attr("height", d => height - margin.bottom - y(d.value))
+      .attr("fill", d => color(d.theory))
+      .on("mouseover", function(event, d) {
+        d3.select(this).attr("opacity", 0.8);
+        svg.append("text")
+          .attr("class", "value-label")
+          .attr("x", x(d.feature) + x.bandwidth() / 2)
+          .attr("y", y(d.value) - 5)
+          .attr("text-anchor", "middle")
+          .text(d.value);
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("opacity", 1);
+        svg.selectAll(".value-label").remove();
+      });
+
+    svg.append("g")
+      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-45)");
+
+    svg.append("g")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y));
+
+    // Experimental Support Chart
+    const expCtx = document.getElementById('experimental-support').getContext('2d');
+    new Chart(expCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Orch OR', 'Global Workspace Theory', 'Integrated Information Theory'],
+        datasets: [{
+          label: 'Direct Evidence',
+          data: [30, 60, 40],
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        }, {
+          label: 'Indirect Evidence',
+          data: [50, 25, 45],
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        }, {
+          label: 'Theoretical Support',
+          data: [80, 70, 85],
+          backgroundColor: 'rgba(255, 206, 86, 0.5)',
+        }]
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Experimental and Theoretical Support for Consciousness Theories'
+          },
+        },
+        responsive: true,
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true
+          }
+        }
+      }
+    });
+  </script>
+
+  <h2>Analysis</h2>
+  <p>The visualizations above provide a comprehensive comparison of Orch OR with other prominent theories of consciousness. Let's analyze the key points:</p>
+
+  <ol>
+    <li><strong>Theory Comparison Chart:</strong> This radar chart shows that Orch OR excels in its incorporation of quantum mechanics and philosophical coherence. Global Workspace Theory is strong in biological plausibility and testability, while Integrated Information Theory shines in explanatory power and philosophical coherence.</li>
+    
+    <li><strong>Key Features Comparison:</strong> The bar chart highlights the unique aspects of each theory. Orch OR's focus on quantum coherence and microtubules sets it apart, while Global Workspace Theory emphasizes the neuronal workspace and information accessibility. Integrated Information Theory, on the other hand, places high importance on information integration and causal power.</li>
+    
+    <li><strong>Experimental Support:</strong> This stacked bar chart reveals that while Orch OR has strong theoretical support, it currently lacks as much direct experimental evidence compared to Global Workspace Theory. Integrated Information Theory occupies a middle ground in terms of experimental support.</li>
+  </ol>
+
+  <p>Orch OR's unique approach, incorporating quantum mechanics and gravity into consciousness theory, offers exciting possibilities for understanding the nature of mind. However, it faces challenges in experimental verification due to the microscopic scale of its proposed mechanisms.</p>
+
+  <p>Global Workspace Theory, with its emphasis on neural networks and information processing, aligns well with current neuroscientific research, making it more easily testable. Integrated Information Theory provides a mathematically rigorous framework for consciousness but faces challenges in practical application and measurement.</p>
+
+  <p>Each theory offers valuable insights into the nature of consciousness, and future research may lead to a synthesis of these approaches or the emergence of new theories that build upon their strengths.</p>
+
+</body>
+</html>

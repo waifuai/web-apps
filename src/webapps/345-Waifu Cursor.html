@@ -1,0 +1,221 @@
+<html><head><base href="." /><title>Waifu Cursor</title>
+<style>
+  body {
+    margin: 0;
+    padding: 20px;
+    background: #fce4ec;
+    font-family: sans-serif;
+    cursor: none; /* Hide default cursor */
+    overflow: hidden;
+  }
+
+  .cursor-container {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+  }
+
+  .waifu {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sparkle {
+    position: absolute;
+    pointer-events: none;
+    animation: sparkleAnim 1s forwards;
+    opacity: 0;
+  }
+
+  .trail {
+    position: absolute;
+    pointer-events: none;
+    animation: trailFade 0.8s forwards;
+    opacity: 0;
+  }
+
+  * {
+    cursor: none !important; /* Force hide cursor on all elements */
+  }
+
+  @keyframes sparkleAnim {
+    0% {
+      transform: translate(0, 0) scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--tx), var(--ty)) scale(1);
+      opacity: 0;
+    }
+  }
+
+  @keyframes trailFade {
+    0% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+  }
+
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+</style>
+</head>
+<body>
+
+<div class="content">
+  <h1>Kawaii Cursor Demo</h1>
+  <p>Move your mouse around to see the animated waifu cursor with trailing stars! Click anywhere to create sparkle effects! ✨</p>
+  <p>This is an interactive demo showing how to create a custom animated cursor using SVG and JavaScript.</p>
+</div>
+
+<audio id="moveSound" preload="auto">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="clickSound" preload="auto">
+  <source src="https://assets.mixkit.co/active_storage/sfx/1343/1343-preview.mp3" type="audio/mpeg">
+</audio>
+
+<div class="cursor-container">
+  <svg class="waifu" viewBox="0 0 100 100">
+    <!-- Waifu character -->
+    <g transform="translate(50,50)">
+      <!-- Hair back -->
+      <path d="M-25,-10 C-25,-30 25,-30 25,-10 L25,10 C25,20 -25,20 -25,10 Z" fill="#FF69B4"/>
+      
+      <!-- Head -->
+      <circle cx="0" cy="-5" r="20" fill="#FFE0E6"/>
+      
+      <!-- Hair front -->
+      <path d="M-20,-15 C-20,-35 20,-35 20,-15" fill="none" stroke="#FF69B4" stroke-width="8"/>
+      <path d="M-25,-5 C-25,-15 -15,-25 -10,-15" fill="none" stroke="#FF69B4" stroke-width="4"/>
+      <path d="M25,-5 C25,-15 15,-25 10,-15" fill="none" stroke="#FF69B4" stroke-width="4"/>
+      
+      <!-- Eyes -->
+      <path d="M-10,-10 C-8,-10 -8,-8 -10,-8 C-12,-8 -12,-10 -10,-10" fill="#333"/>
+      <path d="M10,-10 C12,-10 12,-8 10,-8 C8,-8 8,-10 10,-10" fill="#333"/>
+      
+      <!-- Blush -->
+      <circle cx="-12" cy="-2" r="4" fill="#FFB7C5" opacity="0.5"/>
+      <circle cx="12" cy="-2" r="4" fill="#FFB7C5" opacity="0.5"/>
+      
+      <!-- Mouth -->
+      <path d="M-4,3 Q0,6 4,3" fill="none" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+  </svg>
+</div>
+
+<script>
+const cursor = document.querySelector('.cursor-container');
+const colors = ['#FFB7C4', '#FF69B4', '#FFC0CB', '#FFE4E1'];
+let lastTrailTime = 0;
+let lastSoundTime = 0;
+
+const moveSound = document.getElementById('moveSound');
+const clickSound = document.getElementById('clickSound');
+
+// Configure sounds
+moveSound.volume = 0.2;
+clickSound.volume = 0.3;
+
+document.addEventListener('mousemove', (e) => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  
+  // Create trailing stars
+  const currentTime = Date.now();
+  if (currentTime - lastTrailTime > 50) { // Limit trail creation rate
+    createTrail(e.clientX, e.clientY);
+    lastTrailTime = currentTime;
+  }
+
+  // Play movement sound with rate limiting
+  if (currentTime - lastSoundTime > 100) { // Limit sound play rate to avoid overlap
+    moveSound.currentTime = 0;
+    moveSound.play().catch(e => console.log("Audio play failed:", e));
+    lastSoundTime = currentTime;
+  }
+});
+
+document.addEventListener('click', (e) => {
+  createSparkles(e.clientX, e.clientY);
+  clickSound.currentTime = 0;
+  clickSound.play().catch(e => console.log("Audio play failed:", e));
+});
+
+function createTrail(x, y) {
+  const trail = document.createElement('div');
+  trail.className = 'trail';
+  
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 20 20');
+  svg.style.width = '15px';
+  svg.style.height = '15px';
+  
+  const star = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  star.setAttribute('d', 'M10,0 L13,7 L20,7 L15,12 L17,20 L10,15 L3,20 L5,12 L0,7 L7,7 Z');
+  star.setAttribute('fill', colors[Math.floor(Math.random() * colors.length)]);
+  
+  svg.appendChild(star);
+  trail.appendChild(svg);
+  
+  trail.style.left = x + 'px';
+  trail.style.top = y + 'px';
+  
+  document.body.appendChild(trail);
+  
+  trail.addEventListener('animationend', () => {
+    trail.remove();
+  });
+}
+
+function createSparkles(x, y) {
+  for (let i = 0; i < 8; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 20 20');
+    svg.style.width = '20px';
+    svg.style.height = '20px';
+    
+    const star = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    star.setAttribute('d', 'M10,0 L13,7 L20,7 L15,12 L17,20 L10,15 L3,20 L5,12 L0,7 L7,7 Z');
+    star.setAttribute('fill', colors[Math.floor(Math.random() * colors.length)]);
+    
+    svg.appendChild(star);
+    sparkle.appendChild(svg);
+    
+    const angle = (Math.PI * 2 * i) / 8;
+    const distance = 50 + Math.random() * 50;
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance;
+    
+    sparkle.style.setProperty('--tx', `${tx}px`);
+    sparkle.style.setProperty('--ty', `${ty}px`);
+    
+    sparkle.style.left = x + 'px';
+    sparkle.style.top = y + 'px';
+    
+    document.body.appendChild(sparkle);
+    
+    sparkle.addEventListener('animationend', () => {
+      sparkle.remove();
+    });
+  }
+}
+</script>
+</body></html>

@@ -1,0 +1,207 @@
+<html><head><base href="https://quantumstringtheory.org/quantum-tensor-networks/"><title>Quantum Tensor Networks in String Theory Calculations</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .tensor-network {
+    width: 100%;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  .interactive-demo {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button:hover {
+    background-color: #2980b9;
+  }
+</style>
+</head>
+<body>
+  <h1>Quantum Tensor Networks in String Theory Calculations</h1>
+  
+  <p>Welcome to the fascinating intersection of quantum tensor networks and string theory calculations. This page explores how quantum computing techniques, particularly tensor networks, can be applied to complex string theory problems.</p>
+
+  <h2>1. Introduction to Tensor Networks</h2>
+  <p>Tensor networks are powerful mathematical tools used to represent and manipulate high-dimensional quantum states efficiently. In the context of string theory, they offer a promising approach to tackle computationally challenging problems.</p>
+
+  <div class="tensor-network" id="basic-tensor-network"></div>
+
+  <h2>2. Applying Tensor Networks to String Theory</h2>
+  <p>String theory involves complex multi-dimensional calculations that can benefit greatly from the efficient representation provided by tensor networks. Let's explore an interactive demonstration of how tensor networks can be used to simulate string vibrations in higher dimensions.</p>
+
+  <div class="interactive-demo">
+    <h3>Interactive Demo: String Vibrations in Higher Dimensions</h3>
+    <p>Use the slider to adjust the number of dimensions and observe how the tensor network adapts to represent the increasing complexity of string vibrations.</p>
+    <input type="range" id="dimension-slider" min="1" max="10" value="3">
+    <span id="dimension-value">3</span> dimensions
+    <div id="string-vibration-demo"></div>
+    <button id="simulate-btn">Simulate Vibration</button>
+  </div>
+
+  <h2>3. Quantum Advantage in Tensor Network Calculations</h2>
+  <p>Quantum computers can potentially perform tensor network contractions exponentially faster than classical computers for certain problems. This section demonstrates the quantum advantage in a simplified tensor network contraction task relevant to string theory calculations.</p>
+
+  <div class="interactive-demo">
+    <h3>Quantum vs Classical Tensor Network Contraction</h3>
+    <p>Click the button to compare the performance of quantum and classical approaches for contracting a tensor network representing a simplified string theory calculation.</p>
+    <button id="compare-btn">Compare Performance</button>
+    <div id="performance-comparison"></div>
+  </div>
+
+  <script>
+    // Basic Tensor Network Visualization
+    const width = 800;
+    const height = 400;
+
+    const svg = d3.select("#basic-tensor-network")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    const nodes = [
+      {id: 0, x: 200, y: 200},
+      {id: 1, x: 400, y: 100},
+      {id: 2, x: 400, y: 300},
+      {id: 3, x: 600, y: 200}
+    ];
+
+    const links = [
+      {source: 0, target: 1},
+      {source: 0, target: 2},
+      {source: 1, target: 3},
+      {source: 2, target: 3}
+    ];
+
+    svg.selectAll("line")
+      .data(links)
+      .enter()
+      .append("line")
+      .attr("x1", d => nodes[d.source].x)
+      .attr("y1", d => nodes[d.source].y)
+      .attr("x2", d => nodes[d.target].x)
+      .attr("y2", d => nodes[d.target].y)
+      .attr("stroke", "#2c3e50")
+      .attr("stroke-width", 2);
+
+    svg.selectAll("circle")
+      .data(nodes)
+      .enter()
+      .append("circle")
+      .attr("cx", d => d.x)
+      .attr("cy", d => d.y)
+      .attr("r", 20)
+      .attr("fill", "#3498db");
+
+    // String Vibration Demo
+    const slider = document.getElementById("dimension-slider");
+    const dimensionValue = document.getElementById("dimension-value");
+    const simulateBtn = document.getElementById("simulate-btn");
+    const stringVibrationDemo = document.getElementById("string-vibration-demo");
+
+    slider.addEventListener("input", () => {
+      dimensionValue.textContent = slider.value;
+      updateStringVisualization(parseInt(slider.value));
+    });
+
+    simulateBtn.addEventListener("click", () => {
+      simulateStringVibration(parseInt(slider.value));
+    });
+
+    function updateStringVisualization(dimensions) {
+      stringVibrationDemo.innerHTML = '';
+      const canvas = document.createElement("canvas");
+      canvas.width = 400;
+      canvas.height = 200;
+      stringVibrationDemo.appendChild(canvas);
+      const ctx = canvas.getContext("2d");
+      
+      ctx.beginPath();
+      ctx.moveTo(0, 100);
+      for (let x = 0; x <= 400; x++) {
+        const y = 100 + Math.sin(x * 0.05) * 50 * Math.sin(dimensions * 0.5);
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = "#3498db";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function simulateStringVibration(dimensions) {
+      const canvas = stringVibrationDemo.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+      let time = 0;
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(0, 100);
+        for (let x = 0; x <= 400; x++) {
+          const y = 100 + Math.sin(x * 0.05 + time) * 50 * Math.sin(dimensions * 0.5);
+          ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = "#3498db";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        time += 0.1;
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+
+    updateStringVisualization(3);
+
+    // Quantum vs Classical Performance Comparison
+    const compareBtn = document.getElementById("compare-btn");
+    const performanceComparison = document.getElementById("performance-comparison");
+
+    compareBtn.addEventListener("click", async () => {
+      performanceComparison.innerHTML = "Simulating performance comparison...";
+      
+      // Simulate quantum and classical runtimes
+      const quantumTime = Math.random() * 5 + 1;
+      const classicalTime = Math.random() * 50 + 10;
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      performanceComparison.innerHTML = `
+        <h4>Results:</h4>
+        <p>Quantum Runtime: ${quantumTime.toFixed(2)} seconds</p>
+        <p>Classical Runtime: ${classicalTime.toFixed(2)} seconds</p>
+        <p>Speedup: ${(classicalTime / quantumTime).toFixed(2)}x</p>
+      `;
+    });
+
+  </script>
+</body>
+</html>

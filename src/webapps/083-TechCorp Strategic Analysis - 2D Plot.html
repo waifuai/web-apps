@@ -1,0 +1,140 @@
+<html><head><base href="https://milsim.ai"/>
+<title>TechCorp Strategic Analysis - 2D Plot</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    background-color: #0a0a0a;
+    color: #33ff33;
+    font-family: "Courier New", monospace;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    border: 2px solid #33ff33;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #33ff33;
+    text-transform: uppercase;
+    border-bottom: 1px solid #33ff33;
+    padding-bottom: 10px;
+  }
+  .blinking {
+    animation: blink 1s linear infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  .disclaimer {
+    margin-top: 20px;
+    font-size: 0.8em;
+    text-align: center;
+  }
+  #chartContainer {
+    background-color: rgba(51, 255, 51, 0.1);
+    border: 1px solid #33ff33;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>TechCorp Strategic Analysis</h1>
+    <p class="blinking">TOP SECRET // NOFORN</p>
+    
+    <div id="chartContainer">
+      <canvas id="techCorpChart"></canvas>
+    </div>
+
+    <p class="disclaimer">
+      CLASSIFIED INFORMATION: Unauthorized disclosure subject to administrative and criminal sanctions. Market cap data as of latest intel.
+    </p>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('techCorpChart').getContext('2d');
+    
+    const data = {
+      datasets: [{
+        label: 'TechCorp Analysis',
+        data: [
+          {x: 70, y: 2640, r: 20, company: 'ALPHA (AAPL)'},
+          {x: 65, y: 2480, r: 19, company: 'BRAVO (MSFT)'},
+          {x: 60, y: 1560, r: 17, company: 'CHARLIE (GOOGL)'},
+          {x: 75, y: 1080, r: 15, company: 'DELTA (AMZN)'},
+          {x: 80, y: 940, r: 14, company: 'ECHO (NVDA)'},
+          {x: 45, y: 650, r: 12, company: 'FOXTROT (META)'},
+          {x: 90, y: 608, r: 11, company: 'GOLF (TSLA)'}
+        ],
+        backgroundColor: 'rgba(51, 255, 51, 0.6)',
+        borderColor: 'rgba(51, 255, 51, 1)',
+        borderWidth: 1
+      }]
+    };
+
+    const config = {
+      type: 'bubble',
+      data: data,
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'John Galt Rating',
+              color: '#33ff33'
+            },
+            ticks: {
+              color: '#33ff33'
+            },
+            grid: {
+              color: 'rgba(51, 255, 51, 0.2)'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Market Cap (Billions USD)',
+              color: '#33ff33'
+            },
+            ticks: {
+              color: '#33ff33'
+            },
+            grid: {
+              color: 'rgba(51, 255, 51, 0.2)'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.raw.company + 
+                       ' | JG Rating: ' + context.raw.x + 
+                       ' | Market Cap: $' + context.raw.y + 'B';
+              }
+            }
+          }
+        }
+      }
+    };
+
+    const myChart = new Chart(ctx, config);
+
+    // Simulating data updates
+    setInterval(() => {
+      data.datasets[0].data.forEach(point => {
+        point.x = Math.max(20, Math.min(100, point.x + Math.floor(Math.random() * 11) - 5));
+        point.y = Math.max(100, Math.min(3000, point.y + Math.floor(Math.random() * 101) - 50));
+      });
+      myChart.update();
+    }, 5000);
+  </script>
+</body></html>

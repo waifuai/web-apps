@@ -1,0 +1,219 @@
+<html><head><base href="https://raw.githubusercontent.com" /><meta charset="UTF-8">
+<title>Research Text Analysis Interface</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.0/marked.min.js"></script>
+<style>
+:root {
+  --primary: #2c3e50;
+  --secondary: #34495e;
+  --accent: #3498db;
+  --bg: #ecf0f1;
+  --text: #2c3e50;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-interface {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.visualization {
+  margin-top: 20px;
+  height: 200px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.data-points {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+}
+
+.data-point {
+  background: var(--accent);
+  width: 4px;
+  margin-right: 2px;
+  transition: height 0.3s ease;
+  opacity: 0.7;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--secondary);
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.results {
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  min-height: 200px;
+}
+
+.result-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  animation: fadeIn 0.3s ease;
+}
+
+.math-preview {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin: 10px 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Research Text Analysis Interface</h1>
+  
+  <div class="search-interface">
+    <input type="text" id="searchQuery" placeholder="Enter your research question or equation (supports LaTeX)..." />
+    <div class="visualization">
+      <div class="data-points" id="dataPoints"></div>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="math-preview" id="mathPreview"></div>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Generate random data points for visualization
+  const dataPoints = document.getElementById('dataPoints');
+  for (let i = 0; i < 200; i++) {
+    const point = document.createElement('div');
+    point.className = 'data-point';
+    point.style.height = Math.random() * 100 + 'px';
+    dataPoints.appendChild(point);
+  }
+
+  // Handle search input
+  const searchInput = document.getElementById('searchQuery');
+  const mathPreview = document.getElementById('mathPreview');
+  const searchResults = document.getElementById('searchResults');
+  let searchTimeout;
+
+  searchInput.addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    
+    // Update math preview if contains LaTeX
+    if (e.target.value.includes('$')) {
+      try {
+        const mathText = e.target.value.replace(/\$(.*?)\$/g, (match, p1) => {
+          return katex.renderToString(p1);
+        });
+        mathPreview.innerHTML = mathText;
+      } catch (err) {
+        mathPreview.innerHTML = 'Invalid LaTeX syntax';
+      }
+    } else {
+      mathPreview.innerHTML = '';
+    }
+
+    // Simulate search through vast amounts of data
+    searchTimeout = setTimeout(() => {
+      searchResults.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      
+      // Simulate API call delay
+      setTimeout(() => {
+        // Example results
+        const results = [
+          {
+            title: 'Research Paper A',
+            excerpt: 'This paper discusses ' + e.target.value + ' in context of quantum mechanics...',
+            relevance: 0.95
+          },
+          {
+            title: 'Dataset Analysis B',
+            excerpt: 'Analysis shows correlation between ' + e.target.value + ' and observed phenomena...',
+            relevance: 0.87
+          },
+          {
+            title: 'Mathematical Proof C',
+            excerpt: 'The proof demonstrates that $E = mc^2$ relates to ' + e.target.value,
+            relevance: 0.82
+          }
+        ];
+
+        searchResults.innerHTML = results.map(result => `
+          <div class="result-item">
+            <h3>${result.title}</h3>
+            <p>${result.excerpt}</p>
+            <small>Relevance: ${(result.relevance * 100).toFixed(1)}%</small>
+          </div>
+        `).join('');
+
+        // Animate data points to show "processing"
+        Array.from(dataPoints.children).forEach(point => {
+          point.style.height = Math.random() * 100 + 'px';
+        });
+
+      }, 1000);
+    }, 300);
+  });
+
+  // Example equation to start
+  searchInput.value = 'Find papers about $F = ma$ and acceleration';
+  searchInput.dispatchEvent(new Event('input'));
+});
+</script>
+</body></html>

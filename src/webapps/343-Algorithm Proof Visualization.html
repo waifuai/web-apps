@@ -1,0 +1,164 @@
+<html><head><base href="." ></base><title>Algorithm Proof Visualization</title><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script><style>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.proof-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.visualization {
+  width: 100%;
+  height: 400px;
+  border: 1px solid #ddd;
+  margin: 20px 0;
+  position: relative;
+}
+
+.step-container {
+  margin: 20px 0;
+}
+
+.matrix {
+  font-family: monospace;
+  white-space: pre;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.controls {
+  margin: 20px 0;
+  text-align: center;
+}
+
+button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #45a049;
+}
+</style></head><body><div class="proof-container">
+  <h1>Interactive Algorithm Proof Visualization</h1>
+
+  <div class="visualization">
+    <svg width="100%" height="100%" viewBox="-200 -200 400 400">
+      <!-- Street line -->
+      <line x1="-150" y1="0" x2="150" y2="0" stroke="gray" stroke-width="4"/>
+      
+      <!-- Street center point -->
+      <circle cx="0" cy="0" r="4" fill="red"/>
+      
+      <!-- Parking rectangles -->
+      <g id="rectangles"></g>
+      
+      <!-- Coordinate system -->
+      <line x1="-180" y1="0" x2="180" y2="0" stroke="#ddd" stroke-width="1"/>
+      <line x1="0" y1="-180" x2="0" y2="180" stroke="#ddd" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="step-container">
+    <h3>Matrix Operations</h3>
+    <div class="matrix" id="currentStep"></div>
+  </div>
+
+  <div class="controls">
+    <button onclick="previousStep()">Previous Step</button>
+    <button onclick="nextStep()">Next Step</button>
+  </div>
+
+  <script>
+    let currentStep = 0;
+    const steps = [
+      {
+        title: "Initial Setup",
+        matrix: `B = [K]\n    [H]\n    [W]`,
+        update: () => {
+          updateRectangles([]);
+          document.getElementById('currentStep').textContent = steps[currentStep].matrix;
+        }
+      },
+      {
+        title: "Vertex Template",
+        matrix: `M = [1 0 0]\n    [1 1 0]\n    [1 1 1]\n    [1 0 1]`,
+        update: () => {
+          const points = [[-30,-20], [-30,20], [30,20], [30,-20]];
+          updateRectangles(points);
+          document.getElementById('currentStep').textContent = steps[currentStep].matrix;
+        }
+      },
+      {
+        title: "Rotation",
+        matrix: `R(θ) = [cos(θ) -sin(θ)]\n       [sin(θ)  cos(θ)]`,
+        update: () => {
+          const theta = Math.PI / 6;
+          const points = [[-30,-20], [-30,20], [30,20], [30,-20]].map(p => {
+            return [
+              p[0] * Math.cos(theta) - p[1] * Math.sin(theta),
+              p[0] * Math.sin(theta) + p[1] * Math.cos(theta)
+            ];
+          });
+          updateRectangles(points);
+          document.getElementById('currentStep').textContent = steps[currentStep].matrix;
+        }
+      }
+    ];
+
+    function updateRectangles(points) {
+      const rectangles = document.getElementById('rectangles');
+      rectangles.innerHTML = '';
+      
+      if (points.length > 0) {
+        // First rectangle
+        const path1 = `M ${points[0][0]},${points[0][1]} 
+                      L ${points[1][0]},${points[1][1]} 
+                      L ${points[2][0]},${points[2][1]}
+                      L ${points[3][0]},${points[3][1]} Z`;
+        
+        // Second rectangle (mirrored)
+        const path2 = `M ${-points[0][0]},${-points[0][1]} 
+                      L ${-points[1][0]},${-points[1][1]} 
+                      L ${-points[2][0]},${-points[2][1]}
+                      L ${-points[3][0]},${-points[3][1]} Z`;
+        
+        rectangles.innerHTML = `
+          <path d="${path1}" fill="rgba(76, 175, 80, 0.3)" stroke="green"/>
+          <path d="${path2}" fill="rgba(76, 175, 80, 0.3)" stroke="green"/>
+        `;
+      }
+    }
+
+    function nextStep() {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        steps[currentStep].update();
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 0) {
+        currentStep--;
+        steps[currentStep].update();
+      }
+    }
+
+    // Initialize first step
+    steps[0].update();
+  </script>
+</div></body></html>

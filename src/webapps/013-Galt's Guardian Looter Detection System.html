@@ -1,0 +1,211 @@
+<html><head><base href="https://galtsguardian.com/" />
+<title>Galt's Guardian: Looter Detection System</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    overflow: hidden;
+  }
+  #atlas-grid {
+    width: 800px;
+    height: 600px;
+    margin: 20px auto;
+    position: relative;
+    background-color: #fff;
+    border: 2px solid #333;
+  }
+  .axis {
+    position: absolute;
+    background-color: #333;
+  }
+  #x-axis {
+    bottom: 0;
+    left: 50px;
+    width: calc(100% - 50px);
+    height: 2px;
+  }
+  #y-axis {
+    top: 0;
+    left: 50px;
+    width: 2px;
+    height: calc(100% - 50px);
+  }
+  .axis-label {
+    position: absolute;
+    font-weight: bold;
+  }
+  #x-label {
+    bottom: -30px;
+    right: 0;
+    left: 50px;
+    text-align: center;
+  }
+  #y-label {
+    transform: rotate(-90deg);
+    transform-origin: top left;
+    top: 300px;
+    left: 15px;
+  }
+  .tick {
+    position: absolute;
+    background-color: #333;
+  }
+  .tick-label {
+    position: absolute;
+    font-size: 12px;
+  }
+  .looter {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: red;
+    cursor: pointer;
+  }
+  #info-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    background-color: #fff;
+    border: 1px solid #333;
+    padding: 10px;
+    display: none;
+  }
+  #controls {
+    text-align: center;
+    margin-top: 20px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4a4a4a;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+  button:hover {
+    background-color: #333;
+  }
+</style>
+</head>
+<body>
+<div id="atlas-grid">
+  <div id="x-axis" class="axis"></div>
+  <div id="y-axis" class="axis"></div>
+  <div id="x-label" class="axis-label">Degree of Entitlement</div>
+  <div id="y-label" class="axis-label">Level of Unearned Power</div>
+</div>
+<div id="info-panel"></div>
+<div id="controls">
+  <button onclick="detectLooters()">Detect Looters</button>
+  <button onclick="analyzeThreats()">Analyze Threats</button>
+</div>
+
+<script>
+const looters = [
+  { name: "James Taggart", entitlement: 0.8, power: 0.9, description: "Railroad heir, seeks government favors" },
+  { name: "Orren Boyle", entitlement: 0.7, power: 0.8, description: "Steel magnate, lobbies for protectionist policies" },
+  { name: "Dr. Floyd Ferris", entitlement: 0.6, power: 0.7, description: "Science bureaucrat, suppresses innovation" },
+  { name: "Wesley Mouch", entitlement: 0.9, power: 0.85, description: "Government official, implements restrictive regulations" },
+  { name: "Mr. Thompson", entitlement: 0.75, power: 0.95, description: "Head of State, nationalizes industries" },
+  { name: "Cuffy Meigs", entitlement: 0.85, power: 0.6, description: "Political lobbyist, corrupts for personal gain" },
+];
+
+function setupGrid() {
+  const grid = document.getElementById('atlas-grid');
+  const width = grid.offsetWidth;
+  const height = grid.offsetHeight;
+
+  // X-axis ticks
+  for (let i = 0; i <= 10; i++) {
+    const tick = document.createElement('div');
+    tick.className = 'tick';
+    tick.style.left = `${50 + i * (width - 50) / 10}px`;
+    tick.style.bottom = '0';
+    tick.style.width = '1px';
+    tick.style.height = '5px';
+    grid.appendChild(tick);
+
+    const label = document.createElement('div');
+    label.className = 'tick-label';
+    label.style.left = `${50 + i * (width - 50) / 10}px`;
+    label.style.bottom = '-20px';
+    label.style.transform = 'translateX(-50%)';
+    label.textContent = i / 10;
+    grid.appendChild(label);
+  }
+
+  // Y-axis ticks
+  for (let i = 0; i <= 10; i++) {
+    const tick = document.createElement('div');
+    tick.className = 'tick';
+    tick.style.left = '50px';
+    tick.style.top = `${height - 50 - i * (height - 50) / 10}px`;
+    tick.style.width = '5px';
+    tick.style.height = '1px';
+    grid.appendChild(tick);
+
+    const label = document.createElement('div');
+    label.className = 'tick-label';
+    label.style.left = '30px';
+    label.style.top = `${height - 50 - i * (height - 50) / 10}px`;
+    label.style.transform = 'translateY(-50%)';
+    label.textContent = i / 10;
+    grid.appendChild(label);
+  }
+}
+
+function detectLooters() {
+  const grid = document.getElementById('atlas-grid');
+  grid.innerHTML = ''; // Clear previous detections
+  setupGrid(); // Redraw the grid
+
+  looters.forEach(looter => {
+    const looterElement = document.createElement('div');
+    looterElement.className = 'looter';
+    looterElement.style.left = `${50 + looter.entitlement * (grid.offsetWidth - 50)}px`;
+    looterElement.style.bottom = `${50 + looter.power * (grid.offsetHeight - 50)}px`;
+    looterElement.addEventListener('mouseover', () => showInfo(looter));
+    looterElement.addEventListener('mouseout', hideInfo);
+    grid.appendChild(looterElement);
+  });
+}
+
+function showInfo(looter) {
+  const infoPanel = document.getElementById('info-panel');
+  infoPanel.innerHTML = `
+    <h3>${looter.name}</h3>
+    <p><strong>Entitlement:</strong> ${looter.entitlement.toFixed(2)}</p>
+    <p><strong>Unearned Power:</strong> ${looter.power.toFixed(2)}</p>
+    <p><strong>Description:</strong> ${looter.description}</p>
+  `;
+  infoPanel.style.display = 'block';
+}
+
+function hideInfo() {
+  document.getElementById('info-panel').style.display = 'none';
+}
+
+function analyzeThreats() {
+  const threatLevels = looters.map(looter => ({
+    name: looter.name,
+    threat: (looter.entitlement + looter.power) / 2
+  })).sort((a, b) => b.threat - a.threat);
+
+  let analysis = "Threat Analysis:\n\n";
+  threatLevels.forEach(threat => {
+    analysis += `${threat.name}: Threat Level ${(threat.threat * 100).toFixed(1)}%\n`;
+  });
+
+  alert(analysis);
+}
+
+setupGrid();
+</script>
+</body></html>

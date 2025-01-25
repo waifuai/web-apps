@@ -1,0 +1,177 @@
+<html><head><base href="." /><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f5f7ff;
+    color: #2d3748;
+}
+
+.algorithm-visualization {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.graph-container {
+    position: relative;
+    height: 400px;
+    margin: 2rem 0;
+}
+
+.formula {
+    font-family: 'Fira Code', monospace;
+    background: #2d3748;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.step-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+button {
+    background: #4a5568;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #2d3748;
+}
+
+.parameter-slider {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="algorithm-visualization">
+    <h1>Dynamic Commission Rate Optimization Simulator</h1>
+    
+    <div class="controls">
+        <div>
+            <label for="volatility">Market Volatility:</label>
+            <input type="range" id="volatility" class="parameter-slider" min="0" max="100" value="50">
+        </div>
+        <div>
+            <label for="competition">Competition Level:</label>
+            <input type="range" id="competition" class="parameter-slider" min="0" max="100" value="50">
+        </div>
+    </div>
+    
+    <div class="graph-container">
+        <canvas id="optimizationChart"></canvas>
+    </div>
+    
+    <div class="formula">
+        E_j(α_j) = α_j * I_j(α_j)
+        where I_j(α_j) = base_demand * (1 - α_j)^elasticity * market_factor
+    </div>
+</div>
+
+<script>
+const ctx = document.getElementById('optimizationChart').getContext('2d');
+let optimizationChart;
+
+function initializeChart() {
+    const commissionRates = Array.from({length: 100}, (_, i) => i / 100);
+    const earnings = calculateEarnings(commissionRates);
+    
+    optimizationChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: commissionRates.map(rate => (rate * 100).toFixed(0) + '%'),
+            datasets: [{
+                label: 'Expected Earnings',
+                data: earnings,
+                borderColor: '#4299e1',
+                backgroundColor: 'rgba(66, 153, 225, 0.1)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Expected Earnings'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Commission Rate'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function calculateEarnings(rates) {
+    const volatility = document.getElementById('volatility').value / 100;
+    const competition = document.getElementById('competition').value / 100;
+    
+    return rates.map(rate => {
+        const baseDemand = 1000;
+        const elasticity = 1.5 + volatility;
+        const marketFactor = 1 - (competition * rate);
+        const investmentVolume = baseDemand * Math.pow(1 - rate, elasticity) * marketFactor;
+        return rate * investmentVolume;
+    });
+}
+
+function updateChart() {
+    const commissionRates = Array.from({length: 100}, (_, i) => i / 100);
+    const earnings = calculateEarnings(commissionRates);
+    
+    optimizationChart.data.datasets[0].data = earnings;
+    optimizationChart.update();
+}
+
+document.getElementById('volatility').addEventListener('input', updateChart);
+document.getElementById('competition').addEventListener('input', updateChart);
+
+initializeChart();
+</script>
+</body></html>

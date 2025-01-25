@@ -1,0 +1,168 @@
+<html><head><base href="https://autarky-robots.com"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AutoRky: User Dashboard</title><style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .dashboard {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        min-height: 100vh;
+    }
+    
+    .sidebar {
+        background-color: #2c3e50;
+        color: white;
+        padding: 20px;
+    }
+    
+    .main-content {
+        padding: 20px;
+    }
+    
+    .user-profile {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .menu-item {
+        padding: 12px;
+        margin: 5px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .menu-item:hover {
+        background-color: #34495e;
+    }
+    
+    .menu-item.active {
+        background-color: #3498db;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .dashboard-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    
+    .status-active {
+        background-color: #2ecc71;
+    }
+    
+    .status-warning {
+        background-color: #f1c40f;
+    }
+    
+    .chart {
+        width: 100%;
+        height: 200px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-top: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chart-bar {
+        position: absolute;
+        bottom: 0;
+        width: 30px;
+        background-color: #3498db;
+        transition: height 0.5s;
+    }
+</style></head><body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="user-profile">
+                <svg viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="40" r="25" fill="#95a5a6"/>
+                    <circle cx="50" cy="100" r="35" fill="#95a5a6"/>
+                </svg>
+                <h3>Welcome, User</h3>
+            </div>
+            <div class="menu-item active">Dashboard</div>
+            <div class="menu-item">Robot Fleet</div>
+            <div class="menu-item">Resource Management</div>
+            <div class="menu-item">Energy Systems</div>
+            <div class="menu-item">Food Production</div>
+            <div class="menu-item">Maintenance</div>
+            <div class="menu-item">Settings</div>
+        </div>
+        <div class="main-content">
+            <h1>System Overview</h1>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3><span class="status-indicator status-active"></span>Robot Fleet Status</h3>
+                    <p>Active Units: 12/15</p>
+                    <p>Charging: 2</p>
+                    <p>Maintenance Required: 1</p>
+                    <div class="chart" id="robotChart"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3><span class="status-indicator status-warning"></span>Resource Levels</h3>
+                    <p>Water Storage: 85%</p>
+                    <p>Food Storage: 76%</p>
+                    <p>Raw Materials: 62%</p>
+                    <div class="chart" id="resourceChart"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3><span class="status-indicator status-active"></span>Energy Production</h3>
+                    <p>Solar Output: 5.2 kW</p>
+                    <p>Battery Storage: 92%</p>
+                    <p>Daily Usage: 42 kWh</p>
+                    <div class="chart" id="energyChart"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3><span class="status-indicator status-active"></span>Food Production</h3>
+                    <p>Greenhouse Status: Optimal</p>
+                    <p>Next Harvest: 12 days</p>
+                    <p>Yield Forecast: +15%</p>
+                    <div class="chart" id="foodChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function createCharts() {
+            const charts = ['robotChart', 'resourceChart', 'energyChart', 'foodChart'];
+            charts.forEach(chartId => {
+                const chart = document.getElementById(chartId);
+                for (let i = 0; i < 8; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.left = (i * 35 + 10) + 'px';
+                    bar.style.height = Math.random() * 150 + 20 + 'px';
+                    chart.appendChild(bar);
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', createCharts);
+        
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelector('.menu-item.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body></html>

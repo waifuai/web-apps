@@ -1,0 +1,247 @@
+<html><head><base href="." />
+<meta charset="utf-8">
+<style>
+:root {
+  --gradient-bg: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+  --text-glow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+body {
+  background: var(--gradient-bg);
+  color: #e6e6e6;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 2rem;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gpu-card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: transform 0.3s ease;
+}
+
+.gpu-card:hover {
+  transform: translateY(-5px);
+}
+
+.gpu-name {
+  font-size: 1.5rem;
+  color: #4a9eff;
+  margin-bottom: 1rem;
+  text-shadow: var(--text-glow);
+}
+
+.param-bar {
+  height: 30px;
+  background: #0f3460;
+  border-radius: 15px;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.param-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a9eff, #63b3ff);
+  transition: width 1s ease-out;
+  animation: fillBar 1.5s ease-out forwards;
+}
+
+@keyframes fillBar {
+  from { width: 0; }
+  to { width: var(--fill-width); }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat {
+  background: rgba(255,255,255,0.05);
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>GPU/TPU Model Parameter Estimates</h1>
+  
+  <div class="gpu-card">
+    <div class="gpu-name">NVIDIA H100</div>
+    <div class="param-bar">
+      <div class="param-fill" style="--fill-width: 85%"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div>Single GPU</div>
+        <div>~175B parameters</div>
+      </div>
+      <div class="stat">
+        <div>8-GPU Node</div>
+        <div>~1.4T parameters</div>
+      </div>
+      <div class="stat">
+        <div>1000+ GPU Cluster</div>
+        <div>~100T parameters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gpu-card">
+    <div class="gpu-name">NVIDIA H200</div>
+    <div class="param-bar">
+      <div class="param-fill" style="--fill-width: 95%"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div>Single GPU</div>
+        <div>~230B parameters</div>
+      </div>
+      <div class="stat">
+        <div>8-GPU Node</div>
+        <div>~1.8T parameters</div>
+      </div>
+      <div class="stat">
+        <div>1000+ GPU Cluster</div>
+        <div>~140T parameters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gpu-card">
+    <div class="gpu-name">NVIDIA GB200</div>
+    <div class="param-bar">
+      <div class="param-fill" style="--fill-width: 100%"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div>Single GPU</div>
+        <div>~300B parameters</div>
+      </div>
+      <div class="stat">
+        <div>8-GPU Node</div>
+        <div>~2.4T parameters</div>
+      </div>
+      <div class="stat">
+        <div>1000+ GPU Cluster</div>
+        <div>~180T parameters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gpu-card">
+    <div class="gpu-name">Google TPU v5</div>
+    <div class="param-bar">
+      <div class="param-fill" style="--fill-width: 80%"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div>Single TPU</div>
+        <div>~200B parameters</div>
+      </div>
+      <div class="stat">
+        <div>Pod Slice</div>
+        <div>~2T parameters</div>
+      </div>
+      <div class="stat">
+        <div>Full Pod</div>
+        <div>~120T parameters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gpu-card">
+    <div class="gpu-name">Google TPU v5p</div>
+    <div class="param-bar">
+      <div class="param-fill" style="--fill-width: 90%"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div>Single TPU</div>
+        <div>~250B parameters</div>
+      </div>
+      <div class="stat">
+        <div>Pod Slice</div>
+        <div>~2.5T parameters</div>
+      </div>
+      <div class="stat">
+        <div>Full Pod</div>
+        <div>~150T parameters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gpu-card">
+    <div class="gpu-name">Google TPU v5e</div>
+    <div class="param-bar">
+      <div class="param-fill" style="--fill-width: 70%"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div>Single TPU</div>
+        <div>~100B parameters</div>
+      </div>
+      <div class="stat">
+        <div>Pod Slice</div>
+        <div>~1T parameters</div>
+      </div>
+      <div class="stat">
+        <div>Full Pod</div>
+        <div>~60T parameters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gpu-card">
+    <div class="gpu-name">Google TPU v6 (Estimated)</div>
+    <div class="param-bar">
+      <div class="param-fill" style="--fill-width: 100%"></div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div>Single TPU</div>
+        <div>~400B parameters</div>
+      </div>
+      <div class="stat">
+        <div>Pod Slice</div>
+        <div>~4T parameters</div>
+      </div>
+      <div class="stat">
+        <div>Full Pod</div>
+        <div>~240T parameters</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.gpu-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    card.style.transform = 'translateY(-5px)';
+  });
+  
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'translateY(0)';
+  });
+});
+</script>
+
+</body>
+</html>

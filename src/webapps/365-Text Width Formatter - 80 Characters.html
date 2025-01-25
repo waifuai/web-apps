@@ -1,0 +1,121 @@
+<html><head><base href="." />
+<meta charset="UTF-8">
+<title>Text Width Formatter - 80 Characters</title>
+<style>
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f0f4f8;
+    line-height: 1.6;
+}
+
+.container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+button {
+    background: #0066cc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #0052a3;
+}
+
+#output {
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    background: #f8f8f8;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Text Width Formatter (80 Characters)</h1>
+    <p>Paste your text below and click format to wrap it to 80 characters width, preserving original line breaks:</p>
+    
+    <textarea id="input" placeholder="Paste your text here..."></textarea>
+    <button onclick="formatText()">Format Text</button>
+    
+    <div id="output"></div>
+</div>
+
+<script>
+function formatText() {
+    const input = document.getElementById('input').value;
+    const maxWidth = 80;
+    let formattedText = '';
+    
+    // Split input into paragraphs (preserving original line breaks)
+    const paragraphs = input.split('\n');
+    
+    for (let paragraph of paragraphs) {
+        if (paragraph.trim() === '') {
+            formattedText += '\n';
+            continue;
+        }
+        
+        let currentLine = '';
+        // Split paragraph into words
+        const words = paragraph.split(/\s+/);
+        
+        for (let word of words) {
+            // If adding this word would exceed maxWidth
+            if ((currentLine + ' ' + word).length > maxWidth) {
+                // Add current line to formatted text
+                formattedText += currentLine.trim() + '\n';
+                currentLine = word + ' ';
+            } else {
+                // Add word to current line
+                currentLine += word + ' ';
+            }
+        }
+        
+        // Add the last line of the paragraph
+        if (currentLine) {
+            formattedText += currentLine.trim() + '\n';
+        }
+    }
+    
+    // Remove trailing newline
+    formattedText = formattedText.replace(/\n$/, '');
+    
+    // Display the formatted text
+    document.getElementById('output').textContent = formattedText;
+}
+
+// Allow Ctrl+Enter or Cmd+Enter to format
+document.getElementById('input').addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        formatText();
+    }
+});
+</script>
+</body></html>

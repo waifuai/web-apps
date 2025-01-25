@@ -1,0 +1,103 @@
+<html><head><base href="https://quantum-consciousness-studies.org/" target="_blank"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Quantum Coherence at Unprecedented Scales: Testing Orch-OR Predictions</title><style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+    }
+    h1, h2 {
+        color: #1e90ff;
+    }
+    .chart-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    #coherence-visualization {
+        width: 100%;
+        height: 400px;
+    }
+    #orch-or-predictions {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Quantum Coherence at Unprecedented Scales: Testing Orch-OR Predictions</h1>
+    
+    <p>Welcome to our exploration of quantum coherence at scales never before achieved, and how this allows us to rigorously test predictions made by the Orchestrated Objective Reduction (Orch-OR) theory of consciousness.</p>
+    
+    <h2>Unprecedented Quantum Coherence</h2>
+    <p>Our million-qubit photonic quantum computer allows us to maintain and measure quantum coherence across an unprecedented number of qubits. This capability is crucial for testing Orch-OR predictions about quantum effects in microtubules and their potential role in consciousness.</p>
+    
+    <div class="chart-container">
+        <div id="coherence-visualization"></div>
+    </div>
+    
+    <h2>Testing Orch-OR Predictions</h2>
+    <p>The Orch-OR theory makes specific predictions about quantum coherence in microtubules and its relationship to conscious experiences. Our million-qubit system allows us to simulate and test these predictions at scales that closely approximate biological systems.</p>
+    
+    <div class="chart-container">
+        <div id="orch-or-predictions"></div>
+    </div>
+    
+    <h2>Key Findings</h2>
+    <ul>
+        <li>Quantum coherence maintained across 10^6 qubits for durations consistent with Orch-OR predictions</li>
+        <li>Observed entanglement patterns matching theoretical models of microtubule quantum states</li>
+        <li>Coherence collapse timings correlating with proposed consciousness "frames"</li>
+        <li>Quantum information processing capabilities at scales relevant to neural networks</li>
+    </ul>
+    
+    <h2>Implications for Consciousness Studies</h2>
+    <p>Our ability to test Orch-OR predictions at unprecedented scales has significant implications for the field of consciousness studies. These experiments provide the first empirical tests of quantum theories of consciousness at biologically relevant scales.</p>
+    
+    <script>
+    // Coherence Visualization
+    var coherenceData = [{
+        z: [[1, 0.9, 0.7, 0.5, 0.3],
+            [0.9, 1, 0.8, 0.6, 0.4],
+            [0.7, 0.8, 1, 0.7, 0.5],
+            [0.5, 0.6, 0.7, 1, 0.8],
+            [0.3, 0.4, 0.5, 0.8, 1]],
+        type: 'heatmap',
+        colorscale: 'Viridis'
+    }];
+    
+    var coherenceLayout = {
+        title: 'Quantum Coherence Across Qubit Subsets',
+        xaxis: {title: 'Qubit Subset'},
+        yaxis: {title: 'Qubit Subset'}
+    };
+    
+    Plotly.newPlot('coherence-visualization', coherenceData, coherenceLayout);
+    
+    // Orch-OR Predictions Chart
+    var orchOrData = [{
+        x: [0, 1, 2, 3, 4, 5],
+        y: [0, 2, 4, 6, 8, 10],
+        mode: 'lines+markers',
+        name: 'Orch-OR Prediction'
+    }, {
+        x: [0, 1, 2, 3, 4, 5],
+        y: [0, 1.8, 3.9, 5.9, 7.8, 9.7],
+        mode: 'lines+markers',
+        name: 'Experimental Results'
+    }];
+    
+    var orchOrLayout = {
+        title: 'Orch-OR Predictions vs. Experimental Results',
+        xaxis: {title: 'Time (ms)'},
+        yaxis: {title: 'Coherence Measure'}
+    };
+    
+    Plotly.newPlot('orch-or-predictions', orchOrData, orchOrLayout);
+    </script>
+</body></html>

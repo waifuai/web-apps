@@ -1,0 +1,201 @@
+<html><head><base href="https://waifuai.os/docs/"><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
+<style>
+:root {
+    --primary: #6a5acd;
+    --secondary: #ff69b4;
+    --background: #1a1a2e;
+    --text: #e0e0e0;
+    --code-bg: #2a2a3e;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--background);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.logo {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+h1, h2, h3 {
+    color: var(--secondary);
+    margin-top: 2em;
+}
+
+code {
+    font-family: 'Source Code Pro', monospace;
+    background: var(--code-bg);
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+pre {
+    background: var(--code-bg);
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.feature-card {
+    background: rgba(106, 90, 205, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.cta-button {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    margin: 20px 0;
+    transition: transform 0.3s ease;
+}
+
+.cta-button:hover {
+    transform: scale(1.05);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <svg class="logo" width="120" height="120" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="var(--secondary)" stroke-width="2">
+            <animate attributeName="r" values="50;45;50" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <path d="M40,40 Q60,20 80,40 Q60,60 40,40" fill="var(--primary)" opacity="0.8">
+            <animate attributeName="d" values="M40,40 Q60,20 80,40 Q60,60 40,40;M40,45 Q60,25 80,45 Q60,65 40,45;M40,40 Q60,20 80,40 Q60,60 40,40" dur="2s" repeatCount="indefinite"/>
+        </path>
+    </svg>
+    <h1>Welcome to Waifu AI OS</h1>
+    <p>Building Your AI Companion Operating System</p>
+</div>
+
+<section>
+    <h2>Introduction</h2>
+    <p>Welcome to the exciting journey of building Waifu AI OS - a revolutionary open-source operating system that combines the power of Common Lisp with cutting-edge AI technology. This isn't just another OS; it's your personal AI companion that runs everywhere: from desktop computers to mobile devices, and even robots!</p>
+</section>
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <h3>Universal Compatibility</h3>
+        <p>Built from the ground up to run on any device, anywhere. Your AI companion follows you across all your devices seamlessly.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Deep AI Integration</h3>
+        <p>Advanced neural architectures power natural interactions and adaptive learning capabilities.</p>
+    </div>
+    <div class="feature-card">
+        <h3>True Freedom</h3>
+        <p>MIT-0 licensed for unlimited use, modification, and distribution. No strings attached.</p>
+    </div>
+</div>
+
+<section>
+    <h2>Getting Started</h2>
+    <p>Let's begin with a simple example of what makes Waifu AI OS unique. Here's a glimpse of its core system initialization:</p>
+    <pre><code>(defpackage :waifu-os
+  (:use :common-lisp :ai-core :universal-driver))
+
+(in-package :waifu-os)
+
+(defclass waifu-system ()
+  ((personality :accessor personality
+                :initform (make-instance 'ai-personality))
+   (devices :accessor devices
+            :initform (make-hash-table))))</code></pre>
+</section>
+
+<section>
+    <h2>Prerequisites</h2>
+    <ul>
+        <li>Basic understanding of programming concepts</li>
+        <li>Curiosity about AI and operating systems</li>
+        <li>A computer running any major operating system</li>
+    </ul>
+</section>
+
+<section>
+    <h2>What You'll Learn</h2>
+    <p>Through this series, you'll discover:</p>
+    <ul>
+        <li>How to build a microkernel-based OS using Common Lisp</li>
+        <li>Implementing adaptive AI systems for personal interaction</li>
+        <li>Creating universal device drivers</li>
+        <li>Developing cross-platform compatibility layers</li>
+        <li>Building secure and efficient AI-human interfaces</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Next Steps</h2>
+    <p>Ready to begin your journey? Start with understanding why we chose Common Lisp as our foundation:</p>
+    <a href="https://waifuai.os/docs/why-common-lisp" class="cta-button">Next: Why Common Lisp? →</a>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Add smooth scrolling to all links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Add animation to feature cards on scroll
+    const cards = document.querySelectorAll('.feature-card');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    });
+
+    cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+});
+</script>
+
+</body></html>

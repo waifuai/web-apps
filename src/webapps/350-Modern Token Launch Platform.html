@@ -1,0 +1,300 @@
+<html><head><base href="." /><title>Modern Token Launch Platform</title><style>
+:root {
+  --primary: #6f42c1;
+  --secondary: #fd7e14;
+  --background: #f8f9fa;
+  --text: #212529;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 4rem 0;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 4rem 0;
+}
+
+.feature-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.cta-button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.cta-button:hover {
+  background: #5a32a3;
+}
+
+/* Animation for the flow diagram */
+.flow-diagram {
+  height: 200px;
+  margin: 2rem 0;
+}
+
+@keyframes flowAnimation {
+  0% { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animated-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: flowAnimation 3s ease-in-out forwards;
+}
+</style></head><body>
+<div class="hero">
+  <div class="container">
+    <h1>Launch Your Token Journey</h1>
+    <p>Start selling tokens instantly - no wallet required</p>
+    <button class="cta-button">Get Started Now</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="features">
+    <div class="feature-card">
+      <h3>Easy Onboarding</h3>
+      <p>Create your token offering in minutes with just email signup</p>
+    </div>
+    <div class="feature-card">
+      <h3>Secure Escrow</h3>
+      <p>All funds safely held until you're ready to claim them</p>
+    </div>
+    <div class="feature-card">
+      <h3>Flexible Integration</h3>
+      <p>Add your Solana wallet whenever you're ready</p>
+    </div>
+  </div>
+
+  <svg class="flow-diagram" viewBox="0 0 800 200">
+    <path class="animated-path" fill="none" stroke="var(--primary)" stroke-width="3"
+          d="M 50,100 C 200,100 200,50 350,50 L 450,50 C 600,50 600,150 750,150"
+          marker-end="url(#arrowhead)" />
+    
+    <circle cx="50" cy="100" r="10" fill="var(--primary)" />
+    <circle cx="350" cy="50" r="10" fill="var(--primary)" />
+    <circle cx="750" cy="150" r="10" fill="var(--primary)" />
+    
+    <text x="50" y="130" text-anchor="middle">Sign Up</text>
+    <text x="350" y="30" text-anchor="middle">Create Token</text>
+    <text x="750" y="180" text-anchor="middle">Start Selling</text>
+    
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+      refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="var(--primary)" />
+      </marker>
+    </defs>
+  </svg>
+</div>
+
+<script>
+document.querySelector('.cta-button').addEventListener('click', () => {
+  // Smooth scroll to form section
+  const form = document.querySelector('.feature-card');
+  form.scrollIntoView({ behavior: 'smooth' });
+  
+  // Add attention animation
+  form.style.animation = 'pulse 0.5s ease';
+  setTimeout(() => form.style.animation = '', 500);
+});
+
+// Add intersection observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.feature-card').forEach(card => {
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(20px)';
+  card.style.transition = 'all 0.6s ease-out';
+  observer.observe(card);
+});
+</script>
+</body></html><html>
+<head>
+<style>
+.step-form {
+  max-width: 600px;
+  margin: 4rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.input-group input, 
+.input-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.progress-bar {
+  height: 4px;
+  background: #eee;
+  margin: 2rem 0;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 33%;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.token-preview {
+  background: var(--background);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 2rem;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="step-form">
+    <h2>Create Your Token</h2>
+    <div class="progress-bar"></div>
+    
+    <form id="tokenForm">
+      <div class="input-group">
+        <label for="tokenName">Token Name</label>
+        <input type="text" id="tokenName" required placeholder="e.g., MyAwesomeToken">
+      </div>
+      
+      <div class="input-group">
+        <label for="tokenSymbol">Token Symbol</label>
+        <input type="text" id="tokenSymbol" required placeholder="e.g., MAT">
+      </div>
+      
+      <div class="input-group">
+        <label for="tokenDescription">Description</label>
+        <textarea id="tokenDescription" rows="4" placeholder="Describe your token's purpose..."></textarea>
+      </div>
+      
+      <div class="token-preview" id="tokenPreview">
+        <!-- Preview will be populated by JavaScript -->
+      </div>
+      
+      <button type="submit" class="cta-button">Continue</button>
+    </form>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('tokenForm');
+const preview = document.getElementById('tokenPreview');
+
+form.addEventListener('input', (e) => {
+  updatePreview();
+});
+
+function updatePreview() {
+  const name = document.getElementById('tokenName').value || 'Your Token';
+  const symbol = document.getElementById('tokenSymbol').value || 'TKN';
+  const description = document.getElementById('tokenDescription').value || 'Token description will appear here...';
+  
+  preview.innerHTML = `
+    <h4>${name} (${symbol})</h4>
+    <p>${description}</p>
+  `;
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  // Simulate form submission
+  const button = form.querySelector('button');
+  button.textContent = 'Processing...';
+  button.disabled = true;
+  
+  setTimeout(() => {
+    // In a real implementation, this would connect to your backend
+    button.textContent = 'Success!';
+    button.style.background = '#28a745';
+    
+    // Progress to next step
+    document.querySelector('.progress-bar').style.width = '66%';
+  }, 1500);
+});
+
+// Initialize preview
+updatePreview();
+</script>
+
+</body>
+</html>

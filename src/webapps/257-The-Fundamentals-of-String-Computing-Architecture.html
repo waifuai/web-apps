@@ -1,0 +1,312 @@
+<html><head><base href="https://stringcomputing.org/architecture/fundamentals/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Fundamentals of String Computing Architecture</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.0.0/d3.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>
+    body {
+        font-family: 'Source Sans Pro', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    .visualization {
+        width: 100%;
+        height: 500px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .interactive-diagram {
+        width: 100%;
+        height: 400px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .code-snippet {
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        border-radius: 4px;
+        padding: 15px;
+        font-family: 'Fira Code', monospace;
+        white-space: pre-wrap;
+        margin: 20px 0;
+    }
+    nav {
+        margin: 20px 0;
+        padding: 10px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    nav a {
+        color: #2c3e50;
+        text-decoration: none;
+        padding: 5px 10px;
+    }
+    nav a:hover {
+        color: #3498db;
+    }
+    .controls {
+        margin: 10px 0;
+        padding: 10px;
+        background: #fff;
+        border-radius: 4px;
+    }
+</style>
+</head>
+<body>
+    <header>
+        <h1>The Fundamentals of String Computing Architecture</h1>
+    </header>
+    
+    <nav>
+        <a href="https://stringcomputing.org/introduction">← Introduction</a> |
+        <a href="https://stringcomputing.org/vibrations">String Vibrations →</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. Core Principles of String Computing</h2>
+            <p>String computing architecture is founded on the principles of string theory, where the fundamental building blocks of the universe are viewed as one-dimensional "strings" rather than point particles. This visualization demonstrates how string vibrations encode information.</p>
+            
+            <div id="string-vibration-plot" class="visualization"></div>
+        </section>
+
+        <section>
+            <h2>2. Dimensional Landscape</h2>
+            <p>Unlike classical computing architectures that operate in a three-dimensional space, string computing leverages higher dimensions. This interactive visualization shows the relationship between dimensions and computational capacity.</p>
+            
+            <div id="dimension-complexity" class="interactive-diagram"></div>
+        </section>
+
+        <section>
+            <h2>3. Quantum Superposition in String Computing</h2>
+            <p>String computing inherently incorporates quantum mechanical principles. This simulation shows quantum state evolution in string-based qubits.</p>
+            
+            <div id="quantum-states" class="visualization"></div>
+            <div class="controls">
+                <button onclick="toggleSimulation()">Start/Stop Simulation</button>
+                <input type="range" id="speed" min="1" max="100" value="50">
+                <label for="speed">Simulation Speed</label>
+            </div>
+        </section>
+
+        <section>
+            <h2>4. Brane-based Data Structures</h2>
+            <p>Explore how data is organized in higher-dimensional brane structures through this interactive network visualization.</p>
+            
+            <div id="brane-network" class="interactive-diagram"></div>
+        </section>
+    </main>
+
+    <script>
+    // String Vibration Plot
+    function createStringVibrationPlot() {
+        const t = Array.from({length: 1000}, (_, i) => i * 0.01);
+        const y1 = t.map(t => Math.sin(2 * Math.PI * t));
+        const y2 = t.map(t => Math.sin(4 * Math.PI * t));
+        const y3 = t.map(t => Math.sin(6 * Math.PI * t));
+
+        const traces = [{
+            x: t,
+            y: y1,
+            name: 'Mode 1',
+            type: 'scatter'
+        }, {
+            x: t,
+            y: y2,
+            name: 'Mode 2',
+            type: 'scatter'
+        }, {
+            x: t,
+            y: y3,
+            name: 'Mode 3',
+            type: 'scatter'
+        }];
+
+        const layout = {
+            title: 'String Vibration Modes',
+            xaxis: { title: 'Time' },
+            yaxis: { title: 'Amplitude' },
+            showlegend: true
+        };
+
+        Plotly.newPlot('string-vibration-plot', traces, layout);
+    }
+
+    // Dimensional Complexity Visualization
+    function createDimensionalComplexity() {
+        const dimensions = Array.from({length: 11}, (_, i) => i + 1);
+        const complexity = dimensions.map(d => Math.pow(2, d));
+        
+        const trace = {
+            x: dimensions,
+            y: complexity,
+            type: 'scatter',
+            mode: 'lines+markers',
+            marker: {
+                size: 10,
+                color: dimensions,
+                colorscale: 'Viridis'
+            },
+            line: {
+                color: '#3498db'
+            }
+        };
+
+        const layout = {
+            title: 'Computational Complexity vs Dimensions',
+            xaxis: { title: 'Number of Dimensions' },
+            yaxis: { 
+                title: 'Computational Capacity',
+                type: 'log'
+            }
+        };
+
+        Plotly.newPlot('dimension-complexity', [trace], layout);
+    }
+
+    // Quantum States Visualization
+    let quantumSimulation;
+    function createQuantumStates() {
+        const nStates = 16;
+        const states = Array.from({length: nStates}, (_, i) => ({
+            x: Math.cos(2 * Math.PI * i / nStates),
+            y: Math.sin(2 * Math.PI * i / nStates),
+            phase: 0
+        }));
+
+        const trace = {
+            x: states.map(s => s.x),
+            y: states.map(s => s.y),
+            mode: 'markers+lines',
+            type: 'scatter',
+            marker: {
+                size: 12,
+                color: states.map(s => s.phase),
+                colorscale: 'Viridis'
+            }
+        };
+
+        const layout = {
+            title: 'Quantum State Evolution',
+            xaxis: {range: [-1.5, 1.5]},
+            yaxis: {range: [-1.5, 1.5]},
+            showlegend: false
+        };
+
+        Plotly.newPlot('quantum-states', [trace], layout);
+        
+        return states;
+    }
+
+    // Brane Network Visualization using D3
+    function createBraneNetwork() {
+        const width = document.getElementById('brane-network').clientWidth;
+        const height = document.getElementById('brane-network').clientHeight;
+
+        const svg = d3.select("#brane-network")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        const simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(d => d.id))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        // Generate network data
+        const nodes = Array.from({length: 30}, (_, i) => ({
+            id: `node${i}`,
+            group: Math.floor(i / 10)
+        }));
+
+        const links = [];
+        for (let i = 0; i < nodes.length; i++) {
+            const numLinks = Math.floor(Math.random() * 3) + 1;
+            for (let j = 0; j < numLinks; j++) {
+                links.push({
+                    source: nodes[i].id,
+                    target: nodes[Math.floor(Math.random() * nodes.length)].id
+                });
+            }
+        }
+
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(links)
+            .join("line")
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6);
+
+        const node = svg.append("g")
+            .selectAll("circle")
+            .data(nodes)
+            .join("circle")
+            .attr("r", 5)
+            .attr("fill", d => d3.schemeCategory10[d.group]);
+
+        simulation
+            .nodes(nodes)
+            .on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+            });
+
+        simulation.force("link").links(links);
+    }
+
+    // Initialize all visualizations
+    window.onload = function() {
+        createStringVibrationPlot();
+        createDimensionalComplexity();
+        createQuantumStates();
+        createBraneNetwork();
+    };
+
+    // Quantum simulation controls
+    let isSimulationRunning = false;
+    function toggleSimulation() {
+        isSimulationRunning = !isSimulationRunning;
+        if (isSimulationRunning) {
+            runQuantumSimulation();
+        }
+    }
+
+    function runQuantumSimulation() {
+        if (!isSimulationRunning) return;
+        
+        const speed = document.getElementById('speed').value;
+        const states = createQuantumStates();
+        states.forEach(s => {
+            s.phase = (s.phase + speed / 1000) % (2 * Math.PI);
+        });
+        
+        requestAnimationFrame(runQuantumSimulation);
+    }
+    </script>
+</body></html>

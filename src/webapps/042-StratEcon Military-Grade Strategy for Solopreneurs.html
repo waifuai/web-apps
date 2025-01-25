@@ -1,0 +1,162 @@
+<html><head><base href="https://websim.ai/" />
+<title>StratEcon: Military-Grade Strategy for Solopreneurs</title>
+<style>
+  body {
+    font-family: 'Roboto Mono', monospace;
+    background-color: #0a0e17;
+    color: #5cdb95;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  h1 {
+    font-size: 2.5em;
+    text-transform: uppercase;
+  }
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .panel {
+    background-color: #1a2639;
+    border: 1px solid #3a506b;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  .panel h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #3a506b;
+    padding-bottom: 10px;
+  }
+  .stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .progress-bar {
+    background-color: #3a506b;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress {
+    background-color: #5cdb95;
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+  }
+  .tactics {
+    list-style-type: none;
+    padding: 0;
+  }
+  .tactics li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #253449;
+    border-radius: 5px;
+  }
+  .mission-status {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .alert {
+    color: #ff6b6b;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>StratEcon Dashboard</h1>
+      <p>Military-Grade Strategy for Solopreneurs</p>
+    </header>
+    
+    <div class="dashboard">
+      <div class="panel">
+        <h2>Resource Allocation</h2>
+        <div class="stat">
+          <span>Financial Reserves</span>
+          <span>$24,500</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="width: 65%;"></div>
+        </div>
+        <div class="stat">
+          <span>Time Efficiency</span>
+          <span>78%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="width: 78%;"></div>
+        </div>
+        <div class="stat">
+          <span>Energy Levels</span>
+          <span>89%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="width: 89%;"></div>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <h2>Tactical Operations</h2>
+        <ul class="tactics">
+          <li>Content Creation: 3 blog posts scheduled</li>
+          <li>Social Media Engagement: 2 hours daily</li>
+          <li>Client Outreach: 10 cold emails sent</li>
+          <li>Product Development: MVP 60% complete</li>
+        </ul>
+      </div>
+      
+      <div class="panel">
+        <h2>Strategic Intelligence</h2>
+        <div class="stat">
+          <span>Market Position</span>
+          <span>Rising</span>
+        </div>
+        <div class="stat">
+          <span>Competitor Activity</span>
+          <span class="alert">High</span>
+        </div>
+        <div class="stat">
+          <span>Industry Trends</span>
+          <span>AI Integration</span>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <h2>Mission Status</h2>
+        <p class="mission-status">Operation Revenue Boost: In Progress</p>
+        <div class="stat">
+          <span>Monthly Revenue Target</span>
+          <span>$10,000</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="width: 72%;"></div>
+        </div>
+        <p>Next Milestone: Launch email marketing campaign</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simulating real-time data updates
+    setInterval(() => {
+      const progressBars = document.querySelectorAll('.progress');
+      progressBars.forEach(bar => {
+        let newWidth = Math.floor(Math.random() * 100);
+        bar.style.width = `${newWidth}%`;
+      });
+
+      const alertElement = document.querySelector('.alert');
+      alertElement.textContent = Math.random() > 0.5 ? 'High' : 'Moderate';
+    }, 5000);
+  </script>
+</body></html>

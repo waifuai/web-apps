@@ -1,0 +1,75 @@
+<html><head><base href="https://solana-blink.ico/" /><title>Solana Blink ICO</title><style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #0a0f2d;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .container {
+        background-color: #1a2142;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        color: #14f195;
+        margin-bottom: 1rem;
+    }
+    p {
+        margin-bottom: 2rem;
+    }
+    .btn {
+        background-color: #14f195;
+        color: #0a0f2d;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+        background-color: #0ce085;
+    }
+    .status {
+        margin-top: 1rem;
+        font-style: italic;
+    }
+</style></head><body>
+    <div class="container">
+        <h1>Solana Blink ICO</h1>
+        <p>Launch your company's token in one click, based on your Twitter profile!</p>
+        <button class="btn" id="launchICO">Launch ICO</button>
+        <p class="status" id="status"></p>
+    </div>
+
+    <script>
+        document.getElementById('launchICO').addEventListener('click', async () => {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = 'Launching ICO...';
+
+            try {
+                // Simulating API call to Twitter and Solana
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const tokenName = 'ACME'; // This would be fetched from Twitter
+                const profilePicUrl = 'https://example.com/profile.jpg'; // This would be fetched from Twitter
+
+                // Simulating token creation on Solana
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                statusElement.textContent = `Success! ${tokenName} token launched with a 10% reserve ratio bonding curve.`;
+                
+                // Here we would typically add more details about the token, such as contract address
+            } catch (error) {
+                statusElement.textContent = 'Error launching ICO. Please try again.';
+            }
+        });
+    </script>
+</body></html>

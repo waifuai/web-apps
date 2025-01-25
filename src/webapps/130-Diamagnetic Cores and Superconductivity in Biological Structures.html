@@ -1,0 +1,173 @@
+<html><head><base href="https://superconductingbrain.com/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diamagnetic Cores and Superconductivity in Biological Structures</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #diamagnetismDemo, #microtubuleModel {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+  }
+  .interactive-element {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Diamagnetic Cores and Superconductivity in Biological Structures</h1>
+    
+    <h2>Introduction to Diamagnetism and Superconductivity</h2>
+    <p>Diamagnetism is a fundamental property of matter that causes a repulsive force in the presence of an external magnetic field. Superconductivity, on the other hand, is a phenomenon of zero electrical resistance and expulsion of magnetic fields occurring in certain materials below a critical temperature.</p>
+    
+    <div class="interactive-element">
+      <h3>Interactive Diamagnetism Demonstration</h3>
+      <div id="diamagnetismDemo"></div>
+      <p>Move the slider to change the strength of the external magnetic field and observe how it affects the diamagnetic material.</p>
+      <input type="range" id="fieldStrength" min="0" max="100" value="50">
+    </div>
+
+    <h2>Evidence for Diamagnetic Properties in Microtubules</h2>
+    <p>Recent research has suggested that microtubules, key components of the cellular cytoskeleton, may exhibit diamagnetic properties. This finding has profound implications for our understanding of cellular function and potentially for the role of quantum effects in biological systems.</p>
+
+    <div class="interactive-element">
+      <h3>Microtubule Diamagnetic Response</h3>
+      <canvas id="microtubuleChart"></canvas>
+    </div>
+
+    <h2>Implications for Neural Function</h2>
+    <p>The presence of diamagnetic and potentially superconducting properties in microtubules could revolutionize our understanding of neural function. These properties might allow for quantum coherence, rapid information transfer, and even the possibility of microtubules acting as quantum processors within neurons.</p>
+
+    <div class="interactive-element">
+      <h3>3D Microtubule Model</h3>
+      <div id="microtubuleModel"></div>
+      <p>Rotate the model to explore the structure of a microtubule. The colored regions represent areas of potential diamagnetic activity.</p>
+    </div>
+  </div>
+
+  <script>
+    // Diamagnetism Demo
+    const demoCanvas = document.createElement('canvas');
+    demoCanvas.width = 400;
+    demoCanvas.height = 300;
+    document.getElementById('diamagnetismDemo').appendChild(demoCanvas);
+    const ctx = demoCanvas.getContext('2d');
+
+    function drawDiamagnetism(fieldStrength) {
+      ctx.clearRect(0, 0, 400, 300);
+      
+      // Draw external field
+      ctx.strokeStyle = 'blue';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, 60 * i);
+        ctx.lineTo(400, 60 * i);
+        ctx.stroke();
+      }
+
+      // Draw diamagnetic material
+      ctx.fillStyle = 'gray';
+      ctx.fillRect(150, 100, 100, 100);
+
+      // Draw internal field
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 2;
+      const deflection = fieldStrength / 10;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(150, 130 + 20 * i);
+        ctx.bezierCurveTo(200, 130 + 20 * i - deflection, 200, 130 + 20 * i + deflection, 250, 130 + 20 * i);
+        ctx.stroke();
+      }
+    }
+
+    document.getElementById('fieldStrength').addEventListener('input', (e) => {
+      drawDiamagnetism(e.target.value);
+    });
+
+    drawDiamagnetism(50);
+
+    // Microtubule Chart
+    const ctx2 = document.getElementById('microtubuleChart').getContext('2d');
+    new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'],
+        datasets: [{
+          label: 'Diamagnetic Response',
+          data: [0, 0.2, 0.5, 0.9, 1.4, 2.0, 2.7, 3.5, 4.4, 5.4, 6.5],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'External Field Strength (arbitrary units)'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Diamagnetic Response (arbitrary units)'
+            }
+          }
+        }
+      }
+    });
+
+    // 3D Microtubule Model
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(400, 300);
+    document.getElementById('microtubuleModel').appendChild(renderer.domElement);
+
+    const geometry = new THREE.CylinderGeometry(5, 5, 20, 32);
+    const material = new THREE.MeshPhongMaterial({color: 0xcccccc});
+    const microtubule = new THREE.Mesh(geometry, material);
+    scene.add(microtubule);
+
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(10, 10, 10);
+    scene.add(light);
+
+    camera.position.z = 30;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      microtubule.rotation.x += 0.01;
+      microtubule.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>

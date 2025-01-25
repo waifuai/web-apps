@@ -1,0 +1,238 @@
+<html><head><base href="ransoc_explanation/">
+<title>RANSOC Algorithm Explanation</title>
+<style>
+:root {
+  --bg-color: #0a0a2a;
+  --text-color: #e6e6e6;
+  --highlight: #4a90e2;
+  --accent: #ff5555;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.explanation {
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+.visualization {
+  padding: 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  height: 500px;
+  position: relative;
+}
+
+#epochSlider {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.epoch-vis {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.point {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.5s ease;
+}
+
+.input {
+  background: var(--highlight);
+}
+
+.result {
+  background: var(--accent);
+}
+
+.weight-line {
+  position: absolute;
+  height: 2px;
+  background: rgba(255,255,255,0.2);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.formula {
+  font-family: monospace;
+  padding: 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 5px;
+  margin: 10px 0;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="explanation">
+    <h2>How RANSOC Works</h2>
+    <p>RANSOC (Realtime Adaptive Normalization for Satisfaction of Curiosity) balances between:</p>
+    <ul>
+      <li>Returning the most relevant results</li>
+      <li>Ensuring users explore the full capability spectrum</li>
+    </ul>
+
+    <div class="formula">
+      weight[i] = mass[i] / distance(input, result[i])
+    </div>
+
+    <p>After each selection:</p>
+    <ul>
+      <li>Selected result's mass decreases by α</li>
+      <li>Other results' masses increase proportionally</li>
+    </ul>
+
+    <input type="range" id="epochSlider" min="0" max="10" value="0">
+    <p>Epoch: <span id="epochNum">0</span></p>
+  </div>
+
+  <div class="visualization">
+    <div class="epoch-vis" id="epochVis"></div>
+  </div>
+</div>
+
+<script>
+class RANSOCDemo {
+  constructor() {
+    this.vis = document.getElementById('epochVis');
+    this.slider = document.getElementById('epochSlider');
+    this.epochNum = document.getElementById('epochNum');
+    
+    this.alpha = 0.2;
+    this.numResults = 5;
+    this.epochs = 11;
+    this.results = [];
+    this.masses = new Array(this.numResults).fill(1);
+    
+    this.setupResults();
+    this.bindEvents();
+    this.updateEpoch(0);
+  }
+
+  setupResults() {
+    // Fixed input point
+    const input = document.createElement('div');
+    input.className = 'point input';
+    input.style.left = '30%';
+    input.style.top = '50%';
+    this.vis.appendChild(input);
+    this.input = input;
+
+    // Create result points
+    for(let i = 0; i < this.numResults; i++) {
+      const result = document.createElement('div');
+      result.className = 'point result';
+      const x = 60 + (i * 10);
+      const y = 20 + (i * 15);
+      result.style.left = x + '%';
+      result.style.top = y + '%';
+      this.vis.appendChild(result);
+      
+      const line = document.createElement('div');
+      line.className = 'weight-line';
+      this.vis.appendChild(line);
+      
+      this.results.push({
+        element: result,
+        line: line,
+        x: x,
+        y: y
+      });
+    }
+  }
+
+  bindEvents() {
+    this.slider.addEventListener('input', (e) => {
+      const epoch = parseInt(e.target.value);
+      this.updateEpoch(epoch);
+    });
+  }
+
+  updateEpoch(epoch) {
+    this.epochNum.textContent = epoch;
+    
+    // Reset masses if at epoch 0
+    if(epoch === 0) {
+      this.masses = new Array(this.numResults).fill(1);
+    }
+
+    // Calculate weights
+    const weights = this.results.map((result, i) => ({
+      weight: this.masses[i] / this.getDistance(result),
+      index: i
+    }));
+
+    // Find highest weight
+    const selected = weights.sort((a,b) => b.weight - a.weight)[0];
+
+    // Update masses if not at epoch 0
+    if(epoch > 0) {
+      this.masses = this.masses.map((mass, i) => 
+        i === selected.index ? 
+          mass * (1 - this.alpha) : 
+          mass * (1 + this.alpha/(this.numResults - 1))
+      );
+    }
+
+    // Update visualization
+    this.results.forEach((result, i) => {
+      const weight = weights.find(w => w.index === i).weight;
+      const scale = Math.min(this.masses[i] * 1.5, 2);
+      
+      result.element.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      result.element.style.opacity = Math.min(this.masses[i], 1);
+      
+      // Update connecting line
+      const inputRect = this.input.getBoundingClientRect();
+      const resultRect = result.element.getBoundingClientRect();
+      
+      const dx = resultRect.left - inputRect.left + resultRect.width/2 - inputRect.width/2;
+      const dy = resultRect.top - inputRect.top + resultRect.height/2 - inputRect.height/2;
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      result.line.style.width = distance + 'px';
+      result.line.style.left = (inputRect.left - this.vis.getBoundingClientRect().left + inputRect.width/2) + 'px';
+      result.line.style.top = (inputRect.top - this.vis.getBoundingClientRect().top + inputRect.height/2) + 'px';
+      result.line.style.transform = `rotate(${angle}deg)`;
+      result.line.style.opacity = weight * 0.5;
+    });
+  }
+
+  getDistance(result) {
+    const inputRect = this.input.getBoundingClientRect();
+    const resultRect = result.element.getBoundingClientRect();
+    const dx = resultRect.left - inputRect.left;
+    const dy = resultRect.top - inputRect.top;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+}
+
+window.addEventListener('load', () => {
+  new RANSOCDemo();
+});
+</script>
+</body></html>

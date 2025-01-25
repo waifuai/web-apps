@@ -1,0 +1,194 @@
+<html><head><base href="." />
+<meta charset="UTF-8" />
+<title>AI Commission Rate Optimization Simulator</title>
+<style>
+:root {
+  --primary: #2c3e50;
+  --secondary: #3498db;
+  --accent: #e74c3c;
+  --background: #ecf0f1;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  margin: 0;
+  padding: 2rem;
+  color: var(--primary);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.parameter-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.graph-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.parameter-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.parameter-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.tooltip {
+  position: absolute;
+  background: var(--primary);
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  width: 200px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.parameter-group:hover .tooltip {
+  opacity: 1;
+}
+
+.graph-container {
+  width: 100%;
+  height: 300px;
+  margin: 1rem 0;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="parameter-section">
+    <h2>Simulation Parameters</h2>
+    
+    <div class="parameter-group">
+      <label for="initial-rate">Initial Commission Rate (%)</label>
+      <input type="range" id="initial-rate" class="parameter-input" min="0" max="10" step="0.1" value="5">
+      <div class="tooltip">
+        Starting commission rate for the simulation. Higher rates may increase short-term revenue but could impact long-term market share.
+      </div>
+    </div>
+
+    <div class="parameter-group">
+      <label for="volatility">Market Volatility (%)</label>
+      <input type="range" id="volatility" class="parameter-input" min="0" max="100" step="1" value="30">
+      <div class="tooltip">
+        Measure of market price fluctuations. Higher volatility requires more dynamic commission rate adjustment.
+      </div>
+    </div>
+
+    <div class="parameter-group">
+      <label for="time-horizon">Time Horizon (Days)</label>
+      <input type="number" id="time-horizon" class="parameter-input" min="1" max="365" value="30">
+      <div class="tooltip">
+        Duration of the simulation. Longer periods provide more accurate long-term optimization but require more processing time.
+      </div>
+    </div>
+  </div>
+
+  <div class="graph-section">
+    <h2>Impact Visualization</h2>
+    <div class="graph-container">
+      <canvas id="impactChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+// Initialize the impact chart
+const ctx = document.getElementById('impactChart').getContext('2d');
+let impactChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array.from({length: 10}, (_, i) => i + 1),
+        datasets: [{
+            label: 'Expected Revenue',
+            data: [],
+            borderColor: '#3498db',
+            tension: 0.4
+        },
+        {
+            label: 'Market Share',
+            data: [],
+            borderColor: '#e74c3c',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Commission Rate Impact Analysis'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Update chart based on parameter changes
+function updateChart() {
+    const initialRate = parseFloat(document.getElementById('initial-rate').value);
+    const volatility = parseFloat(document.getElementById('volatility').value);
+    
+    // Generate simulated data based on parameters
+    const revenue = Array.from({length: 10}, (_, i) => {
+        return 100 * (1 + (initialRate/100)) * (1 - (volatility/200)) * (i + 1);
+    });
+    
+    const marketShare = Array.from({length: 10}, (_, i) => {
+        return 100 * Math.exp(-initialRate/10) * (1 - (volatility/400)) * (1 - i/20);
+    });
+
+    impactChart.data.datasets[0].data = revenue;
+    impactChart.data.datasets[1].data = marketShare;
+    impactChart.update();
+}
+
+// Add event listeners to inputs
+document.getElementById('initial-rate').addEventListener('input', updateChart);
+document.getElementById('volatility').addEventListener('input', updateChart);
+document.getElementById('time-horizon').addEventListener('input', updateChart);
+
+// Initial chart update
+updateChart();
+
+// Add hover effects for parameter groups
+document.querySelectorAll('.parameter-group').forEach(group => {
+    const tooltip = group.querySelector('.tooltip');
+    
+    group.addEventListener('mousemove', (e) => {
+        tooltip.style.left = `${e.pageX + 10}px`;
+        tooltip.style.top = `${e.pageY + 10}px`;
+    });
+});
+</script>
+</body></html>

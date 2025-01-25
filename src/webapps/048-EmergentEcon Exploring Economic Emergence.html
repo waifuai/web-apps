@@ -1,0 +1,164 @@
+<html><head><base href="https://websim.ai/"><title>EmergentEcon: Exploring Economic Emergence</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .simulation {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  #market {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  .agent {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+  }
+  #controls {
+    margin-top: 20px;
+  }
+  button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #2980b9;
+  }
+</style></head>
+<body>
+  <h1>EmergentEcon: Exploring Economic Emergence</h1>
+  
+  <p>Welcome to EmergentEcon, a platform dedicated to exploring the fascinating world of emergent behavior in economics. As you've astutely observed, economics often involves situations where multiple participants respond to current conditions, leading to complex evolving systems that can be challenging to predict.</p>
+
+  <h2>Key Concepts in Emergent Economics:</h2>
+  <ul>
+    <li><strong>Adaptive Agents:</strong> Economic actors who adjust their strategies based on current market conditions.</li>
+    <li><strong>Feedback Loops:</strong> Mechanisms where outcomes influence future behavior, potentially amplifying or dampening effects.</li>
+    <li><strong>Equilibrium:</strong> A state where no agent has an incentive to change their behavior.</li>
+    <li><strong>Cycles:</strong> Recurring patterns of economic activity that may not settle into a stable equilibrium.</li>
+    <li><strong>Emergence:</strong> The appearance of complex, unexpected behaviors arising from simple rules and interactions.</li>
+  </ul>
+
+  <div class="simulation">
+    <h2>Simple Market Simulation</h2>
+    <p>Below is a basic simulation of a market with adaptive agents. Each colored circle represents an agent with a certain strategy. Watch as they interact and potentially reach an equilibrium or enter a cycle.</p>
+    
+    <div id="market"></div>
+    
+    <div id="controls">
+      <button onclick="startSimulation()">Start Simulation</button>
+      <button onclick="resetSimulation()">Reset</button>
+    </div>
+    
+    <p id="status">Click 'Start Simulation' to begin.</p>
+  </div>
+
+  <script>
+    const market = document.getElementById('market');
+    const status = document.getElementById('status');
+    let agents = [];
+    let intervalId;
+
+    function createAgent(strategy) {
+      const agent = document.createElement('div');
+      agent.className = 'agent';
+      agent.style.backgroundColor = ['#e74c3c', '#2ecc71', '#3498db'][strategy];
+      agent.textContent = ['A', 'B', 'C'][strategy];
+      agent.dataset.strategy = strategy;
+      return agent;
+    }
+
+    function initializeMarket() {
+      market.innerHTML = '';
+      agents = [];
+      for (let i = 0; i < 10; i++) {
+        const strategy = Math.floor(Math.random() * 3);
+        const agent = createAgent(strategy);
+        agents.push(agent);
+        market.appendChild(agent);
+      }
+    }
+
+    function updateMarket() {
+      const strategies = agents.map(a => parseInt(a.dataset.strategy));
+      const counts = strategies.reduce((acc, s) => {
+        acc[s] = (acc[s] || 0) + 1;
+        return acc;
+      }, {});
+      
+      agents.forEach((agent, i) => {
+        const currentStrategy = parseInt(agent.dataset.strategy);
+        const otherStrategies = [0, 1, 2].filter(s => s !== currentStrategy);
+        const bestStrategy = otherStrategies.reduce((a, b) => counts[a] > counts[b] ? a : b);
+        
+        if (Math.random() < 0.1) {  // 10% chance to adapt
+          agent.dataset.strategy = bestStrategy;
+          agent.style.backgroundColor = ['#e74c3c', '#2ecc71', '#3498db'][bestStrategy];
+          agent.textContent = ['A', 'B', 'C'][bestStrategy];
+        }
+      });
+
+      const dominantStrategy = Object.entries(counts).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+      if (counts[dominantStrategy] === agents.length) {
+        status.textContent = `Equilibrium reached! All agents have adopted strategy ${['A', 'B', 'C'][dominantStrategy]}.`;
+        clearInterval(intervalId);
+      } else {
+        status.textContent = 'Agents are adapting...';
+      }
+    }
+
+    function startSimulation() {
+      clearInterval(intervalId);
+      intervalId = setInterval(updateMarket, 1000);
+      status.textContent = 'Simulation running...';
+    }
+
+    function resetSimulation() {
+      clearInterval(intervalId);
+      initializeMarket();
+      status.textContent = 'Simulation reset. Click \'Start Simulation\' to begin again.';
+    }
+
+    initializeMarket();
+  </script>
+
+  <h2>Implications and Further Exploration</h2>
+  <p>This simple simulation demonstrates how individual adaptive behavior can lead to emergent patterns at the group level. In real economic systems, these dynamics are far more complex, involving countless variables and intricate feedback mechanisms.</p>
+
+  <p>Some areas for further exploration:</p>
+  <ul>
+    <li><strong>Agent-Based Modeling:</strong> More sophisticated simulations can model diverse agent behaviors and complex environments.</li>
+    <li><strong>Network Effects:</strong> How does the structure of connections between agents influence overall system behavior?</li>
+    <li><strong>Policy Implications:</strong> How can policymakers navigate and influence these complex, emergent systems?</li>
+    <li><strong>Machine Learning in Economics:</strong> Can AI help us predict or manage emergent economic phenomena?</li>
+  </ul>
+
+  <p>EmergentEcon is committed to pushing the boundaries of our understanding of these fascinating economic dynamics. We invite you to explore further, ask questions, and contribute to this exciting field of study.</p>
+
+  <p>Ready to dive deeper? Check out our <a href="https://websim.ai/emergentecon/advanced-simulations">advanced simulations</a> or join our <a href="https://websim.ai/emergentecon/community">community of researchers</a>!</p>
+
+</body></html>

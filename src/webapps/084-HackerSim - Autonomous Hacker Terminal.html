@@ -1,0 +1,570 @@
+<html><head><base href="https://hackersim.ai/"><title>HackerSim - Autonomous Hacker Terminal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap');
+
+  body, html {
+    font-family: 'Fira Code', monospace;
+    background-color: #0a0a0a;
+    color: #33ff33;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    height: 100%;
+    overflow: hidden;
+  }
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background: 
+      radial-gradient(circle at 10% 20%, rgba(0, 255, 0, 0.03) 0%, transparent 20%),
+      radial-gradient(circle at 90% 80%, rgba(0, 0, 255, 0.03) 0%, transparent 20%),
+      linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(10,10,10,0.95) 100%);
+    background-attachment: fixed;
+  }
+  h1, h2 {
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+  .content-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: 20px;
+  }
+  #terminal-container, #thought-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  #terminal-container {
+    flex: 2;
+  }
+  #terminal, #thought-log {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(51, 255, 51, 0.5);
+    padding: 15px;
+    box-shadow: 0 0 20px rgba(51, 255, 51, 0.2);
+    overflow-y: auto;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+  }
+  #prompt {
+    color: #ffff00;
+    text-shadow: 0 0 5px #ffff00;
+  }
+  #cursor {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background-color: #ffff00;
+    animation: blink 0.7s infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  #godmode-input {
+    background-color: rgba(0, 31, 31, 0.7);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    padding: 10px;
+    margin-top: 10px;
+    resize: vertical;
+    width: 100%;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  #godmode-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+  .thought {
+    color: #ff00ff;
+    font-style: italic;
+    margin-bottom: 15px;
+    background-color: rgba(255, 0, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.4;
+    animation: pulse 2s;
+    border-left: 3px solid rgba(255, 0, 255, 0.5);
+  }
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 0, 255, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 0, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 0, 255, 0);
+    }
+  }
+  .godmode {
+    color: #00ffff;
+    font-weight: bold;
+    margin-bottom: 15px;
+    background-color: rgba(0, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 3px solid rgba(0, 255, 255, 0.5);
+  }
+  #api-status {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #00ffff;
+    padding: 10px;
+    font-size: 12px;
+    height: 100px;
+    overflow-y: auto;
+    display: none;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+  }
+  #godmode-submit {
+    background-color: rgba(0, 255, 255, 0.2);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Fira Code', monospace;
+    font-weight: bold;
+    margin-top: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  #godmode-submit:hover {
+    background-color: rgba(0, 255, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+  #godmode-container {
+    display: flex;
+    flex-direction: column;
+  }
+  #control-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+  }
+  #sound-toggle, #api-status-toggle {
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-family: 'Fira Code', monospace;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  #sound-toggle {
+    background-color: rgba(51, 255, 51, 0.2);
+    color: #33ff33;
+    border: 1px solid rgba(51, 255, 51, 0.5);
+  }
+  #sound-toggle:hover {
+    background-color: rgba(51, 255, 51, 0.4);
+    box-shadow: 0 0 10px rgba(51, 255, 51, 0.5);
+  }
+  #api-status-toggle {
+    background-color: rgba(68, 68, 68, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+  #api-status-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  @media (max-width: 768px) {
+    body, html {
+      height: auto;
+      overflow-y: auto;
+    }
+    .main-container {
+      height: auto;
+      min-height: 100vh;
+    }
+    .content-container {
+      flex-direction: column;
+    }
+    #terminal-container, #thought-container {
+      width: 100%;
+    }
+    #terminal, #thought-log {
+      height: 40vh;
+    }
+    h1 {
+      font-size: 24px;
+    }
+    h2 {
+      font-size: 20px;
+    }
+    #control-buttons {
+      top: 10px;
+      right: 10px;
+    }
+    #sound-toggle, #api-status-toggle {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+    #api-status {
+      font-size: 10px;
+      height: 60px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="main-container">
+  <h1>HackerSim - Autonomous Hacker Terminal</h1>
+  <div class="content-container">
+    <div id="terminal-container">
+      <div id="terminal"></div>
+    </div>
+    <div id="thought-container">
+      <h2>Hacker Thoughts</h2>
+      <div id="thought-log"></div>
+      <div id="godmode-container">
+        <textarea id="godmode-input" rows="3" placeholder="Enter a GodMode command to direct the hacker's next action..."></textarea>
+        <button id="godmode-submit">Submit GodMode Command</button>
+      </div>
+    </div>
+  </div>
+  <div id="api-status"></div>
+</div>
+<div id="control-buttons">
+  <button id="sound-toggle">Mute Sound</button>
+  <button id="api-status-toggle">Show Debug Log</button>
+</div>
+
+<script>
+const terminal = document.getElementById('terminal');
+const thoughtLog = document.getElementById('thought-log');
+const godmodeInput = document.getElementById('godmode-input');
+const godmodeSubmit = document.getElementById('godmode-submit');
+const apiStatus = document.getElementById('api-status');
+const soundToggle = document.getElementById('sound-toggle');
+const apiStatusToggle = document.getElementById('api-status-toggle');
+
+let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
+let godmodeCommand = "";
+let lastApiCall = Number(localStorage.getItem('lastApiCall')) || 0;
+let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+let apiCallDelay = Number(localStorage.getItem('apiCallDelay')) || 15000; // 15 seconds
+const maxApiCallsPerFiveMinutes = 18;
+let apiCallCount = Number(localStorage.getItem('apiCallCount')) || 0;
+let apiCallResetTimeout;
+let isThoughtStreaming = false;
+let pendingGodModeCommand = null;
+
+const typingSound1 = new Audio('https://cdn.pixabay.com/download/audio/2022/03/24/audio_ef3fa634de.mp3?filename=keyboard-spacebar-hit-101812.mp3');
+const typingSound2 = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_bca2811b06.mp3?filename=keyboard5-88069.mp3');
+
+function updateApiStatus(message) {
+  const statusLine = document.createElement('div');
+  statusLine.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+  apiStatus.appendChild(statusLine);
+  apiStatus.scrollTop = apiStatus.scrollHeight;
+}
+
+async function waitForNextCallWindow() {
+  const now = Date.now();
+  const timeToWait = Math.max(0, apiCallDelay - (now - lastApiCall));
+  if (timeToWait > 0) {
+    updateApiStatus(`Waiting ${timeToWait / 1000} seconds before next hacker action`);
+    await new Promise(resolve => setTimeout(resolve, timeToWait));
+  }
+  
+  if (apiCallCount >= maxApiCallsPerFiveMinutes) {
+    const waitTime = 60000; // 1 minute
+    updateApiStatus(`Rate limit reached. Hacker taking a short break.`);
+    await addThought("Hmm, I've been going pretty fast. Maybe I should take a quick break to avoid detection.");
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+    apiCallCount = 0;
+    localStorage.setItem('apiCallCount', apiCallCount);
+    await addThought("Alright, break's over. Let's get back to work.");
+  }
+  
+  lastApiCall = Date.now();
+  localStorage.setItem('lastApiCall', lastApiCall);
+  apiCallCount++;
+  localStorage.setItem('apiCallCount', apiCallCount);
+  
+  clearTimeout(apiCallResetTimeout);
+  apiCallResetTimeout = setTimeout(() => {
+    apiCallCount = 0;
+    localStorage.setItem('apiCallCount', apiCallCount);
+  }, 300000);
+}
+
+async function progressHackerSession(retryCount = 0) {
+  const requestBody = {
+    session_history: sessionHistory,
+    hacker_characteristics: {
+      personality: "autistic",
+      traits: ["determined", "clever"]
+    },
+    godmode_influence: godmodeCommand
+  };
+
+  updateApiStatus(`Hacker contemplating next move...`);
+
+  try {
+    await waitForNextCallWindow();
+    const response = await fetch('/api/hacker_terminal_session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (response.status === 429) {
+      apiCallDelay *= 1.5;
+      localStorage.setItem('apiCallDelay', apiCallDelay);
+      updateApiStatus(`Rate limit reached. Hacker slowing down, waiting ${apiCallDelay / 1000} seconds.`);
+      await addThought("Whoa, I need to slow down a bit. Don't want to trigger any alarms.");
+      throw new Error('Rate limit reached');
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    apiCallDelay = Math.max(15000, apiCallDelay * 0.9);
+    localStorage.setItem('apiCallDelay', apiCallDelay);
+
+    updateApiStatus(`Hacker decided on next action.`);
+
+    const data = await response.json();
+    
+    await addThought(data.current_thought);
+    await simulateTyping(data.current_command);
+    await streamOutput(data.current_output);
+    
+    sessionHistory.push({
+      command: data.current_command,
+      output: data.current_output,
+      thought: data.current_thought,
+      godmode_influence: godmodeCommand
+    });
+    localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
+    
+    godmodeCommand = ""; // Reset godmode influence after it's been used
+    
+    setTimeout(() => progressHackerSession(), 10000 + Math.random() * 5000);
+  } catch (error) {
+    console.error('Error:', error);
+    if (retryCount < 3) {
+      console.log(`Retrying hacker session (Attempt ${retryCount + 1})`);
+      await new Promise(resolve => setTimeout(resolve, apiCallDelay));
+      await progressHackerSession(retryCount + 1);
+    } else {
+      updateApiStatus(`Error in hacker session: ${error.message}. Restarting...`);
+      setTimeout(() => progressHackerSession(), 10000);
+    }
+  }
+}
+
+async function simulateTyping(text) {
+  removeInputLine();
+  const promptLine = document.createElement('div');
+  promptLine.innerHTML = `<span id="prompt">hacker@machine:~$</span> `;
+  terminal.appendChild(promptLine);
+
+  for (let char of text) {
+    await new Promise(resolve => setTimeout(resolve, 10 + Math.random() * 20)); // Faster typing
+    if (soundEnabled) {
+      (Math.random() < 0.5 ? typingSound1 : typingSound2).play();
+    }
+    promptLine.innerHTML += char;
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+}
+
+async function streamOutput(text) {
+  const lines = text.split('\n');
+  for (let line of lines) {
+    const outputLine = document.createElement('div');
+    outputLine.textContent = line;
+    terminal.appendChild(outputLine);
+    await new Promise(resolve => setTimeout(resolve, 10));
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+  showInputLine();
+}
+
+function showInputLine() {
+  const inputLine = document.createElement('div');
+  inputLine.id = 'input-line';
+  inputLine.innerHTML = `<span id="prompt">hacker@machine:~$</span> <span id="cursor"></span>`;
+  terminal.appendChild(inputLine);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+function removeInputLine() {
+  const inputLine = document.getElementById('input-line');
+  if (inputLine) {
+    inputLine.remove();
+  }
+}
+
+async function addThought(thought) {
+  isThoughtStreaming = true;
+  const thoughtElement = document.createElement('div');
+  thoughtElement.className = 'thought';
+  thoughtLog.appendChild(thoughtElement);
+
+  for (let char of thought) {
+    await new Promise(resolve => setTimeout(resolve, 20 + Math.random() * 30));
+    thoughtElement.textContent += char;
+    thoughtLog.scrollTop = thoughtLog.scrollHeight;
+  }
+
+  // Trigger reflow to restart the animation
+  thoughtElement.style.animation = 'none';
+  thoughtElement.offsetHeight; // trigger reflow
+  thoughtElement.style.animation = null;
+  
+  isThoughtStreaming = false;
+  
+  // Check if there's a pending godmode command
+  if (pendingGodModeCommand) {
+    addGodModeThought(pendingGodModeCommand);
+    pendingGodModeCommand = null;
+  }
+}
+
+function addGodModeThought(thought) {
+  const godModeElement = document.createElement('div');
+  godModeElement.className = 'godmode';
+  godModeElement.textContent = `[GodMode] ${thought}`;
+  thoughtLog.appendChild(godModeElement);
+  thoughtLog.scrollTop = thoughtLog.scrollHeight;
+}
+
+function submitGodmodeCommand() {
+  const command = godmodeInput.value.trim();
+  if (command) {
+    godmodeCommand = command;
+    if (!isThoughtStreaming) {
+      addGodModeThought(godmodeCommand);
+    } else {
+      pendingGodModeCommand = godmodeCommand;
+    }
+    godmodeInput.value = '';
+    updateApiStatus("GodMode command received. Influencing hacker's next action.");
+  }
+}
+
+godmodeInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    submitGodmodeCommand();
+  }
+});
+
+godmodeSubmit.addEventListener('click', submitGodmodeCommand);
+
+soundToggle.addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('soundEnabled', soundEnabled);
+  this.textContent = soundEnabled ? 'Mute Sound' : 'Unmute Sound';
+});
+
+apiStatusToggle.addEventListener('click', function() {
+  const isVisible = apiStatus.style.display === 'block';
+  apiStatus.style.display = isVisible ? 'none' : 'block';
+  this.textContent = isVisible ? 'Show Debug Log' : 'Hide Debug Log';
+});
+
+async function initializeHackerSim() {
+  updateApiStatus("HackerSim initialized. Hacker beginning autonomous session.");
+  const initialContent = `Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-72-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of ${new Date().toUTCString()}
+
+  System load:  0.08               Processes:             109
+  Usage of /:   62.9% of 19.56GB   Users logged in:       1
+  Memory usage: 40%                IPv4 address for eth0: 192.168.1.100
+  Swap usage:   0%
+
+ * Introducing Expanded Security Maintenance for Applications.
+   Receive updates to over 25,000 software packages with your
+   Ubuntu Pro subscription. Free for personal use.
+
+     https://ubuntu.com/pro
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Last login: ${new Date(Date.now() - 3600000).toUTCString()} from 192.168.1.50`;
+
+  terminal.innerHTML = initialContent;
+  showInputLine();
+
+  if (sessionHistory.length === 0) {
+    sessionHistory.push({
+      command: "",
+      output: initialContent,
+      thought: "Time to start exploring this system. What should I look for first?",
+      godmode_influence: ""
+    });
+    localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
+  } else {
+    // Restore previous session
+    for (let entry of sessionHistory) {
+      if (entry.command) await simulateTyping(entry.command);
+      if (entry.output) await streamOutput(entry.output);
+      if (entry.thought) await addThought(entry.thought);
+    }
+  }
+
+  try {
+    if (sessionHistory.length === 1) {
+      await addThought("Time to start exploring this system. What should I look for first?");
+    } else {
+      await addThought("Resuming previous session. Where were we?");
+    }
+    setTimeout(() => progressHackerSession(), 1000);
+  } catch (error) {
+    console.error('Error initializing HackerSim:', error);
+    updateApiStatus(`Error initializing HackerSim: ${error.message}`);
+    setTimeout(() => progressHackerSession(), 1000);
+  }
+}
+
+// Set initial state of UI elements
+soundToggle.textContent = soundEnabled ? 'Mute Sound' : 'Unmute Sound';
+
+initializeHackerSim();
+</script>
+
+</body></html>

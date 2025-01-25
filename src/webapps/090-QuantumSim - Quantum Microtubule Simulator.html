@@ -1,0 +1,555 @@
+<html><head><base href="https://quantumsim.ai/"><title>QuantumSim - Quantum Microtubule Simulator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap');
+
+  body, html {
+    font-family: 'Roboto Mono', monospace;
+    background-color: #000011;
+    color: #00ffff;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    height: 100%;
+    overflow: hidden;
+  }
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background: 
+      radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 20%),
+      radial-gradient(circle at 90% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 20%),
+      linear-gradient(135deg, rgba(0,0,17,0.9) 0%, rgba(0,17,34,0.95) 100%);
+    background-attachment: fixed;
+  }
+  h1, h2 {
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+  .content-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: 20px;
+  }
+  #simulation-container, #analysis-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  #simulation-container {
+    flex: 2;
+  }
+  #simulation, #analysis-log {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    padding: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    overflow-y: auto;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+  }
+  #prompt {
+    color: #ff00ff;
+    text-shadow: 0 0 5px #ff00ff;
+  }
+  #cursor {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background-color: #ff00ff;
+    animation: blink 0.7s infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  #quantum-input {
+    background-color: rgba(0, 31, 63, 0.7);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    padding: 10px;
+    margin-top: 10px;
+    resize: vertical;
+    width: 100%;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  #quantum-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+  .analysis {
+    color: #ff00ff;
+    font-style: italic;
+    margin-bottom: 15px;
+    background-color: rgba(255, 0, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.4;
+    animation: pulse 2s;
+    border-left: 3px solid rgba(255, 0, 255, 0.5);
+  }
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 0, 255, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 0, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 0, 255, 0);
+    }
+  }
+  .quantum-state {
+    color: #00ffff;
+    font-weight: bold;
+    margin-bottom: 15px;
+    background-color: rgba(0, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 3px solid rgba(0, 255, 255, 0.5);
+  }
+  #api-status {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #00ffff;
+    padding: 10px;
+    font-size: 12px;
+    height: 100px;
+    overflow-y: auto;
+    display: none;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+  }
+  #quantum-submit {
+    background-color: rgba(0, 255, 255, 0.2);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: bold;
+    margin-top: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  #quantum-submit:hover {
+    background-color: rgba(0, 255, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+  #quantum-container {
+    display: flex;
+    flex-direction: column;
+  }
+  #control-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+  }
+  #sound-toggle, #api-status-toggle {
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  #sound-toggle {
+    background-color: rgba(0, 255, 255, 0.2);
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+  }
+  #sound-toggle:hover {
+    background-color: rgba(0, 255, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+  #api-status-toggle {
+    background-color: rgba(68, 68, 68, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+  #api-status-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+  @media (max-width: 768px) {
+    body, html {
+      height: auto;
+      overflow-y: auto;
+    }
+    .main-container {
+      height: auto;
+      min-height: 100vh;
+    }
+    .content-container {
+      flex-direction: column;
+    }
+    #simulation-container, #analysis-container {
+      width: 100%;
+    }
+    #simulation, #analysis-log {
+      height: 40vh;
+    }
+    h1 {
+      font-size: 24px;
+    }
+    h2 {
+      font-size: 20px;
+    }
+    #control-buttons {
+      top: 10px;
+      right: 10px;
+    }
+    #sound-toggle, #api-status-toggle {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+    #api-status {
+      font-size: 10px;
+      height: 60px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="main-container">
+  <h1>QuantumSim - Quantum Microtubule Simulator</h1>
+  <div class="content-container">
+    <div id="simulation-container">
+      <div id="simulation"></div>
+    </div>
+    <div id="analysis-container">
+      <h2>Quantum Analysis</h2>
+      <div id="analysis-log"></div>
+      <div id="quantum-container">
+        <textarea id="quantum-input" rows="3" placeholder="Enter quantum parameters or observations..."></textarea>
+        <button id="quantum-submit">Submit Quantum Input</button>
+      </div>
+    </div>
+  </div>
+  <div id="api-status"></div>
+</div>
+<div id="control-buttons">
+  <button id="sound-toggle">Mute Sound</button>
+  <button id="api-status-toggle">Show Debug Log</button>
+</div>
+
+<script>
+const simulation = document.getElementById('simulation');
+const analysisLog = document.getElementById('analysis-log');
+const quantumInput = document.getElementById('quantum-input');
+const quantumSubmit = document.getElementById('quantum-submit');
+const apiStatus = document.getElementById('api-status');
+const soundToggle = document.getElementById('sound-toggle');
+const apiStatusToggle = document.getElementById('api-status-toggle');
+
+let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
+let quantumState = "";
+let lastApiCall = Number(localStorage.getItem('lastApiCall')) || 0;
+let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+let apiCallDelay = Number(localStorage.getItem('apiCallDelay')) || 15000; // 15 seconds
+const maxApiCallsPerFiveMinutes = 18;
+let apiCallCount = Number(localStorage.getItem('apiCallCount')) || 0;
+let apiCallResetTimeout;
+let isAnalysisStreaming = false;
+let pendingQuantumState = null;
+
+const quantumSound1 = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_31743c53a6.mp3?filename=interface-124464.mp3');
+const quantumSound2 = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73cd1.mp3?filename=interface-124470.mp3');
+
+function updateApiStatus(message) {
+  const statusLine = document.createElement('div');
+  statusLine.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+  apiStatus.appendChild(statusLine);
+  apiStatus.scrollTop = apiStatus.scrollHeight;
+}
+
+async function waitForNextCallWindow() {
+  const now = Date.now();
+  const timeToWait = Math.max(0, apiCallDelay - (now - lastApiCall));
+  if (timeToWait > 0) {
+    updateApiStatus(`Waiting ${timeToWait / 1000} seconds before next quantum calculation`);
+    await new Promise(resolve => setTimeout(resolve, timeToWait));
+  }
+  
+  if (apiCallCount >= maxApiCallsPerFiveMinutes) {
+    const waitTime = 60000; // 1 minute
+    updateApiStatus(`Rate limit reached. Quantum system stabilizing.`);
+    await addAnalysis("The quantum system is exhibiting high entropy. A brief stabilization period is necessary.");
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+    apiCallCount = 0;
+    localStorage.setItem('apiCallCount', apiCallCount);
+    await addAnalysis("Quantum stability restored. Resuming calculations.");
+  }
+  
+  lastApiCall = Date.now();
+  localStorage.setItem('lastApiCall', lastApiCall);
+  apiCallCount++;
+  localStorage.setItem('apiCallCount', apiCallCount);
+  
+  clearTimeout(apiCallResetTimeout);
+  apiCallResetTimeout = setTimeout(() => {
+    apiCallCount = 0;
+    localStorage.setItem('apiCallCount', apiCallCount);
+  }, 300000);
+}
+
+async function progressQuantumSimulation(retryCount = 0) {
+  const requestBody = {
+    session_history: sessionHistory,
+    quantum_characteristics: {
+      type: "microtubule",
+      scale: "nanoscopic"
+    },
+    quantum_state: quantumState
+  };
+
+  updateApiStatus(`Calculating quantum microtubule state...`);
+
+  try {
+    await waitForNextCallWindow();
+    const response = await fetch('/api/quantum_microtubule_simulation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (response.status === 429) {
+      apiCallDelay *= 1.5;
+      localStorage.setItem('apiCallDelay', apiCallDelay);
+      updateApiStatus(`Rate limit reached. Quantum calculations slowing down, waiting ${apiCallDelay / 1000} seconds.`);
+      await addAnalysis("Quantum coherence is fluctuating rapidly. Adjusting measurement frequency to maintain stability.");
+      throw new Error('Rate limit reached');
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    apiCallDelay = Math.max(15000, apiCallDelay * 0.9);
+    localStorage.setItem('apiCallDelay', apiCallDelay);
+
+    updateApiStatus(`Quantum state calculated.`);
+
+    const data = await response.json();
+    
+    await addAnalysis(data.quantum_analysis);
+    await simulateQuantumComputation(data.quantum_computation);
+    await streamQuantumResults(data.quantum_results);
+    
+    sessionHistory.push({
+      computation: data.quantum_computation,
+      results: data.quantum_results,
+      analysis: data.quantum_analysis,
+      quantum_state: quantumState
+    });
+    localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
+    
+    quantumState = ""; // Reset quantum state after it's been used
+    
+    setTimeout(() => progressQuantumSimulation(), 10000 + Math.random() * 5000);
+  } catch (error) {
+    console.error('Error:', error);
+    if (retryCount < 3) {
+      console.log(`Retrying quantum simulation (Attempt ${retryCount + 1})`);
+      await new Promise(resolve => setTimeout(resolve, apiCallDelay));
+      await progressQuantumSimulation(retryCount + 1);
+    } else {
+      updateApiStatus(`Error in quantum simulation: ${error.message}. Reinitializing...`);
+      setTimeout(() => progressQuantumSimulation(), 10000);
+    }
+  }
+}
+
+async function simulateQuantumComputation(computation) {
+  removeInputLine();
+  const computationLine = document.createElement('div');
+  computationLine.innerHTML = `<span id="prompt">quantum&gt;</span> `;
+  simulation.appendChild(computationLine);
+
+  for (let char of computation) {
+    await new Promise(resolve => setTimeout(resolve, 10 + Math.random() * 20));
+    if (soundEnabled) {
+      (Math.random() < 0.5 ? quantumSound1 : quantumSound2).play();
+    }
+    computationLine.innerHTML += char;
+    simulation.scrollTop = simulation.scrollHeight;
+  }
+}
+
+async function streamQuantumResults(results) {
+  const lines = results.split('\n');
+  for (let line of lines) {
+    const resultLine = document.createElement('div');
+    resultLine.textContent = line;
+    simulation.appendChild(resultLine);
+    await new Promise(resolve => setTimeout(resolve, 10));
+    simulation.scrollTop = simulation.scrollHeight;
+  }
+  showInputLine();
+}
+
+function showInputLine() {
+  const inputLine = document.createElement('div');
+  inputLine.id = 'input-line';
+  inputLine.innerHTML = `<span id="prompt">quantum&gt;</span> <span id="cursor"></span>`;
+  simulation.appendChild(inputLine);
+  simulation.scrollTop = simulation.scrollHeight;
+}
+
+function removeInputLine() {
+  const inputLine = document.getElementById('input-line');
+  if (inputLine) {
+    inputLine.remove();
+  }
+}
+
+async function addAnalysis(analysis) {
+  isAnalysisStreaming = true;
+  const analysisElement = document.createElement('div');
+  analysisElement.className = 'analysis';
+  analysisLog.appendChild(analysisElement);
+
+  for (let char of analysis) {
+    await new Promise(resolve => setTimeout(resolve, 20 + Math.random() * 30));
+    analysisElement.textContent += char;
+    analysisLog.scrollTop = analysisLog.scrollHeight;
+  }
+
+  // Trigger reflow to restart the animation
+  analysisElement.style.animation = 'none';
+  analysisElement.offsetHeight; // trigger reflow
+  analysisElement.style.animation = null;
+  
+  isAnalysisStreaming = false;
+  
+  // Check if there's a pending quantum state
+  if (pendingQuantumState) {
+    addQuantumState(pendingQuantumState);
+    pendingQuantumState = null;
+  }
+}
+
+function addQuantumState(state) {
+  const quantumStateElement = document.createElement('div');
+  quantumStateElement.className = 'quantum-state';
+  quantumStateElement.textContent = `[Quantum State] ${state}`;
+  analysisLog.appendChild(quantumStateElement);
+  analysisLog.scrollTop = analysisLog.scrollHeight;
+}
+
+function submitQuantumInput() {
+  const input = quantumInput.value.trim();
+  if (input) {
+    quantumState = input;
+    if (!isAnalysisStreaming) {
+      addQuantumState(quantumState);
+    } else {
+      pendingQuantumState = quantumState;
+    }
+    quantumInput.value = '';
+    updateApiStatus("Quantum input received. Adjusting simulation parameters.");
+  }
+}
+
+quantumInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    submitQuantumInput();
+  }
+});
+
+quantumSubmit.addEventListener('click', submitQuantumInput);
+
+soundToggle.addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('soundEnabled', soundEnabled);
+  this.textContent = soundEnabled ? 'Mute Sound' : 'Unmute Sound';
+});
+
+apiStatusToggle.addEventListener('click', function() {
+  const isVisible = apiStatus.style.display === 'block';
+  apiStatus.style.display = isVisible ? 'none' : 'block';
+  this.textContent = isVisible ? 'Show Debug Log' : 'Hide Debug Log';
+});
+
+async function initializeQuantumSim() {
+  updateApiStatus("QuantumSim initialized. Beginning quantum microtubule simulation.");
+  const initialContent = `Quantum Microtubule Simulation v1.0
+================================
+Initializing quantum environment...
+Loading Penrose-Hameroff ORCH-OR model...
+Calibrating Planck-scale oscillations...
+Quantum coherence established.
+
+Ready to receive quantum parameters.
+`;
+
+  simulation.innerHTML = initialContent;
+  showInputLine();
+
+  if (sessionHistory.length === 0) {
+    sessionHistory.push({
+      computation: "",
+      results: initialContent,
+      analysis: "Quantum microtubule environment initialized. Awaiting first set of parameters.",
+      quantum_state: ""
+    });
+    localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
+  } else {
+    // Restore previous session
+    for (let entry of sessionHistory) {
+      if (entry.computation) await simulateQuantumComputation(entry.computation);
+      if (entry.results) await streamQuantumResults(entry.results);
+      if (entry.analysis) await addAnalysis(entry.analysis);
+    }
+  }
+
+  try {
+    if (sessionHistory.length === 1) {
+      await addAnalysis("Quantum microtubule environment initialized. Awaiting first set of parameters.");
+    } else {
+      await addAnalysis("Resuming previous quantum simulation. Recalibrating based on last known state.");
+    }
+    setTimeout(() => progressQuantumSimulation(), 1000);
+  } catch (error) {
+    console.error('Error initializing QuantumSim:', error);
+    updateApiStatus(`Error initializing QuantumSim: ${error.message}`);
+    setTimeout(() => progressQuantumSimulation(), 1000);
+  }
+}
+
+// Set initial state of UI elements
+soundToggle.textContent = soundEnabled ? 'Mute Sound' : 'Unmute Sound';
+
+initializeQuantumSim();
+</script>
+
+</body></html>

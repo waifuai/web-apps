@@ -1,0 +1,225 @@
+<html><head><base href="https://quantum-consciousness-exploration.org/part-ii/quantum-entanglement-non-locality/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Entanglement and Non-Locality: The Building Blocks of Consciousness</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .interactive-demo {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  #entanglement-visualization {
+    width: 100%;
+    height: 400px;
+    background-color: #000;
+    position: relative;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #fff;
+  }
+  .connection {
+    position: absolute;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.5);
+    transform-origin: left center;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.4/d3.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Quantum Entanglement and Non-Locality: The Building Blocks of Consciousness</h1>
+  </header>
+
+  <main>
+    <section>
+      <h2>Introduction</h2>
+      <p>Welcome to the fifth installment of our exploration into quantum consciousness. In this article, we delve into the fascinating phenomena of quantum entanglement and non-locality, and how they may serve as the fundamental building blocks of consciousness.</p>
+    </section>
+
+    <section class="interactive-demo">
+      <h2>Interactive Demonstration: Quantum Entanglement</h2>
+      <p>The visualization below demonstrates the concept of quantum entanglement. Click anywhere to create entangled particle pairs and observe their correlated behavior.</p>
+      <div id="entanglement-visualization"></div>
+    </section>
+
+    <section>
+      <h2>Understanding Quantum Entanglement</h2>
+      <p>Quantum entanglement is a phenomenon where two or more particles become interconnected in such a way that the quantum state of each particle cannot be described independently of the others, even when separated by large distances. This "spooky action at a distance," as Einstein called it, challenges our classical understanding of reality and opens up new possibilities for explaining consciousness.</p>
+    </section>
+
+    <section>
+      <h2>Non-Locality in Quantum Mechanics</h2>
+      <p>Non-locality refers to the ability of quantum systems to instantaneously influence each other regardless of the distance between them. This apparent violation of classical physics has profound implications for our understanding of consciousness and its potential quantum nature.</p>
+    </section>
+
+    <section class="interactive-demo">
+      <h2>Data Visualization: Entanglement Strength vs. Distance</h2>
+      <div id="entanglement-chart"></div>
+    </section>
+
+    <section>
+      <h2>Implications for Consciousness</h2>
+      <p>The principles of quantum entanglement and non-locality provide a potential framework for understanding how consciousness might emerge from the fundamental fabric of reality. By considering the brain as a quantum system, we can explore how entangled neurons could give rise to unified conscious experiences.</p>
+    </section>
+
+    <section>
+      <h2>Conclusion</h2>
+      <p>As we continue to unravel the mysteries of quantum mechanics and consciousness, the concepts of entanglement and non-locality offer tantalizing clues about the nature of reality and our place within it. In the next article, we'll explore how these quantum phenomena might contribute to a holographic model of consciousness and reality.</p>
+    </section>
+  </main>
+
+  <script>
+    // Quantum Entanglement Visualization
+    const visualization = d3.select("#entanglement-visualization");
+    const width = visualization.node().getBoundingClientRect().width;
+    const height = 400;
+
+    visualization.on("click", createEntangledPair);
+
+    function createEntangledPair(event) {
+      const [x, y] = d3.pointer(event);
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = 100;
+
+      const particle1 = { x: x, y: y, angle: angle };
+      const particle2 = {
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.sin(angle) * distance,
+        angle: angle + Math.PI
+      };
+
+      visualization.append("div")
+        .attr("class", "particle")
+        .style("left", particle1.x + "px")
+        .style("top", particle1.y + "px");
+
+      visualization.append("div")
+        .attr("class", "particle")
+        .style("left", particle2.x + "px")
+        .style("top", particle2.y + "px");
+
+      const connection = visualization.append("div")
+        .attr("class", "connection")
+        .style("left", particle1.x + "px")
+        .style("top", particle1.y + "px")
+        .style("width", distance + "px")
+        .style("transform", `rotate(${angle}rad)`);
+
+      animateEntangledPair(particle1, particle2, connection);
+    }
+
+    function animateEntangledPair(particle1, particle2, connection) {
+      const duration = 5000;
+      const startTime = Date.now();
+
+      function update() {
+        const elapsed = Date.now() - startTime;
+        const progress = elapsed / duration;
+
+        if (progress < 1) {
+          const phase = Math.sin(progress * Math.PI * 4);
+          updateParticle(particle1, phase);
+          updateParticle(particle2, -phase);
+          requestAnimationFrame(update);
+        } else {
+          particle1.remove();
+          particle2.remove();
+          connection.remove();
+        }
+      }
+
+      update();
+    }
+
+    function updateParticle(particle, phase) {
+      const amplitude = 20;
+      const x = particle.x + Math.cos(particle.angle) * amplitude * phase;
+      const y = particle.y + Math.sin(particle.angle) * amplitude * phase;
+      particle.style("left", x + "px").style("top", y + "px");
+    }
+
+    // Entanglement Strength vs. Distance Chart
+    const chartData = [
+      {distance: 0, strength: 1},
+      {distance: 10, strength: 0.9},
+      {distance: 20, strength: 0.8},
+      {distance: 50, strength: 0.7},
+      {distance: 100, strength: 0.6},
+      {distance: 200, strength: 0.5},
+      {distance: 500, strength: 0.4},
+      {distance: 1000, strength: 0.3},
+      {distance: 2000, strength: 0.2},
+      {distance: 5000, strength: 0.1},
+    ];
+
+    const margin = {top: 20, right: 20, bottom: 30, left: 50};
+    const chartWidth = 600 - margin.left - margin.right;
+    const chartHeight = 400 - margin.top - margin.bottom;
+
+    const svg = d3.select("#entanglement-chart")
+      .append("svg")
+        .attr("width", chartWidth + margin.left + margin.right)
+        .attr("height", chartHeight + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleLinear()
+      .domain([0, d3.max(chartData, d => d.distance)])
+      .range([0, chartWidth]);
+
+    const y = d3.scaleLinear()
+      .domain([0, 1])
+      .range([chartHeight, 0]);
+
+    svg.append("g")
+      .attr("transform", `translate(0,${chartHeight})`)
+      .call(d3.axisBottom(x));
+
+    svg.append("g")
+      .call(d3.axisLeft(y));
+
+    svg.append("path")
+      .datum(chartData)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(d => x(d.distance))
+        .y(d => y(d.strength))
+      );
+
+    svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("x", chartWidth)
+      .attr("y", chartHeight + margin.top + 20)
+      .text("Distance");
+
+    svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -margin.left + 20)
+      .attr("x", -margin.top)
+      .text("Entanglement Strength");
+
+  </script>
+</body></html>

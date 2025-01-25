@@ -1,0 +1,209 @@
+<html><head><base href="https://quantum-consciousness-study.org/orch-or/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modeling Microtubules with Quantum Circuits</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #microtubuleCanvas {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+  }
+  #quantumCircuit {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #ddd;
+  }
+  .interactive-section {
+    margin-top: 30px;
+  }
+  button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  button:hover {
+    background-color: #2980b9;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Modeling Microtubules with Quantum Circuits</h1>
+    
+    <p>Welcome to the fourth installment of our series exploring the intersection of quantum computing and consciousness. In this section, we'll delve into the fascinating world of microtubules and how we can model their behavior using quantum circuits.</p>
+    
+    <h2>Understanding Microtubules</h2>
+    <p>Microtubules are cylindrical structures found in cells, playing a crucial role in cellular organization and potentially in quantum processes related to consciousness, according to the Orch-OR theory.</p>
+    
+    <div class="interactive-section">
+      <h3>Interactive Microtubule Model</h3>
+      <div id="microtubuleCanvas"></div>
+      <button onclick="toggleMicrotubuleAnimation()">Toggle Animation</button>
+    </div>
+    
+    <h2>Quantum Circuit Representation</h2>
+    <p>We can model the quantum states of tubulin dimers within microtubules using quantum circuits. Here's an interactive quantum circuit simulator:</p>
+    
+    <div class="interactive-section">
+      <h3>Quantum Circuit Simulator</h3>
+      <div id="quantumCircuit"></div>
+      <button onclick="addQubit()">Add Qubit</button>
+      <button onclick="addHadamardGate()">Add Hadamard Gate</button>
+      <button onclick="measure()">Measure</button>
+    </div>
+    
+    <h2>Simulating Quantum Coherence</h2>
+    <p>One of the key aspects of the Orch-OR theory is the maintenance of quantum coherence in microtubules. Let's explore how we can simulate this using our quantum circuit model:</p>
+    
+    <div class="interactive-section">
+      <h3>Quantum Coherence Simulation</h3>
+      <canvas id="coherenceChart"></canvas>
+      <button onclick="runCoherenceSimulation()">Run Simulation</button>
+    </div>
+    
+    <h2>Conclusion</h2>
+    <p>By modeling microtubules with quantum circuits, we can gain insights into the potential quantum processes occurring within neurons. This approach allows us to test predictions of the Orch-OR theory and explore the fascinating possibility of quantum effects in consciousness.</p>
+  </div>
+
+  <script>
+    // Microtubule Animation
+    let microtubuleSketch = function(p) {
+      let angle = 0;
+      let animating = true;
+
+      p.setup = function() {
+        p.createCanvas(p.windowWidth, 400, p.WEBGL);
+      }
+
+      p.draw = function() {
+        p.background(240);
+        p.rotateY(angle);
+        p.normalMaterial();
+        p.cylinder(50, 300);
+        
+        if (animating) {
+          angle += 0.02;
+        }
+      }
+    }
+
+    new p5(microtubuleSketch, 'microtubuleCanvas');
+
+    function toggleMicrotubuleAnimation() {
+      animating = !animating;
+    }
+
+    // Quantum Circuit Simulator
+    let circuit = [];
+    let qubits = 2;
+
+    function drawQuantumCircuit() {
+      let canvas = document.getElementById('quantumCircuit');
+      let ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw qubit lines
+      for (let i = 0; i < qubits; i++) {
+        ctx.beginPath();
+        ctx.moveTo(50, 50 + i * 50);
+        ctx.lineTo(750, 50 + i * 50);
+        ctx.stroke();
+      }
+      
+      // Draw gates
+      circuit.forEach((gate, index) => {
+        ctx.fillStyle = gate.type === 'H' ? 'blue' : 'green';
+        ctx.fillRect(100 + index * 50, 25 + gate.qubit * 50, 40, 40);
+        ctx.fillStyle = 'white';
+        ctx.fillText(gate.type, 115 + index * 50, 50 + gate.qubit * 50);
+      });
+    }
+
+    function addQubit() {
+      qubits++;
+      drawQuantumCircuit();
+    }
+
+    function addHadamardGate() {
+      circuit.push({type: 'H', qubit: Math.floor(Math.random() * qubits)});
+      drawQuantumCircuit();
+    }
+
+    function measure() {
+      circuit.push({type: 'M', qubit: Math.floor(Math.random() * qubits)});
+      drawQuantumCircuit();
+    }
+
+    // Quantum Coherence Simulation
+    let coherenceChart;
+
+    function setupCoherenceChart() {
+      let ctx = document.getElementById('coherenceChart').getContext('2d');
+      coherenceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Quantum Coherence',
+            data: [],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 1
+            }
+          }
+        }
+      });
+    }
+
+    function runCoherenceSimulation() {
+      let timePoints = 100;
+      let coherenceData = [];
+      
+      for (let i = 0; i < timePoints; i++) {
+        let t = i / (timePoints - 1);
+        let coherence = Math.exp(-t * 5) * (1 + 0.1 * Math.sin(t * 20));
+        coherenceData.push(coherence);
+      }
+      
+      coherenceChart.data.labels = Array.from({length: timePoints}, (_, i) => i);
+      coherenceChart.data.datasets[0].data = coherenceData;
+      coherenceChart.update();
+    }
+
+    // Initialize
+    drawQuantumCircuit();
+    setupCoherenceChart();
+  </script>
+</body></html>

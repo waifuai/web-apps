@@ -1,0 +1,432 @@
+<html><head><base href="https://objectivist-solana-tokenomics.io/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Solana Tokenomics: Objectivist Portfolio Optimization</title>
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  header {
+    background-color: #1a237e;
+    color: #fff;
+    text-align: center;
+    padding: 2rem 0;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  nav {
+    background-color: #3f51b5;
+    padding: 1rem 0;
+  }
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  nav ul li {
+    margin: 0.5rem;
+  }
+  nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+  }
+  nav ul li a:hover {
+    background-color: #283593;
+  }
+  .section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  h2 {
+    color: #1a237e;
+    border-bottom: 2px solid #ffd54f;
+    padding-bottom: 0.5rem;
+  }
+  .chart-container {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 2rem;
+  }
+  .interactive-element {
+    margin-bottom: 1rem;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+  <header>
+    <h1>Interactive Solana Tokenomics: Objectivist Portfolio Optimization</h1>
+    <p>Empowering Solopreneurs through Data-Driven Rational Self-Interest</p>
+  </header>
+  
+  <nav>
+    <ul>
+      <li><a href="#portfolio-optimization">Portfolio Optimization</a></li>
+      <li><a href="#token-swap">Intertoken Swap</a></li>
+      <li><a href="#ico-analysis">ICO Analysis</a></li>
+      <li><a href="#bonding-curves">Bonding Curves</a></li>
+      <li><a href="#market-trends">Market Trends</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <section id="portfolio-optimization" class="section">
+      <h2>Portfolio Optimization</h2>
+      <p>Visualize your Solana token portfolio performance and optimize based on Objectivist principles.</p>
+      <div class="interactive-element">
+        <label for="risk-tolerance">Risk Tolerance: </label>
+        <input type="range" id="risk-tolerance" min="1" max="10" value="5">
+        <span id="risk-value">5</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="portfolio-chart"></canvas>
+      </div>
+    </section>
+
+    <section id="token-swap" class="section">
+      <h2>Intertoken Swap Analyzer</h2>
+      <p>Explore potential gains from Solana intertoken swaps using our interactive tool.</p>
+      <div class="interactive-element">
+        <label for="token-from">From Token: </label>
+        <select id="token-from">
+          <option value="SOL">SOL</option>
+          <option value="RAY">RAY</option>
+          <option value="SRM">SRM</option>
+        </select>
+        <label for="token-to">To Token: </label>
+        <select id="token-to">
+          <option value="RAY">RAY</option>
+          <option value="SRM">SRM</option>
+          <option value="SOL">SOL</option>
+        </select>
+        <button id="calculate-swap">Calculate Swap</button>
+      </div>
+      <div class="chart-container">
+        <canvas id="swap-chart"></canvas>
+      </div>
+    </section>
+
+    <section id="ico-analysis" class="section">
+      <h2>ICO Strategy Analysis</h2>
+      <p>Analyze different ICO strategies based on Objectivist principles.</p>
+      <div class="interactive-element">
+        <label for="ico-type">ICO Type: </label>
+        <select id="ico-type">
+          <option value="dutch">Dutch Auction</option>
+          <option value="fixed">Fixed Price</option>
+          <option value="dynamic">Dynamic Pricing</option>
+        </select>
+      </div>
+      <div class="chart-container">
+        <canvas id="ico-chart"></canvas>
+      </div>
+    </section>
+
+    <section id="bonding-curves" class="section">
+      <h2>Interactive Bonding Curves</h2>
+      <p>Explore how different bonding curve parameters affect token price and supply.</p>
+      <div class="interactive-element">
+        <label for="curve-type">Curve Type: </label>
+        <select id="curve-type">
+          <option value="linear">Linear</option>
+          <option value="exponential">Exponential</option>
+          <option value="logarithmic">Logarithmic</option>
+        </select>
+        <label for="curve-steepness">Curve Steepness: </label>
+        <input type="range" id="curve-steepness" min="1" max="10" value="5">
+      </div>
+      <div class="chart-container" id="bonding-curve-container"></div>
+    </section>
+
+    <section id="market-trends" class="section">
+      <h2>Solana Ecosystem Market Trends</h2>
+      <p>Visualize market trends in the Solana ecosystem to inform your rational decision-making.</p>
+      <div class="interactive-element">
+        <label for="trend-timeframe">Timeframe: </label>
+        <select id="trend-timeframe">
+          <option value="1d">1 Day</option>
+          <option value="1w">1 Week</option>
+          <option value="1m">1 Month</option>
+          <option value="3m">3 Months</option>
+        </select>
+      </div>
+      <div class="chart-container">
+        <canvas id="market-trends-chart"></canvas>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Portfolio Optimization Chart
+    const portfolioCtx = document.getElementById('portfolio-chart').getContext('2d');
+    const portfolioChart = new Chart(portfolioCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Optimized Portfolio',
+          data: [1000, 1150, 1280, 1390, 1500, 1650],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Portfolio Value (SOL)'
+            }
+          }
+        }
+      }
+    });
+
+    // Risk Tolerance Slider
+    const riskSlider = document.getElementById('risk-tolerance');
+    const riskValue = document.getElementById('risk-value');
+    riskSlider.addEventListener('input', (e) => {
+      riskValue.textContent = e.target.value;
+      // Update portfolio chart based on risk tolerance
+      const riskFactor = e.target.value / 5;
+      portfolioChart.data.datasets[0].data = portfolioChart.data.datasets[0].data.map(val => val * riskFactor);
+      portfolioChart.update();
+    });
+
+    // Intertoken Swap Chart
+    const swapCtx = document.getElementById('swap-chart').getContext('2d');
+    const swapChart = new Chart(swapCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Current Value', 'Potential Value'],
+        datasets: [{
+          label: 'Token Value',
+          data: [100, 110],
+          backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+          borderColor: ['rgb(75, 192, 192)', 'rgb(153, 102, 255)'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Value (USD)'
+            }
+          }
+        }
+      }
+    });
+
+    // Calculate Swap Button
+    document.getElementById('calculate-swap').addEventListener('click', () => {
+      const fromToken = document.getElementById('token-from').value;
+      const toToken = document.getElementById('token-to').value;
+      // Simulate API call to get potential swap value
+      const potentialValue = Math.random() * 50 + 100;
+      swapChart.data.datasets[0].data = [100, potentialValue];
+      swapChart.data.labels = [`Current ${fromToken} Value`, `Potential ${toToken} Value`];
+      swapChart.update();
+    });
+
+    // ICO Strategy Chart
+    const icoCtx = document.getElementById('ico-chart').getContext('2d');
+    const icoChart = new Chart(icoCtx, {
+      type: 'line',
+      data: {
+        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+        datasets: [{
+          label: 'Token Price',
+          data: [1, 1.2, 1.5, 1.8, 2.1, 2.3, 2.5],
+          borderColor: 'rgb(255, 99, 132)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Token Price (USD)'
+            }
+          }
+        }
+      }
+    });
+
+    // ICO Type Selector
+    document.getElementById('ico-type').addEventListener('change', (e) => {
+      const icoType = e.target.value;
+      let newData;
+      switch(icoType) {
+        case 'dutch':
+          newData = [2.5, 2.3, 2.1, 1.9, 1.7, 1.5, 1.3];
+          break;
+        case 'fixed':
+          newData = [2, 2, 2, 2, 2, 2, 2];
+          break;
+        case 'dynamic':
+          newData = [1, 1.5, 1.8, 2.2, 2.5, 2.7, 3];
+          break;
+      }
+      icoChart.data.datasets[0].data = newData;
+      icoChart.update();
+    });
+
+    // Bonding Curve
+    const bondingCurveContainer = d3.select('#bonding-curve-container');
+    const width = bondingCurveContainer.node().getBoundingClientRect().width;
+    const height = 400;
+    const margin = {top: 20, right: 20, bottom: 30, left: 50};
+
+    const svg = bondingCurveContainer.append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+    const g = svg.append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleLinear().range([0, width - margin.left - margin.right]);
+    const y = d3.scaleLinear().range([height - margin.top - margin.bottom, 0]);
+
+    const line = d3.line()
+      .x(d => x(d.supply))
+      .y(d => y(d.price));
+
+    function updateBondingCurve() {
+      const curveType = document.getElementById('curve-type').value;
+      const steepness = document.getElementById('curve-steepness').value / 5;
+
+      const data = [];
+      for (let i = 0; i <= 100; i++) {
+        let price;
+        switch(curveType) {
+          case 'linear':
+            price = i * steepness;
+            break;
+          case 'exponential':
+            price = Math.pow(i, steepness);
+            break;
+          case 'logarithmic':
+            price = Math.log(i + 1) * steepness * 10;
+            break;
+        }
+        data.push({supply: i, price: price});
+      }
+
+      x.domain([0, 100]);
+      y.domain([0, d3.max(data, d => d.price)]);
+
+      g.selectAll('*').remove();
+
+      g.append('g')
+        .attr('transform', `translate(0,${height - margin.top - margin.bottom})`)
+        .call(d3.axisBottom(x));
+
+      g.append('g')
+        .call(d3.axisLeft(y));
+
+      g.append('path')
+        .datum(data)
+        .attr('fill', 'none')
+        .attr('stroke', 'steelblue')
+        .attr('stroke-width', 1.5)
+        .attr('d', line);
+    }
+
+    document.getElementById('curve-type').addEventListener('change', updateBondingCurve);
+    document.getElementById('curve-steepness').addEventListener('input', updateBondingCurve);
+
+    updateBondingCurve();
+
+    // Market Trends Chart
+    const trendsCtx = document.getElementById('market-trends-chart').getContext('2d');
+    const trendsChart = new Chart(trendsCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'SOL',
+          data: [100, 120, 115, 130, 140, 135],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        },
+        {
+          label: 'RAY',
+          data: [10, 12, 11, 13, 14, 13.5],
+          borderColor: 'rgb(255, 99, 132)',
+          tension: 0.1
+        },
+        {
+          label: 'SRM',
+          data: [5, 5.5, 5.2, 6, 6.5, 6.2],
+          borderColor: 'rgb(255, 205, 86)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Price (USD)'
+            }
+          }
+        }
+      }
+    });
+
+    // Timeframe Selector
+    document.getElementById('trend-timeframe').addEventListener('change', (e) => {
+      const timeframe = e.target.value;
+      // Simulate API call to get data for different timeframes
+      const newData = {
+        'SOL': [],
+        'RAY': [],
+        'SRM': []
+      };
+      for (let i = 0; i < 6; i++) {
+        newData.SOL.push(Math.random() * 50 + 100);
+        newData.RAY.push(Math.random() * 5 + 10);
+        newData.SRM.push(Math.random() * 2 + 5);
+      }
+      trendsChart.data.datasets[0].data = newData.SOL;
+      trendsChart.data.datasets[1].data = newData.RAY;
+      trendsChart.data.datasets[2].data = newData.SRM;
+      trendsChart.update();
+    });
+  </script>
+</body>
+</html>

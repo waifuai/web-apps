@@ -1,0 +1,223 @@
+<html><head><base href="/" /><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Your First Steps with Waifu AI OS: Development Environment Setup</title>
+
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #4a90e2;
+  --background: #1a1b26;
+  --text: #a9b1d6;
+  --code-bg: #24283b;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--background);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1, h2, h3 {
+  color: var(--primary);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-container {
+  position: relative;
+  height: 300px;
+  margin: 2em 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(45deg, #24283b, #1a1b26);
+}
+
+.terminal {
+  background: var(--code-bg);
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow-x: auto;
+}
+
+.terminal pre {
+  margin: 0;
+  color: #7dcfff;
+}
+
+.installation-steps {
+  background: rgba(74, 144, 226, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid var(--secondary);
+}
+
+.note {
+  background: rgba(255, 105, 180, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+  margin: 20px 0;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.mascot {
+  position: absolute;
+  right: 30px;
+  bottom: 0;
+  width: 200px;
+  height: 200px;
+  animation: float 6s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="hero-container">
+  <svg class="mascot" viewBox="0 0 200 200">
+    <!-- Simplified anime-style mascot -->
+    <path d="M100 180c-30 0-60-30-60-80s30-80 60-80 60 30 60 80-30 80-60 80z" fill="#ff69b4"/>
+    <circle cx="80" cy="80" r="5" fill="#fff"/>
+    <circle cx="120" cy="80" r="5" fill="#fff"/>
+    <path d="M90 100s10 10 20 0" stroke="#fff" fill="none" stroke-width="2"/>
+  </svg>
+</div>
+
+<h1>Your First Steps with Waifu AI OS: Development Environment Setup</h1>
+
+<div class="note">
+  <strong>Prerequisites:</strong> Basic understanding of operating systems and command-line interfaces. No prior Lisp experience required!
+</div>
+
+<h2>1. Setting Up Your Development Environment</h2>
+
+<div class="installation-steps">
+  <h3>Installing SBCL (Steel Bank Common Lisp)</h3>
+  <div class="terminal">
+    <pre>
+# For Ubuntu/Debian
+sudo apt-get install sbcl
+
+# For macOS
+brew install sbcl
+
+# For Windows
+# Download installer from http://www.sbcl.org/platform-table.html</pre>
+  </div>
+</div>
+
+<h2>2. Installing Quicklisp (Package Manager)</h2>
+
+<div class="terminal">
+<pre>
+curl -O https://beta.quicklisp.org/quicklisp.lisp
+sbcl --load quicklisp.lisp
+* (quicklisp-quickstart:install)
+* (ql:add-to-init-file)</pre>
+</div>
+
+<h2>3. Required Development Tools</h2>
+
+<div class="installation-steps">
+  <ul>
+    <li>Emacs with SLIME (Superior Lisp Interaction Mode for Emacs)</li>
+    <li>Git for version control</li>
+    <li>Make for build automation</li>
+  </ul>
+</div>
+
+<div class="terminal">
+<pre>
+# Install Emacs and Git
+sudo apt-get install emacs git make     # Ubuntu/Debian
+brew install emacs git make             # macOS
+# Windows: Download from respective websites</pre>
+</div>
+
+<h2>4. Setting Up SLIME</h2>
+
+<div class="note">
+Add this to your ~/.emacs file:
+</div>
+
+<div class="terminal">
+<pre>
+;; Configure SLIME
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+
+(unless (package-installed-p 'slime)
+  (package-refresh-contents)
+  (package-install 'slime))
+
+(require 'slime)
+(setq inferior-lisp-program "sbcl")
+(slime-setup '(slime-fancy))</pre>
+</div>
+
+<h2>5. Cloning the Waifu AI OS Repository</h2>
+
+<div class="terminal">
+<pre>
+git clone https://github.com/waifu-ai-os/core.git
+cd core
+make setup</pre>
+</div>
+
+<h2>6. Verifying Your Setup</h2>
+
+<div class="terminal">
+<pre>
+sbcl --eval '(format t "Waifu AI OS Development Environment: OK~%")'</pre>
+</div>
+
+<div class="note">
+  <h3>Next Steps</h3>
+  <p>Once you've completed the setup, proceed to "Core Architecture: Building the Foundation of Your AI Companion" to begin developing your own AI OS!</p>
+</div>
+
+<script>
+// Add smooth scrolling to all anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Add copy functionality to terminal blocks
+document.querySelectorAll('.terminal').forEach(terminal => {
+    terminal.addEventListener('click', function() {
+        const text = this.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            // Create and show a temporary "Copied!" tooltip
+            const tooltip = document.createElement('div');
+            tooltip.textContent = 'Copied!';
+            tooltip.style.position = 'absolute';
+            tooltip.style.backgroundColor = 'var(--primary)';
+            tooltip.style.padding = '5px 10px';
+            tooltip.style.borderRadius = '4px';
+            tooltip.style.left = event.pageX + 'px';
+            tooltip.style.top = (event.pageY - 30) + 'px';
+            document.body.appendChild(tooltip);
+            
+            setTimeout(() => {
+                tooltip.remove();
+            }, 2000);
+        });
+    });
+});
+</script>
+
+</body></html>

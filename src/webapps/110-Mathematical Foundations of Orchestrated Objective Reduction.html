@@ -1,0 +1,227 @@
+<html><head><base href="https://quantum-consciousness.org/orch-or/"><title>Mathematical Foundations of Orchestrated Objective Reduction</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .math-container {
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 20px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .interactive-chart {
+        width: 100%;
+        height: 400px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin: 20px 0;
+    }
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+    }
+    .nav-button {
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    .nav-button:hover {
+        background-color: #2980b9;
+    }
+</style>
+</head>
+<body>
+    <h1>Mathematical Foundations of Orchestrated Objective Reduction</h1>
+    
+    <p>The Orchestrated Objective Reduction (Orch OR) theory, proposed by physicist Roger Penrose and anesthesiologist Stuart Hameroff, relies on a complex mathematical framework that combines quantum mechanics, neurobiology, and theories of consciousness. This page explores the key mathematical concepts underlying Orch OR.</p>
+    
+    <h2>1. Quantum Superposition and Collapse</h2>
+    
+    <div class="math-container">
+        <p>At the heart of Orch OR is the concept of quantum superposition, described by the wave function:</p>
+        <p>\[ \Psi = c_1\psi_1 + c_2\psi_2 + ... + c_n\psi_n \]</p>
+        <p>Where \(\Psi\) represents the quantum state, and \(c_i\) are complex coefficients.</p>
+    </div>
+    
+    <div id="superposition-chart" class="interactive-chart"></div>
+    
+    <h2>2. Schrödinger-Newton Equation</h2>
+    
+    <div class="math-container">
+        <p>Penrose proposed a modification to the Schrödinger equation that incorporates gravitational effects:</p>
+        <p>\[ i\hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m}\nabla^2\Psi + V\Psi - Gm^2\int \frac{|\Psi(\mathbf{r'})|^2}{|\mathbf{r} - \mathbf{r'}|} d^3r' \Psi \]</p>
+        <p>This equation combines quantum mechanics with Newtonian gravity, forming a basis for gravitational effects on quantum states.</p>
+    </div>
+    
+    <h2>3. Quantum Coherence Timescale</h2>
+    
+    <div class="math-container">
+        <p>The time for objective reduction is given by:</p>
+        <p>\[ \tau \approx \frac{\hbar}{E_G} \]</p>
+        <p>Where \(\tau\) is the coherence time, \(\hbar\) is the reduced Planck constant, and \(E_G\) is the gravitational self-energy of the superposed state.</p>
+    </div>
+    
+    <div id="coherence-time-chart" class="interactive-chart"></div>
+    
+    <h2>4. Microtubule Quantum Computations</h2>
+    
+    <p>Hameroff proposed that microtubules in neurons could perform quantum computations. This involves modeling microtubules as cellular automata capable of quantum operations.</p>
+    
+    <div id="microtubule-automata" class="interactive-chart"></div>
+    
+    <h2>5. Quantum Entanglement in Neural Networks</h2>
+    
+    <div class="math-container">
+        <p>Entanglement between quantum states in different neurons is described by the density matrix:</p>
+        <p>\[ \rho = \sum_i p_i |\psi_i\rangle \langle\psi_i| \]</p>
+        <p>Where \(p_i\) are probabilities and \(|\psi_i\rangle\) are pure quantum states.</p>
+    </div>
+    
+    <script>
+    // MathJax configuration
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        TeX: {
+            extensions: ["AMSmath.js", "AMSsymbols.js"]
+        },
+        SVG: {
+            scale: 120,
+            linebreaks: { automatic: true }
+        }
+    });
+
+    // Trigger MathJax to process the page
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+    // Superposition visualization
+    var superpositionData = [{
+        x: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+        y: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Base State'
+    }, {
+        x: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+        y: [0.2, 0.4, 0.6, 0.8, 0.9, 1, 0.9, 0.8, 0.6, 0.4, 0.2],
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Superposition'
+    }];
+    
+    var superpositionLayout = {
+        title: 'Quantum Superposition Visualization',
+        xaxis: { title: 'Position' },
+        yaxis: { title: 'Probability Amplitude' }
+    };
+    
+    Plotly.newPlot('superposition-chart', superpositionData, superpositionLayout);
+    
+    // Coherence Time Chart
+    var coherenceTimeData = [{
+        x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        y: [1, 0.9, 0.7, 0.5, 0.3, 0.2, 0.1, 0.05, 0.02, 0.01, 0],
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Coherence'
+    }];
+    
+    var coherenceTimeLayout = {
+        title: 'Quantum Coherence Decay',
+        xaxis: { title: 'Time' },
+        yaxis: { title: 'Coherence' }
+    };
+    
+    Plotly.newPlot('coherence-time-chart', coherenceTimeData, coherenceTimeLayout);
+    
+    // Microtubule Cellular Automata
+    var gridSize = 20;
+    var grid = [];
+    for (var i = 0; i < gridSize; i++) {
+        grid[i] = [];
+        for (var j = 0; j < gridSize; j++) {
+            grid[i][j] = Math.random() > 0.5 ? 1 : 0;
+        }
+    }
+    
+    var data = [{
+        z: grid,
+        type: 'heatmap',
+        colorscale: [[0, 'rgb(0,0,255)'], [1, 'rgb(255,0,0)']]
+    }];
+    
+    var layout = {
+        title: 'Microtubule Quantum Cellular Automata',
+        annotations: [{
+            text: 'Each cell represents a tubulin dimer',
+            showarrow: false,
+            x: 0.5,
+            y: -0.15,
+            xref: 'paper',
+            yref: 'paper',
+            font: {
+                size: 12
+            }
+        }]
+    };
+    
+    Plotly.newPlot('microtubule-automata', data, layout);
+    
+    // Animate the cellular automata
+    function updateCA() {
+        var newGrid = JSON.parse(JSON.stringify(grid));
+        for (var i = 0; i < gridSize; i++) {
+            for (var j = 0; j < gridSize; j++) {
+                var neighbors = countNeighbors(i, j);
+                if (neighbors < 2 || neighbors > 3) {
+                    newGrid[i][j] = 0;
+                } else if (neighbors === 3) {
+                    newGrid[i][j] = 1;
+                }
+            }
+        }
+        grid = newGrid;
+        Plotly.restyle('microtubule-automata', {z: [grid]});
+        setTimeout(updateCA, 500);
+    }
+    
+    function countNeighbors(x, y) {
+        var count = 0;
+        for (var i = -1; i <= 1; i++) {
+            for (var j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) continue;
+                var nx = (x + i + gridSize) % gridSize;
+                var ny = (y + j + gridSize) % gridSize;
+                count += grid[nx][ny];
+            }
+        }
+        return count;
+    }
+    
+    updateCA();
+    </script>
+    
+    <div class="navigation">
+        <a href="quantum-biology-evidence" class="nav-button">← Previous: Experimental Evidence for Quantum Effects in Biology</a>
+        <a href="future-research-directions" class="nav-button">Next: Future Research Directions in Quantum Consciousness →</a>
+    </div>
+</body>
+</html>

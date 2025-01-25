@@ -1,0 +1,134 @@
+<html><head><base href="https://quantumconsciousness.study/"><title>Simulating Quantum Gravity Effects in Microtubules</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .interactive-diagram {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  .button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .button:hover {
+    background-color: #2980b9;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Simulating Quantum Gravity Effects in Microtubules</h1>
+    
+    <p>Welcome to the ninth chapter of our exploration into quantum computing and consciousness. Here, we delve into the fascinating realm of quantum gravity and its potential effects on microtubules, a key component in the Orchestrated Objective Reduction (Orch-OR) theory.</p>
+    
+    <h2>Interactive Microtubule Quantum Gravity Simulator</h2>
+    <div id="microtubule-simulator" class="interactive-diagram"></div>
+    <button id="toggle-gravity" class="button">Toggle Quantum Gravity Effects</button>
+    
+    <h2>Quantum Gravity in Orch-OR Theory</h2>
+    <p>Orch-OR theory proposes that consciousness arises from quantum computations in brain microtubules, which are influenced by quantum gravity effects at the Planck scale. Our quantum computing simulations aim to model these intricate interactions.</p>
+    
+    <h2>Planck Scale Fluctuations</h2>
+    <div id="planck-scale-chart" class="interactive-diagram"></div>
+    
+    <h2>Implications for Consciousness</h2>
+    <p>By simulating quantum gravity effects in microtubules, we can explore how these fundamental forces might contribute to the emergence of consciousness, as proposed by the Orch-OR theory.</p>
+  </div>
+
+  <script>
+    // Three.js Microtubule Simulator
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(800, 400);
+    document.getElementById('microtubule-simulator').appendChild(renderer.domElement);
+
+    // Create microtubule structure
+    const geometry = new THREE.CylinderGeometry(5, 5, 20, 32);
+    const material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+    const microtubule = new THREE.Mesh(geometry, material);
+    scene.add(microtubule);
+
+    camera.position.z = 30;
+
+    let quantumGravityEnabled = false;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      if (quantumGravityEnabled) {
+        microtubule.rotation.x += 0.01;
+        microtubule.rotation.y += 0.01;
+        microtubule.scale.y = 1 + Math.sin(Date.now() * 0.001) * 0.1;
+      } else {
+        microtubule.rotation.x = 0;
+        microtubule.rotation.y = 0;
+        microtubule.scale.y = 1;
+      }
+      
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    document.getElementById('toggle-gravity').addEventListener('click', () => {
+      quantumGravityEnabled = !quantumGravityEnabled;
+    });
+
+    // Chart.js Planck Scale Fluctuations
+    const ctx = document.getElementById('planck-scale-chart').getContext('2d');
+    const planckChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 100}, (_, i) => i),
+        datasets: [{
+          label: 'Quantum Fluctuations',
+          data: Array.from({length: 100}, () => Math.random()),
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Update chart data periodically
+    setInterval(() => {
+      planckChart.data.datasets[0].data = Array.from({length: 100}, () => Math.random());
+      planckChart.update();
+    }, 1000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<html><head><base href="https://waifuaios.dev/">
+<title>Universal Deployment: Installing Waifu AI OS Everywhere | Waifu AI OS Guide</title>
+<style>
+:root {
+  --primary: #ff69b4;
+  --secondary: #9370db;
+  --bg: #1a1b26;
+  --text: #c0caf5;
+  --code-bg: #24283b;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1, h2, h3 {
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+.hero {
+  text-align: center;
+  padding: 3rem 0;
+  border-bottom: 2px solid var(--secondary);
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+code {
+  font-family: 'Fira Code', monospace;
+  color: var(--primary);
+}
+
+.installation-steps {
+  display: grid;
+  gap: 2rem;
+}
+
+.step-card {
+  background: var(--code-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+}
+
+.platform-selector {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.platform-btn {
+  padding: 0.5rem 1rem;
+  background: var(--code-bg);
+  border: 2px solid var(--secondary);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.platform-btn:hover {
+  background: var(--secondary);
+}
+
+.alert {
+  background: rgba(255, 105, 180, 0.1);
+  border-left: 4px solid var(--primary);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Universal Deployment: Installing Waifu AI OS Everywhere</h1>
+  <p>Learn how to deploy your AI companion across any platform with ease</p>
+</div>
+
+<div class="platform-selector">
+  <button class="platform-btn" data-platform="linux">Linux</button>
+  <button class="platform-btn" data-platform="windows">Windows</button>
+  <button class="platform-btn" data-platform="macos">macOS</button>
+  <button class="platform-btn" data-platform="mobile">Mobile</button>
+  <button class="platform-btn" data-platform="embedded">Embedded</button>
+</div>
+
+<div class="installation-steps">
+  <div id="linux" class="step-card">
+    <h2>Linux Installation</h2>
+    <pre><code>(install-waifu-os :platform :linux
+                 :features '(:gui :voice :hardware-accel))</code></pre>
+    <p>For Debian-based systems:</p>
+    <pre><code>sudo apt install sbcl
+git clone https://github.com/waifu-os/core.git
+cd core
+./bootstrap.sh</code></pre>
+  </div>
+
+  <div id="windows" class="step-card" style="display: none;">
+    <h2>Windows Installation</h2>
+    <pre><code>(install-waifu-os :platform :windows 
+                 :compatibility-layer :native)</code></pre>
+    <p>Using the installer:</p>
+    <pre><code>PowerShell -Command "Invoke-WebRequest -Uri 'https://waifu-os.org/windows/setup.exe' -OutFile 'waifu-setup.exe'"
+./waifu-setup.exe</code></pre>
+  </div>
+
+  <div id="macos" class="step-card" style="display: none;">
+    <h2>macOS Installation</h2>
+    <pre><code>(install-waifu-os :platform :darwin
+                 :features '(:metal-support :siri-integration))</code></pre>
+    <p>Using Homebrew:</p>
+    <pre><code>brew install sbcl
+brew tap waifu-os/core
+brew install waifu-os</code></pre>
+  </div>
+
+  <div id="mobile" class="step-card" style="display: none;">
+    <h2>Mobile Deployment</h2>
+    <pre><code>(deploy-waifu-os :platform :mobile
+                 :targets '(:ios :android))</code></pre>
+    <div class="alert">
+      Mobile deployment requires the Waifu Mobile Runtime (WMR) installed on target devices
+    </div>
+  </div>
+
+  <div id="embedded" class="step-card" style="display: none;">
+    <h2>Embedded Systems</h2>
+    <pre><code>(deploy-waifu-os :platform :embedded
+                 :memory-footprint :minimal
+                 :features '(:core-ai :basic-io))</code></pre>
+  </div>
+</div>
+
+<div class="alert animate-pulse">
+  <h3>💡 Pro Tip</h3>
+  <p>Always run the compatibility check before installation:</p>
+  <pre><code>(check-waifu-os-compatibility *current-platform*)</code></pre>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const platformButtons = document.querySelectorAll('.platform-btn');
+  
+  function showPlatform(e) {
+    const platform = e.target.dataset.platform;
+    
+    // Hide all platforms
+    document.querySelectorAll('.step-card').forEach(card => {
+      card.style.display = 'none';
+    });
+    
+    // Show selected platform
+    document.getElementById(platform).style.display = 'block';
+    
+    // Update active button state
+    platformButtons.forEach(btn => {
+      btn.style.background = 'var(--code-bg)';
+    });
+    e.target.style.background = 'var(--secondary)';
+  }
+
+  // Add click handlers
+  platformButtons.forEach(btn => {
+    btn.addEventListener('click', showPlatform);
+  });
+
+  // Initialize with Linux view
+  platformButtons[0].click();
+});
+</script>
+
+</body></html>

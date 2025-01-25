@@ -1,0 +1,217 @@
+<html><head><base href="/" target="_blank"><script src="https://unpkg.com/leaflet/dist/leaflet.js"></script><link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+<style>
+#map {
+    height: 600px;
+    width: 100%;
+}
+.controls {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+.status {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="controls">
+    <button onclick="startConnect()">Start Analysis</button>
+    <button onclick="clearMap()">Clear Map</button>
+    <div>
+        <label>Grid Size:</label>
+        <input type="number" id="gridSize" value="10" min="5" max="50">
+    </div>
+</div>
+<div class="status" id="status">Ready to analyze street segments...</div>
+
+<script>
+// Initialize the map centered on a default location
+const map = L.map('map').setView([40.7128, -74.0060], 16);
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+class StreetApi {
+    constructor() {
+        this.parkingSpots = [];
+        this.gridPoints = [];
+        this.streetSegments = [];
+    }
+
+    // Simulated API call to find nearest street point
+    nearestStreetPoint(latLng) {
+        // In a real implementation, this would call Google Roads API
+        // For demo, we'll add some random offset to simulate street snapping
+        const offset = 0.0001 * (Math.random() - 0.5);
+        return {
+            lat: latLng.lat + offset,
+            lng: latLng.lng + offset
+        };
+    }
+
+    // Calculate Haversine distance between two points
+    getDistance(point1, point2) {
+        const R = 6371e3; // Earth's radius in meters
+        const φ1 = point1.lat * Math.PI/180;
+        const φ2 = point2.lat * Math.PI/180;
+        const Δφ = (point2.lat - point1.lat) * Math.PI/180;
+        const Δλ = (point2.lng - point1.lng) * Math.PI/180;
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        return R * c;
+    }
+
+    // Generate parking rectangles for a street segment
+    generateParkingRectangles(point1, point2) {
+        const theta = Math.atan2(point2.lat - point1.lat, point2.lng - point1.lng);
+        const K = 2.5; // Distance from street center to parking edge (meters)
+        const H = 5.0; // Parking spot length (meters)
+        const W = 2.5; // Parking spot width (meters)
+
+        // Convert meters to degrees (approximate)
+        const metersPerDegree = 111319.9;
+        const latScale = 1/metersPerDegree;
+        const lngScale = 1/(metersPerDegree * Math.cos(point1.lat * Math.PI/180));
+
+        const spots = [];
+        const distance = this.getDistance(point1, point2);
+        const numSpots = Math.min(Math.floor(distance/H), 20);
+
+        for(let i = 0; i < numSpots; i++) {
+            const t = i/numSpots;
+            const center = {
+                lat: point1.lat + (point2.lat - point1.lat) * t,
+                lng: point1.lng + (point2.lng - point1.lng) * t
+            };
+
+            // Generate rectangles on both sides of the street
+            [-1, 1].forEach(side => {
+                const rect = this.calculateParkingRectangle(
+                    center, theta, K * side, H, W, latScale, lngScale
+                );
+                spots.push(rect);
+            });
+        }
+
+        return spots;
+    }
+
+    calculateParkingRectangle(center, theta, K, H, W, latScale, lngScale) {
+        const cos_t = Math.cos(theta);
+        const sin_t = Math.sin(theta);
+
+        const corners = [
+            {x: -W/2, y: -H/2},
+            {x: W/2, y: -H/2},
+            {x: W/2, y: H/2},
+            {x: -W/2, y: H/2}
+        ];
+
+        return corners.map(corner => ({
+            lat: center.lat + (corner.x * cos_t - corner.y * sin_t + K * sin_t) * latScale,
+            lng: center.lng + (corner.x * sin_t + corner.y * cos_t + K * cos_t) * lngScale
+        }));
+    }
+}
+
+const streetApi = new StreetApi();
+let currentAnalysis = null;
+
+function startConnect() {
+    if(currentAnalysis) return;
+
+    const bounds = map.getBounds();
+    const gridSize = parseInt(document.getElementById('gridSize').value);
+    
+    currentAnalysis = analyzeArea(bounds, gridSize);
+}
+
+function clearMap() {
+    map.eachLayer((layer) => {
+        if(layer instanceof L.Polygon || layer instanceof L.Polyline || layer instanceof L.Marker) {
+            map.removeLayer(layer);
+        }
+    });
+    document.getElementById('status').textContent = 'Map cleared';
+}
+
+async function analyzeArea(bounds, gridSize) {
+    const status = document.getElementById('status');
+    status.textContent = 'Analyzing area...';
+
+    const latStep = (bounds._northEast.lat - bounds._southWest.lat) / gridSize;
+    const lngStep = (bounds._northEast.lng - bounds._southWest.lng) / gridSize;
+
+    // Generate grid points
+    for(let i = 0; i <= gridSize; i++) {
+        for(let j = 0; j <= gridSize; j++) {
+            const point = {
+                lat: bounds._southWest.lat + i * latStep,
+                lng: bounds._southWest.lng + j * lngStep
+            };
+            
+            const streetPoint = streetApi.nearestStreetPoint(point);
+            
+            // Visualize the grid point and its nearest street point
+            L.circle([point.lat, point.lng], {
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.5,
+                radius: 2
+            }).addTo(map);
+
+            L.circle([streetPoint.lat, streetPoint.lng], {
+                color: 'red',
+                fillColor: 'red',
+                fillOpacity: 0.5,
+                radius: 2
+            }).addTo(map);
+
+            // Generate parking spots
+            if(i > 0 && j > 0) {
+                const prevPoint = streetApi.nearestStreetPoint({
+                    lat: bounds._southWest.lat + (i-1) * latStep,
+                    lng: bounds._southWest.lng + (j-1) * lngStep
+                });
+
+                const spots = streetApi.generateParkingRectangles(prevPoint, streetPoint);
+                
+                spots.forEach(spot => {
+                    L.polygon(spot, {
+                        color: 'green',
+                        weight: 1,
+                        fillOpacity: 0.3
+                    }).addTo(map);
+                });
+            }
+        }
+    }
+
+    status.textContent = 'Analysis complete';
+    currentAnalysis = null;
+}
+
+// Auto-start after 3 seconds
+setTimeout(startConnect, 3000);
+</script>
+</body></html>

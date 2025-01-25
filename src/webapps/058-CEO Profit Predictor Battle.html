@@ -1,0 +1,220 @@
+<html><head><base href="https://randomgamegenerator.fun/generate?theme=two%20ceos%20battle%20to%20predict%20how%20to%20outprofit%20the%20other">
+<title>CEO Profit Predictor Battle</title>
+<style>
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+.side-panel {
+    width: 300px;
+    background-color: #2a2a2a;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+h1 {
+    color: #4CAF50;
+}
+#gameCanvas {
+    border: 1px solid #4CAF50;
+    display: block;
+    margin: 20px auto;
+}
+textarea, input {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    padding: 10px;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+#decisionLog {
+    height: 150px;
+    overflow-y: auto;
+    background-color: #333;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+</style>
+</head>
+<body>
+<div class="main-content">
+    <h1>CEO Profit Predictor Battle</h1>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <div id="gameControls">
+        <input type="text" id="player1Decision" placeholder="CEO 1: Enter your business decision...">
+        <input type="text" id="player2Decision" placeholder="CEO 2: Enter your business decision...">
+        <button id="submitDecision">Submit Decisions</button>
+    </div>
+    <div id="gameStatus"></div>
+    <div id="decisionLog">
+        <h3>Decision Log:</h3>
+    </div>
+</div>
+<div class="side-panel">
+    <h2>AI Game Customization</h2>
+    <textarea id="aiInstructions" placeholder="Enter instructions to update the game..."></textarea>
+    <button id="updateButton">Update Game</button>
+    <button id="continueButton">!continue</button>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let game = {
+    player1: { name: "CEO 1", profit: 1000000, x: 100, y: 250 },
+    player2: { name: "CEO 2", profit: 1000000, x: 700, y: 250 },
+    currentRound: 1,
+    maxRounds: 10
+};
+
+function drawGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    drawPlayer(game.player1, "#4CAF50");
+    drawPlayer(game.player2, "#2196F3");
+    
+    drawProfitBar(game.player1, 50, 400, "#4CAF50");
+    drawProfitBar(game.player2, 450, 400, "#2196F3");
+    
+    ctx.fillStyle = 'white';
+    ctx.font = '20px Roboto';
+    ctx.fillText(`Round: ${game.currentRound}/${game.maxRounds}`, 350, 30);
+}
+
+function drawPlayer(player, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, 50, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillStyle = 'white';
+    ctx.font = '16px Roboto';
+    ctx.fillText(player.name, player.x - 25, player.y + 5);
+}
+
+function drawProfitBar(player, x, y, color) {
+    const barWidth = 300;
+    const barHeight = 30;
+    const filledWidth = (player.profit / 2000000) * barWidth;
+    
+    ctx.fillStyle = '#333';
+    ctx.fillRect(x, y, barWidth, barHeight);
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, filledWidth, barHeight);
+    ctx.fillStyle = 'white';
+    ctx.font = '16px Roboto';
+    ctx.fillText(`$${player.profit.toLocaleString()}`, x + 10, y + 20);
+}
+
+async function updateGame(decision1, decision2) {
+    try {
+        const response = await fetch('https://api.randomgamegenerator.fun/predict-relative-profit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ decision1, decision2 }),
+        });
+        const data = await response.json();
+        
+        // The API now returns a single number representing the relative profit
+        const relativeProfit = data.relativeProfit;
+        
+        // Determine the profit for each player based on the relative profit
+        const totalProfit = Math.abs(relativeProfit) * 1000000; // Scale the profit
+        let profit1, profit2;
+        if (relativeProfit > 0) {
+            profit1 = totalProfit;
+            profit2 = 0;
+        } else {
+            profit1 = 0;
+            profit2 = totalProfit;
+        }
+        
+        game.player1.profit += profit1;
+        game.player2.profit += profit2;
+        
+        logDecision(decision1, decision2, profit1, profit2);
+        
+        game.currentRound++;
+        
+        updateGameStatus(`Round ${game.currentRound - 1} Results:
+            ${game.player1.name} gained $${profit1.toLocaleString()}
+            ${game.player2.name} gained $${profit2.toLocaleString()}`);
+        
+        if (game.currentRound > game.maxRounds) {
+            endGame();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while predicting profits. Please try again.');
+    }
+}
+
+function logDecision(decision1, decision2, profit1, profit2) {
+    const logEntry = document.createElement('p');
+    logEntry.textContent = `Round ${game.currentRound}: 
+        CEO 1 decided "${decision1}" and made $${profit1.toLocaleString()}. 
+        CEO 2 decided "${decision2}" and made $${profit2.toLocaleString()}.`;
+    document.getElementById('decisionLog').appendChild(logEntry);
+}
+
+function updateGameStatus(message) {
+    document.getElementById('gameStatus').innerText = message;
+}
+
+function endGame() {
+    const winner = game.player1.profit > game.player2.profit ? game.player1.name : game.player2.name;
+    updateGameStatus(`Game Over! ${winner} wins with the highest profit!`);
+    document.getElementById('submitDecision').disabled = true;
+}
+
+document.getElementById('submitDecision').addEventListener('click', async () => {
+    const decision1 = document.getElementById('player1Decision').value;
+    const decision2 = document.getElementById('player2Decision').value;
+    if (decision1 && decision2) {
+        await updateGame(decision1, decision2);
+        drawGame();
+        document.getElementById('player1Decision').value = '';
+        document.getElementById('player2Decision').value = '';
+    } else {
+        alert('Both CEOs must enter a decision!');
+    }
+});
+
+document.getElementById('updateButton').addEventListener('click', () => {
+    const instructions = document.getElementById('aiInstructions').value;
+    window.location.href = `https://randomgamegenerator.fun/generate?theme=two%20ceos%20battle%20to%20predict%20how%20to%20outprofit%20the%20other&update=${encodeURIComponent(instructions)}`;
+});
+
+document.getElementById('continueButton').addEventListener('click', () => {
+    window.location.href = `https://randomgamegenerator.fun/generate?theme=two%20ceos%20battle%20to%20predict%20how%20to%20outprofit%20the%20other&continue=true`;
+});
+
+// Start the game
+drawGame();
+</script>
+</body>
+</html>

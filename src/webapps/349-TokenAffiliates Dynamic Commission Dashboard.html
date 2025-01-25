@@ -1,0 +1,368 @@
+<html><head><base href="." /><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1.0" name="viewport" /><title>TokenAffiliates Dynamic Commission Dashboard</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" /><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
+.gradient-bg {
+  background: linear-gradient(120deg, #1a365d 0%, #2d3748 100%);
+}
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+.commission-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4fd1c5;
+  border-radius: 50%;
+  cursor: pointer;
+}
+</style></head><body class="gradient-bg min-h-screen text-gray-100">
+
+<div class="container mx-auto px-4 py-8">
+  <header class="text-center mb-12">
+    <h1 class="text-4xl font-bold mb-2">TokenAffiliates Dashboard</h1>
+    <p class="text-xl text-gray-300">Dynamic Commission Management System</p>
+  </header>
+
+  <!-- Performance Overview -->
+  <div class="card rounded-lg p-6 mb-8">
+    <h2 class="text-2xl font-bold mb-4">Performance Overview</h2>
+    <canvas id="performanceChart" height="100"></canvas>
+  </div>
+
+  <!-- Token Commission Management -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Token Card Template -->
+    <div class="card rounded-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">SOL Token</h3>
+        <span class="bg-teal-500 text-white px-3 py-1 rounded-full text-sm">Active</span>
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-2">Commission Rate</label>
+        <input type="range" class="commission-slider w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" 
+               min="5" max="20" value="10">
+        <div class="flex justify-between text-sm mt-1">
+          <span>5%</span>
+          <span class="commission-value">10%</span>
+          <span>20%</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="text-center">
+          <p class="text-sm text-gray-400">Clicks</p>
+          <p class="text-xl font-bold">1,234</p>
+        </div>
+        <div class="text-center">
+          <p class="text-sm text-gray-400">Conversions</p>
+          <p class="text-xl font-bold">56</p>
+        </div>
+      </div>
+
+      <button class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+        Generate Referral Link
+      </button>
+    </div>
+
+    <!-- Additional Token Cards -->
+    <div class="card rounded-lg p-6">
+      <!-- Similar structure for other tokens -->
+    </div>
+  </div>
+</div>
+
+<script>
+// Performance Chart
+const ctx = document.getElementById('performanceChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Commission Earnings (SOL)',
+            data: [12, 19, 15, 25, 22, 30],
+            borderColor: '#4fd1c5',
+            tension: 0.4,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#fff'
+                }
+            }
+        },
+        scales: {
+            y: {
+                ticks: {
+                    color: '#fff'
+                },
+                grid: {
+                    color: 'rgba(255,255,255,0.1)'
+                }
+            },
+            x: {
+                ticks: {
+                    color: '#fff'
+                },
+                grid: {
+                    color: 'rgba(255,255,255,0.1)'
+                }
+            }
+        }
+    }
+});
+
+// Commission Slider Functionality
+document.querySelectorAll('.commission-slider').forEach(slider => {
+    const valueDisplay = slider.parentElement.querySelector('.commission-value');
+    slider.addEventListener('input', (e) => {
+        valueDisplay.textContent = `${e.target.value}%`;
+    });
+});
+
+// Referral Link Generation
+document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', () => {
+        const referralLink = `https://tokenaffiliates.com/ref/${generateUniqueId()}`;
+        alert(`Referral Link Generated: ${referralLink}`);
+    });
+});
+
+function generateUniqueId() {
+    return Math.random().toString(36).substr(2, 9);
+}
+</script></body></html><html><head><meta charset="UTF-8"><title>TokenAffiliates Dashboard - Analytics</title><style>
+.analytics-card {
+    background: rgba(26, 32, 44, 0.8);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+.donut-chart-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script></head>
+<body class="bg-gray-900 text-white">
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Transaction History -->
+    <div class="analytics-card">
+        <h2 class="text-2xl font-bold mb-4">Recent Transactions</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Date</th>
+                        <th class="text-left">Token</th>
+                        <th class="text-left">Amount</th>
+                        <th class="text-left">Commission</th>
+                        <th class="text-left">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTable">
+                    <!-- Dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Commission Analytics -->
+    <div class="analytics-card">
+        <h2 class="text-2xl font-bold mb-4">Commission Analytics</h2>
+        <div class="metric-grid">
+            <div id="commissionChart" class="donut-chart-container"></div>
+            <div id="tokenPerformance"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize Web3
+const web3 = new Web3(Web3.givenProvider || 'https://api.mainnet-beta.solana.com');
+
+// Mock transaction data
+const transactions = [
+    { date: '2024-01-20', token: 'SOL', amount: '100', commission: '10', status: 'Completed' },
+    { date: '2024-01-19', token: 'RAY', amount: '500', commission: '45', status: 'Pending' },
+    { date: '2024-01-18', token: 'SRM', amount: '200', commission: '18', status: 'Completed' }
+];
+
+// Populate transaction table
+function populateTransactions() {
+    const tableBody = document.getElementById('transactionTable');
+    transactions.forEach(tx => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${tx.date}</td>
+            <td>${tx.token}</td>
+            <td>${tx.amount}</td>
+            <td>${tx.commission}</td>
+            <td><span class="status-${tx.status.toLowerCase()}">${tx.status}</span></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Create commission donut chart using D3
+function createDonutChart() {
+    const width = 150;
+    const height = 150;
+    const radius = Math.min(width, height) / 2;
+
+    const svg = d3.select('#commissionChart')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+    const data = [
+        { label: 'SOL', value: 45 },
+        { label: 'RAY', value: 30 },
+        { label: 'SRM', value: 25 }
+    ];
+
+    const color = d3.scaleOrdinal()
+        .domain(data.map(d => d.label))
+        .range(['#4fd1c5', '#667eea', '#ed64a6']);
+
+    const pie = d3.pie()
+        .value(d => d.value);
+
+    const arc = d3.arc()
+        .innerRadius(radius * 0.6)
+        .outerRadius(radius);
+
+    svg.selectAll('path')
+        .data(pie(data))
+        .enter()
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', d => color(d.data.label));
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', () => {
+    populateTransactions();
+    createDonutChart();
+    
+    // Add real-time updates
+    setInterval(() => {
+        // Simulate real-time data updates
+        updateMetrics();
+    }, 30000);
+});
+
+function updateMetrics() {
+    // Simulate real-time metric updates
+    const randomIncrease = Math.floor(Math.random() * 10);
+    const metrics = document.querySelectorAll('.metric-value');
+    metrics.forEach(metric => {
+        const currentValue = parseInt(metric.textContent);
+        metric.textContent = currentValue + randomIncrease;
+    });
+}
+</script></body></html><!-- Report Generation Section -->
+<div class="container mx-auto px-4 py-8">
+    <div class="analytics-card">
+        <h2 class="text-2xl font-bold mb-4">Custom Reports</h2>
+        <div class="flex flex-wrap gap-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium mb-2">Date Range</label>
+                <select class="w-full bg-gray-800 rounded p-2">
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>Custom Range</option>
+                </select>
+            </div>
+            <div class="flex-1">
+                <label class="block text-sm font-medium mb-2">Token Filter</label>
+                <select class="w-full bg-gray-800 rounded p-2" multiple>
+                    <option selected>SOL</option>
+                    <option>RAY</option>
+                    <option>SRM</option>
+                </select>
+            </div>
+            <div class="flex-1">
+                <label class="block text-sm font-medium mb-2">Report Type</label>
+                <select class="w-full bg-gray-800 rounded p-2">
+                    <option>Commission Summary</option>
+                    <option>Performance Analytics</option>
+                    <option>Conversion Rates</option>
+                </select>
+            </div>
+        </div>
+        <button class="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded">
+            Generate Report
+        </button>
+    </div>
+</div>
+
+<script>
+// Report Generation Logic
+document.querySelector('button').addEventListener('click', generateReport);
+
+async function generateReport() {
+    const dateRange = document.querySelector('select:nth-child(1)').value;
+    const tokens = Array.from(document.querySelector('select[multiple]').selectedOptions).map(opt => opt.value);
+    const reportType = document.querySelector('select:nth-child(3)').value;
+
+    // Simulate API call
+    const report = await simulateReportGeneration(dateRange, tokens, reportType);
+    displayReport(report);
+}
+
+async function simulateReportGeneration(dateRange, tokens, reportType) {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    return {
+        totalCommission: Math.random() * 1000,
+        conversionRate: Math.random() * 100,
+        topPerformingToken: tokens[0],
+        trends: Array.from({length: 7}, () => Math.random() * 100)
+    };
+}
+
+function displayReport(report) {
+    const reportContainer = document.createElement('div');
+    reportContainer.className = 'analytics-card mt-4';
+    reportContainer.innerHTML = `
+        <h3 class="text-xl font-bold mb-2">Report Summary</h3>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-gray-400">Total Commission</p>
+                <p class="text-2xl font-bold">${report.totalCommission.toFixed(2)} SOL</p>
+            </div>
+            <div>
+                <p class="text-gray-400">Conversion Rate</p>
+                <p class="text-2xl font-bold">${report.conversionRate.toFixed(2)}%</p>
+            </div>
+        </div>
+    `;
+    
+    document.querySelector('.container').appendChild(reportContainer);
+}
+</script>
+</body>
+</html>

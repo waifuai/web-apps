@@ -1,0 +1,172 @@
+<html><head><base href="https://websim.creation.engine/superconducting-brain/9-testing-microtubule-antenna-hypothesis/"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Testing the Microtubule Antenna Hypothesis</title><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script><style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .experiment-container {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .interactive-demo {
+        width: 100%;
+        height: 400px;
+        background-color: #eee;
+        margin-bottom: 20px;
+    }
+    #microtubule-model {
+        width: 100%;
+        height: 300px;
+    }
+</style></head><body>
+    <h1>Testing the Microtubule Antenna Hypothesis</h1>
+    
+    <p>Welcome to our exploration of testing methods for the microtubule antenna hypothesis. This page will delve into the experimental approaches, challenges, and potential breakthroughs in verifying the role of microtubules as quantum-limited RF antennas in neural tissue.</p>
+
+    <h2>1. Designing experiments to test for superconductivity in microtubules</h2>
+    
+    <div class="experiment-container">
+        <h3>Meissner Effect Observation</h3>
+        <p>One key experiment involves testing for the Meissner effect in isolated microtubules. This effect, characteristic of superconductors, involves the expulsion of magnetic fields.</p>
+        
+        <div class="interactive-demo" id="meissner-effect-demo"></div>
+        
+        <script>
+            const meissnerDemo = document.getElementById('meissner-effect-demo');
+            let ctx = meissnerDemo.getContext('2d');
+            let microtubule = {x: 200, y: 200, radius: 50};
+            let magnetic_field = {x: 0, y: 0, strength: 0};
+
+            function drawMeissnerEffect() {
+                ctx.clearRect(0, 0, meissnerDemo.width, meissnerDemo.height);
+                
+                // Draw microtubule
+                ctx.beginPath();
+                ctx.arc(microtubule.x, microtubule.y, microtubule.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = 'lightblue';
+                ctx.fill();
+                
+                // Draw magnetic field lines
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < meissnerDemo.width; i += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    for (let j = 0; j < meissnerDemo.height; j += 10) {
+                        let dx = i - microtubule.x;
+                        let dy = j - microtubule.y;
+                        let distance = Math.sqrt(dx*dx + dy*dy);
+                        if (distance > microtubule.radius) {
+                            ctx.lineTo(i, j);
+                        } else {
+                            ctx.moveTo(i, j);
+                        }
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            meissnerDemo.width = 400;
+            meissnerDemo.height = 400;
+            drawMeissnerEffect();
+        </script>
+    </div>
+
+    <h2>2. Methods for measuring quantum-limited RF sensitivity in neural tissue</h2>
+    
+    <div class="experiment-container">
+        <h3>Ultra-Sensitive RF Detection Setup</h3>
+        <p>To measure quantum-limited RF sensitivity, we propose using a highly sensitive superconducting quantum interference device (SQUID) coupled with carefully shielded neural tissue samples.</p>
+        
+        <canvas id="rf-sensitivity-chart"></canvas>
+        
+        <script>
+            const rfCtx = document.getElementById('rf-sensitivity-chart').getContext('2d');
+            new Chart(rfCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1 Hz', '10 Hz', '100 Hz', '1 kHz', '10 kHz', '100 kHz', '1 MHz'],
+                    datasets: [{
+                        label: 'Theoretical Quantum Limit',
+                        data: [1.4e-5, 1.4e-4, 1.4e-3, 1.4e-2, 1.4e-1, 1.4, 14],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        fill: false
+                    }, {
+                        label: 'Measured Sensitivity',
+                        data: [2e-5, 2.2e-4, 2.1e-3, 1.8e-2, 1.6e-1, 1.5, 15],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Frequency'
+                            }
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Sensitivity (fT/√Hz)'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+
+    <h2>3. Challenges in isolating and verifying microtubule antenna effects</h2>
+    
+    <div class="experiment-container">
+        <h3>3D Microtubule Model</h3>
+        <p>Understanding the complex structure of microtubules is crucial for isolating their potential antenna effects. Explore our interactive 3D model below:</p>
+        
+        <div id="microtubule-model"></div>
+        
+        <script>
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(document.getElementById('microtubule-model').offsetWidth, 300);
+            document.getElementById('microtubule-model').appendChild(renderer.domElement);
+
+            const geometry = new THREE.CylinderGeometry(1, 1, 10, 13);
+            const material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+            const microtubule = new THREE.Mesh(geometry, material);
+            scene.add(microtubule);
+
+            camera.position.z = 15;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                microtubule.rotation.x += 0.01;
+                microtubule.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        </script>
+    </div>
+
+    <p>As we continue to develop and refine these experimental approaches, we edge closer to unraveling the mysteries of microtubules and their potential role as quantum-limited RF antennas. Stay tuned for updates on our findings and new experimental designs!</p>
+
+    <nav>
+        <a href="../8-oxytocin-and-electromagnetic-resonance/">Previous: Oxytocin and Electromagnetic Resonance</a> | 
+        <a href="../10-faraday-cages-and-cognitive-shielding/">Next: Faraday Cages and Cognitive Shielding</a>
+    </nav>
+
+</body></html>

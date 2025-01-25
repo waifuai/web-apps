@@ -1,0 +1,208 @@
+<!DOCTYPE html><html><head><base href="https://www.string-consciousness.edu/verifying-orch-or/"><title>Verifying Orch OR: Experimental Designs Using String Computers</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .experiment-container {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #interactive-model {
+        width: 100%;
+        height: 400px;
+        background-color: #eee;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    .button:hover {
+        background-color: #2980b9;
+    }
+    #results-container {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #e8f4f8;
+        border-radius: 4px;
+    }
+</style>
+</head>
+<body>
+    <h1>Verifying Orch OR: Experimental Designs Using String Computers</h1>
+    
+    <p>Welcome to our exploration of experimental designs for verifying the Orchestrated Objective Reduction (Orch OR) theory using string computers. This page presents innovative approaches to testing the predictions of Orch OR, leveraging the unique capabilities of string-based computational models.</p>
+
+    <div class="experiment-container">
+        <h2>Experiment 1: Quantum Coherence in Microtubules</h2>
+        <p>This experiment aims to detect and measure quantum coherence in microtubules, a key prediction of the Orch OR theory.</p>
+        <div id="interactive-model"></div>
+        <button class="button" onclick="runSimulation()">Run Simulation</button>
+        <div id="results-container"></div>
+    </div>
+
+    <h2>Key Experimental Approaches</h2>
+    <ol>
+        <li>Quantum State Measurement in Cytoskeletal Structures</li>
+        <li>Gravitational Threshold for Objective Reduction</li>
+        <li>Temporal Dynamics of Conscious Events</li>
+        <li>Entanglement Patterns in Neural Networks</li>
+    </ol>
+
+    <script>
+    function runSimulation() {
+        // Clear previous simulation
+        d3.select("#interactive-model").selectAll("*").remove();
+        
+        const svg = d3.select("#interactive-model")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%");
+
+        const width = svg.node().getBoundingClientRect().width;
+        const height = svg.node().getBoundingClientRect().height;
+
+        // Create microtubule structure
+        const tubulinCount = 50;
+        const tubulinSpacing = width / (tubulinCount + 2);
+        const microtubuleY = height / 2;
+
+        // Create tubulins
+        const tubulins = [];
+        for (let i = 0; i < tubulinCount; i++) {
+            tubulins.push({
+                x: (i + 1) * tubulinSpacing,
+                y: microtubuleY,
+                state: Math.random() > 0.5 ? "quantum" : "classical",
+                phase: 0
+            });
+        }
+
+        // Draw microtubule backbone
+        svg.append("line")
+            .attr("x1", tubulinSpacing)
+            .attr("y1", microtubuleY)
+            .attr("x2", width - tubulinSpacing)
+            .attr("y2", microtubuleY)
+            .style("stroke", "#666")
+            .style("stroke-width", 2);
+
+        // Create and update tubulins
+        function updateTubulins() {
+            const tubulinElements = svg.selectAll(".tubulin")
+                .data(tubulins);
+
+            // Enter new tubulins
+            const tubulinEnter = tubulinElements.enter()
+                .append("g")
+                .attr("class", "tubulin")
+                .attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+            tubulinEnter.append("circle")
+                .attr("r", 8)
+                .style("fill", d => d.state === "quantum" ? "#3498db" : "#e74c3c")
+                .style("stroke", "#2c3e50")
+                .style("stroke-width", 2);
+
+            // Update existing tubulins
+            tubulinElements.select("circle")
+                .style("fill", d => d.state === "quantum" ? "#3498db" : "#e74c3c");
+
+            // Remove old tubulins
+            tubulinElements.exit().remove();
+        }
+
+        // Quantum dynamics simulation
+        function simulateQuantumDynamics() {
+            tubulins.forEach(tubulin => {
+                // Quantum state evolution
+                if (Math.random() < 0.1) {
+                    tubulin.state = tubulin.state === "quantum" ? "classical" : "quantum";
+                }
+                tubulin.phase += Math.PI / 30;
+            });
+
+            // Add quantum entanglement effects
+            svg.selectAll(".entanglement").remove();
+            for (let i = 0; i < tubulins.length - 1; i++) {
+                if (tubulins[i].state === "quantum" && tubulins[i + 1].state === "quantum") {
+                    svg.append("path")
+                        .attr("class", "entanglement")
+                        .attr("d", `M ${tubulins[i].x} ${tubulins[i].y - 10} 
+                                 Q ${(tubulins[i].x + tubulins[i + 1].x) / 2} ${tubulins[i].y - 30}
+                                 ${tubulins[i + 1].x} ${tubulins[i + 1].y - 10}`)
+                        .style("fill", "none")
+                        .style("stroke", `rgba(52, 152, 219, ${Math.abs(Math.sin(tubulins[i].phase))})`)
+                        .style("stroke-width", 2);
+                }
+            }
+
+            updateTubulins();
+        }
+
+        // Start animation
+        const interval = setInterval(simulateQuantumDynamics, 100);
+
+        // Stop simulation after 30 seconds
+        setTimeout(() => {
+            clearInterval(interval);
+            displayResults();
+        }, 30000);
+    }
+
+    function displayResults() {
+        const resultsContainer = document.getElementById("results-container");
+        const coherenceTime = Math.floor(Math.random() * 400) + 100; // Random time between 100-500 fs
+        const gravitationalEnergy = (6.626e-34) / (coherenceTime * 1e-15); // E = ℏ/t
+
+        resultsContainer.innerHTML = `
+            <h3>Simulation Results:</h3>
+            <p>Quantum Coherence Detected: Yes</p>
+            <p>Coherence Duration: ${coherenceTime} femtoseconds</p>
+            <p>Gravitational Threshold: \(E = \\frac{\\hbar}{t} \\approx ${gravitationalEnergy.toExponential(2)} \\text{ Joules}\)</p>
+            <p>Observed Entanglement: ${Math.floor(Math.random() * 30) + 20}% of tubulins showed quantum correlation</p>
+            <p>Analysis: The simulation demonstrates quantum coherence patterns consistent with Orch OR predictions, 
+            particularly in the maintenance of quantum states at the microscale level.</p>
+        `;
+        
+        if (typeof MathJax !== 'undefined') {
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, resultsContainer]);
+        }
+    }
+</script>
+
+    <h2>Implications and Future Directions</h2>
+    <p>The results from these string computer-based experiments have profound implications for our understanding of consciousness and quantum biology. Future research directions include:</p>
+    <ul>
+        <li>Refining string computer models to better represent biological systems</li>
+        <li>Exploring the role of gravity in conscious experience</li>
+        <li>Investigating potential medical applications based on Orch OR insights</li>
+    </ul>
+
+    <h2>Conclusion</h2>
+    <p>String computers offer a unique platform for testing the predictions of the Orch OR theory, potentially bridging the gap between quantum mechanics, gravity, and neuroscience. As we continue to refine our experimental designs and computational models, we move closer to unraveling the mysteries of consciousness.</p>
+
+</body></html>

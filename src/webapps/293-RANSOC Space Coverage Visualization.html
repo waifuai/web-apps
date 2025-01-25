@@ -1,0 +1,183 @@
+<html><head><base href="/">
+<style>
+:root {
+  --bg: #fafafa;
+  --text: #212121; 
+  --accent: #2196F3;
+  --radius: 8px;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.theorem-container {
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.visualization {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin: 2rem 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.formula {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.planet {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%, -50%);
+  transition: all 0.5s ease-out;
+}
+
+.star {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #FFC107;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px rgba(255,193,7,0.4);
+}
+
+.mass-label {
+  position: absolute;
+  font-size: 12px;
+  transform: translate(-50%, -100%);
+  color: var(--text);
+}
+</style>
+</head>
+<body>
+
+<div class="theorem-container">
+  <h1>RANSOC Space Coverage Visualization</h1>
+  
+  <div class="visualization" id="ransoc-viz"></div>
+
+  <div class="formula">
+    <p>Weight Function: w(pᵢ, s) = mᵢ/d(pᵢ, s)</p>
+    <p>Mass Update (hit): mₕᵢₜ_new = (1-α)mₕᵢₜ</p>
+    <p>Mass Update (others): mᵢ_new = (1 + α/(n-1))mᵢ</p>
+  </div>
+</div>
+
+<script>
+class RANSOCVisualizer {
+  constructor() {
+    this.container = document.getElementById('ransoc-viz');
+    this.planets = [];
+    this.alpha = 0.3;
+    this.initializeSystem();
+  }
+
+  initializeSystem() {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = '50%';
+    star.style.top = '50%';
+    this.container.appendChild(star);
+
+    const numPlanets = 5;
+    for(let i = 0; i < numPlanets; i++) {
+      const angle = (i / numPlanets) * 2 * Math.PI;
+      const radius = 150;
+      const x = 50 + Math.cos(angle) * radius/3;
+      const y = 50 + Math.sin(angle) * radius/3;
+      
+      const planet = {
+        element: document.createElement('div'),
+        mass: 1.0,
+        x: x,
+        y: y,
+        selected: false
+      };
+
+      planet.element.className = 'planet';
+      planet.element.style.left = `${x}%`;
+      planet.element.style.top = `${y}%`;
+      
+      const label = document.createElement('div');
+      label.className = 'mass-label';
+      label.textContent = planet.mass.toFixed(2);
+      label.style.left = `${x}%`;
+      label.style.top = `${y}%`;
+      
+      this.container.appendChild(planet.element);
+      this.container.appendChild(label);
+      this.planets.push(planet);
+    }
+
+    this.startSimulation();
+  }
+
+  updateMasses(hitIndex) {
+    const n = this.planets.length;
+    
+    this.planets[hitIndex].mass *= (1 - this.alpha);
+    
+    for(let i = 0; i < n; i++) {
+      if(i !== hitIndex) {
+        this.planets[i].mass *= (1 + this.alpha/(n-1));
+      }
+    }
+
+    this.planets.forEach((planet, i) => {
+      const label = this.container.children[i + 2];
+      label.textContent = planet.mass.toFixed(2);
+    });
+  }
+
+  selectNextPlanet() {
+    const weights = this.planets.map(p => {
+      const dx = p.x - 50;
+      const dy = p.y - 50;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      return p.mass / dist;
+    });
+    
+    const maxWeight = Math.max(...weights);
+    const hitIndex = weights.indexOf(maxWeight);
+    
+    this.planets.forEach((p, i) => {
+      if(i === hitIndex) {
+        p.element.style.transform = 'translate(-50%, -50%) scale(1.5)';
+        p.element.style.background = '#F44336';
+      } else {
+        p.element.style.transform = 'translate(-50%, -50%) scale(1)';
+        p.element.style.background = 'var(--accent)';
+      }
+    });
+
+    this.updateMasses(hitIndex);
+  }
+
+  startSimulation() {
+    setInterval(() => this.selectNextPlanet(), 2000);
+  }
+}
+
+const visualizer = new RANSOCVisualizer();
+</script>
+
+</body></html>

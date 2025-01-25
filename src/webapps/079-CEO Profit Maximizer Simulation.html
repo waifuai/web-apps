@@ -1,0 +1,232 @@
+<html><head><base href="https://randomgamegenerator.fun/generate?theme=one%20ceo%20battles%20to%20predict%20how%20to%20maximize%20profit">
+<title>CEO Profit Maximizer Simulation</title>
+<style>
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #0a192f;
+    color: #e6f1ff;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #172a45;
+    padding: 20px;
+    border: 1px solid #64ffda;
+    border-radius: 5px;
+}
+h1, h2, h3 {
+    color: #64ffda;
+}
+input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: #233554;
+    color: #e6f1ff;
+    border: 1px solid #64ffda;
+}
+button {
+    background-color: #64ffda;
+    color: #0a192f;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #4cccb0;
+}
+#gameStatus, #marketTrends, #newsTicker, #decisionLog, #debugView {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #233554;
+    border: 1px solid #64ffda;
+}
+#debugView {
+    display: none;
+}
+.ascii-art {
+    white-space: pre;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.2;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>CEO Profit Maximizer Simulation</h1>
+    
+    <div class="ascii-art">
+   ___________
+  /           \
+ /    CEO      \
+|   $1,000,000  |
+ \             /
+  \___________/
+    </div>
+
+    <div id="gameControls">
+        <input type="text" id="ceoDecision" placeholder="Enter your business decision...">
+        <button id="submitDecision">Submit Decision</button>
+    </div>
+
+    <div id="gameStatus">
+        <h3>Game Status</h3>
+        <p>Quarter: 1/8</p>
+    </div>
+
+    <div id="marketTrends">
+        <h3>Market Trends</h3>
+        <p>The market is currently stable.</p>
+    </div>
+
+    <div id="newsTicker">
+        <h3>Business News</h3>
+        <p>Loading latest news...</p>
+    </div>
+
+    <div id="decisionLog">
+        <h3>Decision Log</h3>
+        <p>The simulation has just begun. Make your first decision!</p>
+    </div>
+
+    <button id="debugToggle">Toggle Debug View</button>
+    <div id="debugView">
+        <h3>Debug Information</h3>
+        <pre id="debugInfo"></pre>
+    </div>
+</div>
+
+<script>
+let game = {
+    ceo: { name: "CEO", profit: 1000000 },
+    currentQuarter: 1,
+    maxQuarters: 8,
+    marketTrend: "stable",
+    news: []
+};
+
+function updateDisplay() {
+    document.querySelector('.ascii-art').textContent = `
+   ___________
+  /           \\
+ /    CEO      \\
+|  $${game.ceo.profit.toLocaleString()}  |
+ \\             /
+  \\___________/
+    `;
+
+    document.getElementById('gameStatus').innerHTML = `
+        <h3>Game Status</h3>
+        <p>Quarter: ${game.currentQuarter}/${game.maxQuarters}</p>
+    `;
+
+    document.getElementById('marketTrends').innerHTML = `
+        <h3>Market Trends</h3>
+        <p>The market is currently ${game.marketTrend}.</p>
+    `;
+
+    document.getElementById('newsTicker').innerHTML = `
+        <h3>Business News</h3>
+        <p>${game.news.join(' | ')}</p>
+    `;
+
+    updateDebugView();
+}
+
+async function updateGame(decision) {
+    try {
+        const response = await fetch('https://api.randomgamegenerator.fun/predict-profit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ decision, marketTrend: game.marketTrend }),
+        });
+        const data = await response.json();
+        
+        const profitChange = data.profitChange;
+        game.ceo.profit += profitChange;
+        
+        logDecision(decision, profitChange);
+        
+        game.currentQuarter++;
+        updateMarketTrend();
+        generateNews();
+        
+        updateDisplay();
+        
+        if (game.currentQuarter > game.maxQuarters) {
+            endGame();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while predicting profits. Please try again.');
+    }
+}
+
+function updateMarketTrend() {
+    const trends = ['bullish', 'bearish', 'volatile', 'stable'];
+    game.marketTrend = trends[Math.floor(Math.random() * trends.length)];
+}
+
+function generateNews() {
+    const newsItems = [
+        "Tech stocks surge as new AI breakthrough announced",
+        "Oil prices plummet due to renewable energy advancements",
+        "Global economic forum predicts steady growth for next quarter",
+        "Startup unicorn valuation reaches record high",
+        "Crypto market experiences sudden volatility",
+        "Major merger shakes up industry landscape",
+        "New trade deal signed between leading economies",
+        "Central bank adjusts interest rates unexpectedly",
+        "Labor market shows signs of tightening",
+        "Consumer confidence index reaches 5-year high"
+    ];
+    game.news = newsItems.sort(() => 0.5 - Math.random()).slice(0, 3);
+}
+
+function logDecision(decision, profitChange) {
+    const logEntry = document.createElement('p');
+    logEntry.textContent = `Quarter ${game.currentQuarter}: 
+        CEO decided "${decision}" and ${profitChange >= 0 ? 'gained' : 'lost'} $${Math.abs(profitChange).toLocaleString()}.`;
+    document.getElementById('decisionLog').appendChild(logEntry);
+}
+
+function endGame() {
+    document.getElementById('gameStatus').innerHTML += `
+        <p><strong>Simulation Complete!</strong></p>
+        <p>Final Profit: $${game.ceo.profit.toLocaleString()}</p>
+    `;
+    document.getElementById('submitDecision').disabled = true;
+}
+
+function updateDebugView() {
+    document.getElementById('debugInfo').textContent = JSON.stringify(game, null, 2);
+}
+
+document.getElementById('submitDecision').addEventListener('click', async () => {
+    const decision = document.getElementById('ceoDecision').value;
+    if (decision) {
+        await updateGame(decision);
+        document.getElementById('ceoDecision').value = '';
+    } else {
+        alert('You must enter a decision!');
+    }
+});
+
+document.getElementById('debugToggle').addEventListener('click', () => {
+    const debugView = document.getElementById('debugView');
+    debugView.style.display = debugView.style.display === 'none' ? 'block' : 'none';
+});
+
+// Start the game
+updateMarketTrend();
+generateNews();
+updateDisplay();
+</script>
+</body>
+</html>

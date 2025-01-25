@@ -1,0 +1,197 @@
+<html><head><base href="https://example.com">
+<style>
+:root {
+  --primary: #2D3748;
+  --secondary: #4A5568;
+  --accent: #4299E1;
+  --success: #48BB78;
+  --background: #F7FAFC;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: var(--background);
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.results-container {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 800px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  color: var(--primary);
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--secondary);
+  font-size: 1.1rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: var(--background);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.metric-label {
+  color: var(--secondary);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.improvement {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+  margin-top: 2rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="results-container animate-in">
+  <div class="header">
+    <h1>Simulation Results Summary</h1>
+    <p>AI-Optimized Commission Rate Analysis</p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-value">8.5%</div>
+      <div class="metric-label">Optimal Commission Rate</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-value">$247,890</div>
+      <div class="metric-label">Projected Annual Earnings</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-value improvement">+24.6%</div>
+      <div class="metric-label">Improvement from Initial Rate</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="performanceChart"></canvas>
+  </div>
+</div>
+
+<script>
+const ctx = document.getElementById('performanceChart').getContext('2d');
+const performanceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Initial', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+        datasets: [{
+            label: 'Commission Rate Performance',
+            data: [6.8, 7.2, 7.8, 8.1, 8.3, 8.4, 8.5],
+            borderColor: '#4299E1',
+            backgroundColor: 'rgba(66, 153, 225, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: false,
+                title: {
+                    display: true,
+                    text: 'Commission Rate (%)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+            }
+        }
+    }
+});
+
+// Add hover effects to metric cards
+document.querySelectorAll('.metric-card').forEach(card => {
+    card.addEventListener('mouseover', () => {
+        card.style.transform = 'translateY(-5px)';
+        card.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.1)';
+    });
+    
+    card.addEventListener('mouseout', () => {
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = 'none';
+    });
+});
+</script>
+
+</body></html>

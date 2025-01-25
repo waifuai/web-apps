@@ -1,0 +1,199 @@
+<html><head><base href="https://cdn.jsdelivr.net/"><link href="katex/0.16.9/katex.min.css" rel="stylesheet"></head><style>
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f5f5f5;
+}
+
+.paper-section {
+  background: white;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.math-display {
+  overflow-x: auto;
+  padding: 15px;
+  background: #fafafa;
+  border-left: 4px solid #2196F3;
+  margin: 10px 0;
+}
+
+.interactive-demo {
+  border: 2px solid #2196F3;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+#simulation {
+  width: 100%;
+  height: 400px;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.agent {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.connection {
+  position: absolute;
+  height: 1px;
+  background: rgba(255,255,255,0.2);
+  transform-origin: left center;
+  pointer-events: none;
+}
+</style>
+<body>
+
+<div class="paper-section">
+  <h2>Interactive Social Network Simulation</h2>
+  <div id="simulation"></div>
+  <div id="controls">
+    <button onclick="toggleSimulation()">Start/Stop</button>
+    <button onclick="addAgent()">Add Agent</button>
+    <label>Emotional Susceptibility (δ):
+      <input type="range" min="0" max="100" value="50" id="susceptibility">
+    </label>
+  </div>
+</div>
+
+<script>
+class Agent {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 2;
+    this.vy = (Math.random() - 0.5) * 2;
+    this.personality = Math.random();
+    this.emotional_state = Math.random();
+    this.connections = new Set();
+    this.element = document.createElement('div');
+    this.element.className = 'agent';
+    this.updateVisuals();
+  }
+
+  updateVisuals() {
+    this.element.style.left = this.x + 'px';
+    this.element.style.top = this.y + 'px';
+    this.element.style.backgroundColor = `hsl(${this.emotional_state * 360}, 70%, 50%)`;
+  }
+
+  move(bounds) {
+    this.x += this.vx;
+    this.y += this.vy;
+    
+    if (this.x < 0 || this.x > bounds.width) this.vx *= -1;
+    if (this.y < 0 || this.y > bounds.height) this.vy *= -1;
+    
+    this.x = Math.max(0, Math.min(bounds.width, this.x));
+    this.y = Math.max(0, Math.min(bounds.height, this.y));
+    
+    this.updateVisuals();
+  }
+}
+
+class Simulation {
+  constructor() {
+    this.container = document.getElementById('simulation');
+    this.agents = [];
+    this.connections = new Set();
+    this.running = false;
+    this.bounds = this.container.getBoundingClientRect();
+  }
+
+  initialize(numAgents = 20) {
+    for (let i = 0; i < numAgents; i++) {
+      this.addAgent();
+    }
+    this.updateConnections();
+  }
+
+  addAgent() {
+    const x = Math.random() * this.bounds.width;
+    const y = Math.random() * this.bounds.height;
+    const agent = new Agent(x, y);
+    this.agents.push(agent);
+    this.container.appendChild(agent.element);
+  }
+
+  updateConnections() {
+    // Clear old connections
+    this.connections.forEach(conn => conn.remove());
+    this.connections.clear();
+
+    // Create new connections
+    for (let i = 0; i < this.agents.length; i++) {
+      for (let j = i + 1; j < this.agents.length; j++) {
+        const a1 = this.agents[i];
+        const a2 = this.agents[j];
+        const dist = Math.hypot(a1.x - a2.x, a1.y - a2.y);
+        
+        if (dist < 100) {
+          const connection = document.createElement('div');
+          connection.className = 'connection';
+          const angle = Math.atan2(a2.y - a1.y, a2.x - a1.x);
+          
+          connection.style.width = `${dist}px`;
+          connection.style.left = `${a1.x}px`;
+          connection.style.top = `${a1.y}px`;
+          connection.style.transform = `rotate(${angle}rad)`;
+          
+          this.container.appendChild(connection);
+          this.connections.add(connection);
+        }
+      }
+    }
+  }
+
+  update() {
+    if (!this.running) return;
+    
+    this.agents.forEach(agent => {
+      agent.move(this.bounds);
+    });
+    
+    this.updateConnections();
+    requestAnimationFrame(() => this.update());
+  }
+
+  toggle() {
+    this.running = !this.running;
+    if (this.running) this.update();
+  }
+}
+
+const sim = new Simulation();
+sim.initialize();
+
+function toggleSimulation() {
+  sim.toggle();
+}
+
+function addAgent() {
+  sim.addAgent();
+}
+
+document.getElementById('susceptibility').addEventListener('input', (e) => {
+  const delta = e.target.value / 100;
+  // Update emotional susceptibility in the simulation
+  sim.agents.forEach(agent => {
+    agent.emotional_state = agent.emotional_state * (1 - delta) + 
+      Math.random() * delta;
+    agent.updateVisuals();
+  });
+});
+</script>
+
+</body></html>

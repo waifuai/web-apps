@@ -1,0 +1,132 @@
+<html><head><base href="." />
+<style>
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f5f7fa;
+  color: #2c3e50;
+}
+
+.math-paper {
+  background: white;
+  padding: 40px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.equation {
+  font-family: 'Times New Roman', serif;
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.graph-container {
+  margin: 30px 0;
+  height: 300px;
+}
+
+h1, h2 {
+  color: #34495e;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.notation {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.notation-item {
+  display: contents;
+}
+
+.notation-symbol {
+  font-weight: bold;
+  padding-right: 15px;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.2/plotly.min.js"></script>
+</head>
+<body>
+
+<div class="math-paper">
+  <h1>TokenAffiliates: A Formal Mathematical Model</h1>
+
+  <section>
+    <h2>Interactive Visualization of Key Components</h2>
+    
+    <div id="bondingCurve" class="graph-container"></div>
+    
+    <div id="commissionCalculator" class="equation">
+      Commission Calculator:
+      <br>
+      Investment Amount: <input type="number" id="investment" value="1000" min="0" step="100">
+      <br>
+      <button onclick="calculateCommission()">Calculate Commission</button>
+      <div id="result"></div>
+    </div>
+  </section>
+
+  <script>
+    // Bonding Curve Visualization
+    function generateBondingCurve() {
+      const S = Array.from({length: 100}, (_, i) => i * 100);
+      const P_linear = S.map(s => s * 0.1);
+      const P_exponential = S.map(s => Math.exp(s/1000));
+      
+      const data = [
+        {
+          x: S,
+          y: P_linear,
+          name: 'Linear Bonding Curve',
+          type: 'scatter',
+          mode: 'lines',
+          line: {color: '#3498db'}
+        },
+        {
+          x: S,
+          y: P_exponential,
+          name: 'Exponential Bonding Curve',
+          type: 'scatter',
+          mode: 'lines',
+          line: {color: '#e74c3c'}
+        }
+      ];
+
+      const layout = {
+        title: 'Token Price vs Supply',
+        xaxis: {title: 'Supply (S)'},
+        yaxis: {title: 'Price (P)'},
+        showlegend: true
+      };
+
+      Plotly.newPlot('bondingCurve', data, layout);
+    }
+
+    // Commission Calculator
+    function calculateCommission() {
+      const investment = parseFloat(document.getElementById('investment').value);
+      const commission = investment * 0.10;
+      document.getElementById('result').innerHTML = `
+        Commission (C) = α * I = 0.10 * ${investment} = ${commission.toFixed(2)} tokens
+      `;
+    }
+
+    // Initialize visualizations
+    window.onload = function() {
+      generateBondingCurve();
+    };
+  </script>
+
+</div>
+
+</body></html>

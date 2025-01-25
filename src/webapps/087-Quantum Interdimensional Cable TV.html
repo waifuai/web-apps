@@ -1,0 +1,300 @@
+<html><head><base href="https://quantum-interdimensional-cable.tv"><title>Quantum Interdimensional Cable TV</title>
+<style>
+  body {
+    font-family: 'Courier New', monospace;
+    color: #00FFFF;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+  }
+  .quantum-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 2px solid #00FFFF;
+    box-shadow: 0 0 20px #00FFFF;
+  }
+  .quantum-static {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle, #00FFFF 1%, transparent 1%) 0 0,
+      radial-gradient(circle, #FF00FF 1%, transparent 1%) 0 0;
+    background-size: 3px 3px;
+    opacity: 0.1;
+    animation: quantum-noise 0.5s infinite;
+    pointer-events: none;
+  }
+  @keyframes quantum-noise {
+    0% { background-position: 0 0, 0 0; }
+    25% { background-position: -1px -1px, 1px 1px; }
+    50% { background-position: 1px 1px, -1px -1px; }
+    75% { background-position: -1px 1px, 1px -1px; }
+    100% { background-position: 0 0, 0 0; }
+  }
+  .video-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .controls {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  button {
+    background-color: #00FFFF;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+  }
+  button:hover {
+    background-color: #FF00FF;
+    box-shadow: 0 0 10px #FF00FF;
+  }
+  .channel-display {
+    font-size: 2em;
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+  @keyframes quantum-glitch {
+    0% {
+      text-shadow: 0.05em 0 0 #00FFFF, -0.03em -0.04em 0 #FF00FF,
+        0.025em 0.04em 0 #FFFF00;
+    }
+    15% {
+      text-shadow: 0.05em 0 0 #FF00FF, -0.03em -0.04em 0 #FFFF00,
+        0.025em 0.04em 0 #00FFFF;
+    }
+    30% {
+      text-shadow: -0.05em -0.025em 0 #FFFF00, 0.025em 0.035em 0 #00FFFF,
+        -0.05em -0.05em 0 #FF00FF;
+    }
+    45% {
+      text-shadow: 0.05em 0.035em 0 #00FFFF, 0.03em 0 0 #FFFF00,
+        0 -0.04em 0 #FF00FF;
+    }
+    60% {
+      text-shadow: -0.05em 0 0 #FF00FF, -0.025em -0.04em 0 #00FFFF,
+        -0.04em -0.025em 0 #FFFF00;
+    }
+    75% {
+      text-shadow: 0.05em 0 0 #FFFF00, -0.03em -0.04em 0 #FF00FF,
+        0.025em 0.04em 0 #00FFFF;
+    }
+    90% {
+      text-shadow: 0.05em 0 0 #00FFFF, -0.03em -0.04em 0 #FFFF00,
+        0.025em 0.04em 0 #FF00FF;
+    }
+    100% {
+      text-shadow: 0.05em 0 0 #FF00FF, -0.03em -0.04em 0 #00FFFF,
+        0.025em 0.04em 0 #FFFF00;
+    }
+  }
+  .quantum-glitch {
+    animation: quantum-glitch 2s linear infinite;
+  }
+  .quantum-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: none;
+    overflow: hidden;
+  }
+  .quantum-loader::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(
+        45deg,
+        #00FFFF 25%,
+        #FF00FF 25%,
+        #FF00FF 50%,
+        #FFFF00 50%,
+        #FFFF00 75%,
+        #00FFFF 75%,
+        #00FFFF 100%
+      );
+    background-size: 60px 60px;
+    animation: quantum-load 1s linear infinite;
+  }
+  @keyframes quantum-load {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="channel-display">
+    <span id="channel-number" class="quantum-glitch">Quantum State |ψ⟩</span>
+  </div>
+  
+  <div class="quantum-screen">
+    <div class="quantum-static"></div>
+    <div class="video-container">
+      <iframe id="video-frame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <div id="quantum-loader" class="quantum-loader"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="changeQuantumState('collapse')">Collapse Wavefunction</button>
+    <button onclick="changeQuantumState('superposition')">Quantum Superposition</button>
+    <button onclick="changeQuantumState('entangle')">Quantum Entanglement</button>
+  </div>
+</div>
+
+<script>
+  const quantumVideoIds = {
+    'α': 'zNzzGgr2mhk', // Quantum Computing for Dummies
+    'β': 'JhHMJCUmq28', // Quantum Computers Explained
+    'γ': 'F_Riqjdh2oM', // How Does a Quantum Computer Work?
+    'δ': 'ZoT82NDpcvQ', // You Don't Know How Quantum Computers Work!
+    'ε': 'g_IaVepNDT4', // The Map of Quantum Physics
+    'ζ': 'CT7SiRiqvhM', // What's the Real Meaning of Quantum Computing?
+    'η': 'OWJCfOvochA', // Quantum Computing - The Qubit Technology Revolution
+    'θ': 'lvTqNWUcP3g', // Quantum Computers, Explained With Quantum Physics
+    'ι': '60OkanvToFI', // Quantum Computing Expert Explains One Concept in 5 Levels of Difficulty
+    'κ': 'saeDUVPzD7g', // A Beginner's Guide To Quantum Computing
+  };
+
+  const fallbackVideoId = 'h8JZCqaJ068'; // Fallback video: Adult Swim Off The Air - Technology
+
+  let currentState = '|ψ⟩';
+  let quantumNoiseAudio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-futuristic-technology-hum-2129.mp3');
+  quantumNoiseAudio.loop = true;
+
+  function changeQuantumState(type) {
+    if (type === 'collapse') {
+      currentState = '|' + Object.keys(quantumVideoIds)[Math.floor(Math.random() * Object.keys(quantumVideoIds).length)] + '⟩';
+    } else if (type === 'superposition') {
+      const states = Object.keys(quantumVideoIds);
+      currentState = '1/√2(|' + states[Math.floor(Math.random() * states.length)] + '⟩ + |' + states[Math.floor(Math.random() * states.length)] + '⟩)';
+    } else if (type === 'entangle') {
+      const states = Object.keys(quantumVideoIds);
+      currentState = '|' + states[Math.floor(Math.random() * states.length)] + '⟩⊗|' + states[Math.floor(Math.random() * states.length)] + '⟩';
+    }
+
+    document.getElementById('channel-number').textContent = `Quantum State ${currentState}`;
+    
+    loadQuantumVideo(currentState);
+  }
+
+  function loadQuantumVideo(state) {
+    const videoId = getVideoIdFromState(state);
+    
+    // Show loader and play quantum noise
+    document.getElementById('quantum-loader').style.display = 'block';
+    quantumNoiseAudio.play();
+    
+    // Hide current video
+    document.getElementById('video-frame').style.opacity = '0';
+    
+    // Check if video is available
+    checkVideoAvailability(videoId)
+      .then(isAvailable => {
+        if (isAvailable) {
+          playVideo(videoId);
+        } else {
+          console.log(`Video ${videoId} is not available. Playing fallback...`);
+          playVideo(fallbackVideoId);
+        }
+      });
+  }
+
+  function getVideoIdFromState(state) {
+    // Extract the Greek letter from the state notation
+    const match = state.match(/\|([αβγδεζηθικ])⟩/);
+    if (match) {
+      return quantumVideoIds[match[1]] || fallbackVideoId;
+    }
+    // For superposition and entanglement, choose randomly
+    return quantumVideoIds[Object.keys(quantumVideoIds)[Math.floor(Math.random() * Object.keys(quantumVideoIds).length)]];
+  }
+
+  function checkVideoAvailability(videoId) {
+    return fetch(`https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=${videoId}&format=json`)
+      .then(response => response.ok)
+      .catch(() => false);
+  }
+
+  function playVideo(videoId) {
+    // Change video source
+    document.getElementById('video-frame').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&showinfo=0&rel=0`;
+    
+    // Hide loader, stop quantum noise, and show video when loaded
+    document.getElementById('video-frame').onload = function() {
+      setTimeout(() => {
+        document.getElementById('quantum-loader').style.display = 'none';
+        quantumNoiseAudio.pause();
+        quantumNoiseAudio.currentTime = 0;
+        document.getElementById('video-frame').style.opacity = '1';
+      }, 1000); // Delay to show the loader effect
+    };
+    
+    applyQuantumGlitchEffect();
+  }
+
+  function applyQuantumGlitchEffect() {
+    const channelDisplay = document.getElementById('channel-number');
+    channelDisplay.classList.add('quantum-glitch');
+    setTimeout(() => {
+      channelDisplay.classList.remove('quantum-glitch');
+    }, 2000);
+  }
+
+  // Initial quantum state
+  changeQuantumState('superposition');
+</script>
+
+</body></html>

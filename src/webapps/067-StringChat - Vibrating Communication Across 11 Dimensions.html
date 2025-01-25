@@ -1,0 +1,223 @@
+<html><head><base href="https://hacker.chat"><title>StringChat - Vibrating Communication Across 11 Dimensions</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+  
+  body {
+    background-color: #010B13;
+    color: #7DF9FF;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-image: 
+      linear-gradient(to right, rgba(125, 249, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(125, 249, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    line-height: 1.6;
+  }
+  header {
+    border-bottom: 1px solid #7DF9FF;
+    padding-bottom: 10px;
+  }
+  h1 {
+    font-weight: 700;
+  }
+  main {
+    display: flex;
+    justify-content: space-between;
+  }
+  #chat-window {
+    width: 70%;
+    height: 400px;
+    border: 1px solid #7DF9FF;
+    padding: 10px;
+    overflow-y: scroll;
+    background-color: rgba(1, 11, 19, 0.8);
+  }
+  #user-list {
+    width: 25%;
+    border: 1px solid #7DF9FF;
+    padding: 10px;
+    background-color: rgba(1, 11, 19, 0.8);
+  }
+  form {
+    margin-top: 20px;
+  }
+  input[type="text"] {
+    width: 70%;
+    background-color: #010B13;
+    color: #7DF9FF;
+    border: 1px solid #7DF9FF;
+    padding: 5px;
+    font-family: 'Roboto', sans-serif;
+  }
+  input[type="submit"] {
+    background-color: #7DF9FF;
+    color: #010B13;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+  }
+  .string-vibration {
+    animation: string-vibration-animation 0.5s infinite;
+    display: inline-block;
+  }
+  @keyframes string-vibration-animation {
+    0% { transform: translateY(0); }
+    25% { transform: translateY(-2px); }
+    50% { transform: translateY(0); }
+    75% { transform: translateY(2px); }
+    100% { transform: translateY(0); }
+  }
+  #dimension-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  #dimension-selector select {
+    background-color: #010B13;
+    color: #7DF9FF;
+    border: 1px solid #7DF9FF;
+    padding: 5px;
+    font-family: 'Roboto', sans-serif;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>StringChat <span class="string-vibration">~~~</span></h1>
+  <p>Vibrating communication across 11 dimensions of the multiverse</p>
+</header>
+
+<div id="dimension-selector">
+  <select onchange="changeDimension(this.value)">
+    <option value="1">Dimension 1</option>
+    <option value="2">Dimension 2</option>
+    <option value="3">Dimension 3</option>
+    <option value="4">Dimension 4</option>
+    <option value="5">Dimension 5</option>
+    <option value="6">Dimension 6</option>
+    <option value="7">Dimension 7</option>
+    <option value="8">Dimension 8</option>
+    <option value="9">Dimension 9</option>
+    <option value="10">Dimension 10</option>
+    <option value="11">Dimension 11</option>
+  </select>
+</div>
+
+<main>
+  <div id="chat-window">
+    <p><strong>M-Theory System:</strong> Welcome to StringChat. Your messages resonate across all 11 dimensions of spacetime.</p>
+  </div>
+  
+  <div id="user-list">
+    <h3>Active String Theorists</h3>
+    <ul>
+      <li>BraneWalker</li>
+      <li>CalabiBabe</li>
+      <li>SupersymmetrySeeker</li>
+      <li>HolographicHacker</li>
+      <li>DualityDreamer</li>
+      <li>FluxCompactifier</li>
+      <li>GravityLooper</li>
+      <li>ModuliMaster</li>
+      <li>AdSConformal</li>
+      <li>TypeIIAce</li>
+    </ul>
+  </div>
+</main>
+
+<form id="chat-form" onsubmit="return sendStringMessage(event)">
+  <input type="text" id="message-input" placeholder="Vibrate your message across dimensions...">
+  <input type="submit" value="Resonate">
+</form>
+
+<footer>
+  <p>StringChat utilizes M-theory to ensure your messages are coherent across all possible universes.</p>
+  <p>For interdimensional privacy, consider using our <a href="https://hacker.chat/calabi-yau-manifold">Calabi-Yau Manifold Encryption</a>.</p>
+  <p>Interested in string theory? Enroll in our <a href="https://string.academy">String Academy</a> for mind-bending courses on the nature of reality.</p>
+</footer>
+
+<script>
+let stringChatLog = [];
+let currentDimension = 3;
+
+function addStringMessage(username, message) {
+  const chatWindow = document.getElementById('chat-window');
+  const messageElement = document.createElement('p');
+  messageElement.innerHTML = `<strong>${username} (D${currentDimension}):</strong> ${message}`;
+  chatWindow.appendChild(messageElement);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  stringChatLog.push({username, message, dimension: currentDimension});
+}
+
+async function sendStringMessage(event) {
+  event.preventDefault();
+  const messageInput = document.getElementById('message-input');
+  const message = messageInput.value.trim();
+  if (message) {
+    addStringMessage('You', message);
+    messageInput.value = '';
+    
+    try {
+      const response = await fetch('/api/intelligent-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatLog: stringChatLog, userMessage: message, stringTheoryContext: true, dimension: currentDimension }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('String vibration failed to propagate');
+      }
+      
+      const data = await response.json();
+      data.responses.forEach(response => {
+        addStringMessage(response.username, response.message);
+      });
+    } catch (error) {
+      console.error('M-Theory Error:', error);
+    }
+  }
+}
+
+function getStringInterval() {
+  return Math.floor(Math.random() * (15000 - 5000 + 1) + 5000);
+}
+
+async function simulateStringChat() {
+  try {
+    const response = await fetch('/api/intelligent-ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ chatLog: stringChatLog, simulateChat: true, stringTheoryContext: true, dimension: currentDimension }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Interdimensional communication breakdown');
+    }
+    
+    const data = await response.json();
+    if (data.message) {
+      addStringMessage(data.username, data.message);
+    }
+  } catch (error) {
+    console.error('M-Theory Error:', error);
+  }
+  
+  setTimeout(simulateStringChat, getStringInterval());
+}
+
+function changeDimension(dimension) {
+  currentDimension = parseInt(dimension);
+  addStringMessage('M-Theory System', `You have shifted to dimension ${currentDimension}. The nature of reality may have changed subtly.`);
+}
+
+simulateStringChat();
+</script>
+
+</body></html>

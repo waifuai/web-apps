@@ -1,0 +1,165 @@
+<html><head><base href="https://websim.ai" /><title>UniSwap Curve Simulator</title><style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 800px;
+    width: 100%;
+  }
+  h1 {
+    color: #1a1a1a;
+    text-align: center;
+  }
+  .chart-container {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+  }
+  .controls {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+  }
+  label {
+    margin-bottom: 5px;
+    color: #555;
+  }
+  input[type="number"] {
+    width: 100px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  .info {
+    background-color: #e6f7ff;
+    border: 1px solid #91d5ff;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 20px;
+  }
+  .token-prices {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+  }
+  .token-price {
+    text-align: center;
+  }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>UniSwap Curve Simulator</h1>
+    <div class="controls">
+      <div class="control-group">
+        <label for="tokenAReserve">Token A Reserve:</label>
+        <input type="number" id="tokenAReserve" value="1000" min="1">
+      </div>
+      <div class="control-group">
+        <label for="tokenBReserve">Token B Reserve:</label>
+        <input type="number" id="tokenBReserve" value="1000" min="1">
+      </div>
+      <div class="control-group">
+        <label for="tradeAmount">Trade Amount:</label>
+        <input type="number" id="tradeAmount" value="100" min="1">
+      </div>
+    </div>
+    <div id="chart" class="chart-container"></div>
+    <div class="token-prices">
+      <div class="token-price">
+        <h3>Token A Price</h3>
+        <p id="tokenAPrice">1.00 B</p>
+      </div>
+      <div class="token-price">
+        <h3>Token B Price</h3>
+        <p id="tokenBPrice">1.00 A</p>
+      </div>
+    </div>
+    <div class="info">
+      <p>This simulator demonstrates the UniSwap constant product formula: x * y = k, where x and y are the reserves of two tokens, and k is a constant. As you adjust the reserves and trade amount, you can see how the curve and token prices change.</p>
+    </div>
+  </div>
+  <script>
+    function calculatePrice(x, y) {
+      return y / x;
+    }
+
+    function generateCurvePoints(reserveA, reserveB, points = 100) {
+      const k = reserveA * reserveB;
+      const xValues = [];
+      const yValues = [];
+      
+      for (let i = 0; i <= points; i++) {
+        const x = reserveA * 0.5 + (reserveA * i) / points;
+        const y = k / x;
+        xValues.push(x);
+        yValues.push(y);
+      }
+      
+      return { x: xValues, y: yValues };
+    }
+
+    function updateChart() {
+      const reserveA = parseFloat(document.getElementById('tokenAReserve').value);
+      const reserveB = parseFloat(document.getElementById('tokenBReserve').value);
+      const tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
+
+      const curvePoints = generateCurvePoints(reserveA, reserveB);
+      
+      const data = [{
+        x: curvePoints.x,
+        y: curvePoints.y,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'UniSwap Curve',
+        line: { color: '#1f77b4' }
+      }, {
+        x: [reserveA],
+        y: [reserveB],
+        type: 'scatter',
+        mode: 'markers',
+        name: 'Current Position',
+        marker: { size: 12, color: '#ff7f0e' }
+      }];
+
+      const layout = {
+        title: 'UniSwap Curve',
+        xaxis: { title: 'Token A Reserve' },
+        yaxis: { title: 'Token B Reserve' },
+        showlegend: true
+      };
+
+      Plotly.newPlot('chart', data, layout);
+
+      // Update token prices
+      const tokenAPrice = calculatePrice(reserveA, reserveB);
+      const tokenBPrice = calculatePrice(reserveB, reserveA);
+      document.getElementById('tokenAPrice').textContent = tokenAPrice.toFixed(4) + ' B';
+      document.getElementById('tokenBPrice').textContent = tokenBPrice.toFixed(4) + ' A';
+    }
+
+    // Initial chart render
+    updateChart();
+
+    // Add event listeners to inputs
+    document.getElementById('tokenAReserve').addEventListener('input', updateChart);
+    document.getElementById('tokenBReserve').addEventListener('input', updateChart);
+    document.getElementById('tradeAmount').addEventListener('input', updateChart);
+  </script>
+</body></html>

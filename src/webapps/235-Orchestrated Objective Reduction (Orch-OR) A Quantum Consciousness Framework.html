@@ -1,0 +1,128 @@
+<html><head><base href="https://quantum-consciousness.org/part-ii/"><title>Orchestrated Objective Reduction (Orch-OR): A Quantum Consciousness Framework</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.0/chart.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #microtubule-model {
+        width: 100%;
+        height: 400px;
+        margin-bottom: 20px;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .interactive-element {
+        background-color: #3498db;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .interactive-element:hover {
+        background-color: #2980b9;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Orchestrated Objective Reduction (Orch-OR): A Quantum Consciousness Framework</h1>
+        
+        <p>Welcome to our exploration of the Orchestrated Objective Reduction (Orch-OR) theory, a groundbreaking framework that connects quantum processes to consciousness. Developed by physicist Sir Roger Penrose and anesthesiologist Stuart Hameroff, Orch-OR proposes that consciousness emerges from quantum computations in microtubules within brain neurons.</p>
+        
+        <h2>Interactive 3D Microtubule Model</h2>
+        <div id="microtubule-model"></div>
+        
+        <h2>Key Components of Orch-OR</h2>
+        <ul>
+            <li>Quantum superposition in microtubules</li>
+            <li>Objective reduction (OR) of quantum states</li>
+            <li>Orchestration of quantum processes by cellular mechanisms</li>
+            <li>Emergence of conscious experience</li>
+        </ul>
+        
+        <h2>Quantum Coherence Duration in Microtubules</h2>
+        <div class="chart-container">
+            <canvas id="coherenceChart"></canvas>
+        </div>
+        
+        <h2>Interactive Orch-OR Timeline</h2>
+        <div id="timeline" class="interactive-element">
+            Click to explore the development of Orch-OR theory
+        </div>
+        
+        <script>
+            // 3D Microtubule Model
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(document.getElementById('microtubule-model').clientWidth, 400);
+            document.getElementById('microtubule-model').appendChild(renderer.domElement);
+
+            const geometry = new THREE.CylinderGeometry(5, 5, 20, 32);
+            const material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+            const microtubule = new THREE.Mesh(geometry, material);
+            scene.add(microtubule);
+
+            camera.position.z = 30;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                microtubule.rotation.x += 0.01;
+                microtubule.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Quantum Coherence Chart
+            const ctx = document.getElementById('coherenceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['0', '100', '200', '300', '400', '500'],
+                    datasets: [{
+                        label: 'Quantum Coherence Duration (femtoseconds)',
+                        data: [100, 90, 70, 50, 30, 10],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Interactive Timeline
+            document.getElementById('timeline').addEventListener('click', function() {
+                alert('Orch-OR Timeline:\n\n1989: Penrose proposes quantum processes in microtubules\n1994: Hameroff and Penrose collaborate on Orch-OR\n2014: Evidence of quantum vibrations in microtubules\n2022: Further refinements to the theory');
+            });
+        </script>
+    </div>
+</body></html>

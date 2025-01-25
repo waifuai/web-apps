@@ -1,0 +1,157 @@
+<html><head><base href="." /><meta charset="UTF-8"><title>AI Commission Optimization Platform</title>
+<style>
+:root {
+    --primary: #2A3B4C;
+    --accent: #4A90E2;
+    --light: #F5F7FA;
+    --text: #333;
+    --spacing: 2rem;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.features-section {
+    padding: 6rem 2rem;
+    background: var(--light);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    padding: 2rem 0;
+}
+
+.feature-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.5rem;
+}
+
+.feature-title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.feature-description {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.icon-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+
+<section class="features-section">
+    <div class="container">
+        <header class="section-header">
+            <h2 class="section-title">Intelligent Commission Optimization</h2>
+            <p class="section-subtitle">Leverage advanced AI to optimize your commission structures with precision and confidence</p>
+        </header>
+        
+        <div class="features-grid">
+            <!-- Real-time Simulation -->
+            <div class="feature-card">
+                <svg class="feature-icon icon-pulse" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                <h3 class="feature-title">Real-time Simulation</h3>
+                <p class="feature-description">Watch your adjustments come to life instantly with our dynamic simulation engine, providing immediate insights into commission impacts.</p>
+            </div>
+
+            <!-- Data-driven Optimization -->
+            <div class="feature-card">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2">
+                    <path d="M21 21H3V3"/>
+                    <path d="M21 9L13 15L9 11L3 16"/>
+                </svg>
+                <h3 class="feature-title">Data-driven Optimization</h3>
+                <p class="feature-description">Harness the power of advanced analytics to discover optimal commission rates based on historical performance and market trends.</p>
+            </div>
+
+            <!-- Customizable Parameters -->
+            <div class="feature-card">
+                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2">
+                    <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+                </svg>
+                <h3 class="feature-title">Customizable Parameters</h3>
+                <p class="feature-description">Fine-tune your commission structure with flexible parameters that adapt to your unique business requirements and goals.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Add hover effects for feature cards
+    const cards = document.querySelectorAll('.feature-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.querySelector('.feature-icon').style.transform = 'scale(1.1)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.querySelector('.feature-icon').style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+
+</body></html>

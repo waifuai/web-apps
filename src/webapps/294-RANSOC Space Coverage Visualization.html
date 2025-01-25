@@ -1,0 +1,222 @@
+<html><head><base href="." />
+<style>
+/* Core styling for the proof visualization */
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f0f4f8;
+    color: #2d3748;
+}
+
+.proof-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.simulation {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+}
+
+.star {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.planet {
+    position: absolute;
+    transition: all 0.5s ease-out;
+}
+
+/* CSS Animation for mass transfer */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.selected {
+    animation: pulse 1s ease-out;
+}
+
+/* Visualization controls */
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    background: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #3182ce;
+}
+</style>
+</head>
+<body>
+<div class="proof-container">
+    <h1>RANSOC Space Coverage Visualization</h1>
+    <div class="simulation" id="simulation">
+        <!-- SVG container for visualization -->
+        <svg width="100%" height="100%" id="space">
+            <defs>
+                <radialGradient id="starGradient">
+                    <stop offset="0%" style="stop-color:yellow"/>
+                    <stop offset="100%" style="stop-color:orange"/>
+                </radialGradient>
+            </defs>
+        </svg>
+    </div>
+    <div class="controls">
+        <button onclick="startSimulation()">Start Simulation</button>
+        <button onclick="resetSimulation()">Reset</button>
+    </div>
+</div>
+
+<script>
+class Planet {
+    constructor(x, y, mass) {
+        this.x = x;
+        this.y = y;
+        this.mass = mass;
+        this.selected = false;
+        this.element = null;
+    }
+
+    distance(star) {
+        return Math.sqrt(Math.pow(this.x - star.x, 2) + Math.pow(this.y - star.y, 2));
+    }
+
+    weight(star) {
+        return this.mass / this.distance(star);
+    }
+}
+
+class Star {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+class RANSOCSimulation {
+    constructor() {
+        this.svg = document.getElementById('space');
+        this.planets = [];
+        this.star = new Star(300, 200);
+        this.alpha = 0.3;
+        this.setupSpace();
+    }
+
+    setupSpace() {
+        // Create star
+        const starElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        starElement.setAttribute("cx", this.star.x);
+        starElement.setAttribute("cy", this.star.y);
+        starElement.setAttribute("r", 15);
+        starElement.setAttribute("fill", "url(#starGradient)");
+        this.svg.appendChild(starElement);
+
+        // Create planets
+        for(let i = 0; i < 5; i++) {
+            const angle = (i / 5) * 2 * Math.PI;
+            const radius = 100;
+            const x = this.star.x + radius * Math.cos(angle);
+            const y = this.star.y + radius * Math.sin(angle);
+            
+            const planet = new Planet(x, y, 1.0);
+            this.planets.push(planet);
+            
+            const planetElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            planetElement.setAttribute("cx", x);
+            planetElement.setAttribute("cy", y);
+            planetElement.setAttribute("r", 10);
+            planetElement.setAttribute("fill", "#4299e1");
+            planetElement.setAttribute("class", "planet");
+            
+            planet.element = planetElement;
+            this.svg.appendChild(planetElement);
+        }
+    }
+
+    step() {
+        // Find planet with maximum weight
+        let maxWeight = -Infinity;
+        let selectedPlanet = null;
+        
+        for(const planet of this.planets) {
+            const weight = planet.weight(this.star);
+            if(weight > maxWeight) {
+                maxWeight = weight;
+                selectedPlanet = planet;
+            }
+        }
+
+        // Update masses
+        if(selectedPlanet) {
+            selectedPlanet.selected = true;
+            selectedPlanet.mass *= (1 - this.alpha);
+            selectedPlanet.element.setAttribute("fill", "#48bb78");
+
+            const massGain = this.alpha / (this.planets.length - 1);
+            for(const planet of this.planets) {
+                if(planet !== selectedPlanet) {
+                    planet.mass *= (1 + massGain);
+                }
+            }
+        }
+
+        // Update visualization
+        this.updateVisualization();
+    }
+
+    updateVisualization() {
+        for(const planet of this.planets) {
+            const size = 10 * Math.sqrt(planet.mass);
+            planet.element.setAttribute("r", size);
+        }
+    }
+}
+
+let simulation;
+let simulationInterval;
+
+function startSimulation() {
+    if(!simulation) {
+        simulation = new RANSOCSimulation();
+    }
+    if(!simulationInterval) {
+        simulationInterval = setInterval(() => simulation.step(), 1000);
+    }
+}
+
+function resetSimulation() {
+    if(simulationInterval) {
+        clearInterval(simulationInterval);
+        simulationInterval = null;
+    }
+    const space = document.getElementById('space');
+    space.innerHTML = '';
+    simulation = new RANSOCSimulation();
+}
+</script>
+</body></html>

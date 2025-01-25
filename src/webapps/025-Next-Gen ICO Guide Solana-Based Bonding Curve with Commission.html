@@ -1,0 +1,173 @@
+<html><head><base href="https://solana-ico-guide.websim.ai/"><title>Next-Gen ICO Guide: Solana-Based Bonding Curve with Commission</title><style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #9945FF;
+    }
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    code {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        display: block;
+        padding: 10px;
+        white-space: pre-wrap;
+    }
+    .highlight {
+        background-color: #FFD700;
+        padding: 2px 4px;
+        border-radius: 2px;
+    }
+    .note {
+        background-color: #e7f3fe;
+        border-left: 6px solid #2196F3;
+        margin-bottom: 15px;
+        padding: 4px 12px;
+    }
+</style></head><body>
+    <div class="container">
+        <h1>Next-Gen ICO Guide: Solana-Based Bonding Curve with Commission</h1>
+        
+        <p>Welcome to our guide on implementing a cutting-edge Initial Coin Offering (ICO) system. This tutorial will walk you through creating an ICO with three key features:</p>
+        
+        <ol>
+            <li>A bonding curve to prevent liquidity draining bots</li>
+            <li>A 10% commission on token sales for marketing purposes</li>
+            <li>Implementation on Solana for lower gas fees</li>
+        </ol>
+
+        <h2>1. Understanding the Bonding Curve</h2>
+        
+        <p>A bonding curve is a mathematical curve that defines the relationship between a token's price and its supply. As more tokens are minted, the price increases, and vice versa. This mechanism discourages large-scale buying and selling, effectively preventing bots from draining liquidity.</p>
+
+        <div class="note">
+            <strong>Note:</strong> For this example, we'll use a simple linear bonding curve, but more complex curves can be implemented for different tokenomics models.
+        </div>
+
+        <h2>2. Implementing the ICO Contract</h2>
+
+        <p>Here's a basic structure for our Solana-based ICO contract:</p>
+
+        <code>
+use anchor_lang::prelude::*;
+
+#[program]
+pub mod solana_ico {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>, initial_price: u64) -> ProgramResult {
+        let ico_account = &mut ctx.accounts.ico_account;
+        ico_account.token_supply = 0;
+        ico_account.current_price = initial_price;
+        ico_account.commission_account = ctx.accounts.commission_account.key();
+        Ok(())
+    }
+
+    pub fn buy_tokens(ctx: Context<BuyTokens>, amount: u64) -> ProgramResult {
+        let ico_account = &mut ctx.accounts.ico_account;
+        let buyer = &mut ctx.accounts.buyer;
+
+        // Calculate total cost
+        let total_cost = calculate_cost(ico_account.token_supply, amount, ico_account.current_price);
+
+        // Transfer SOL from buyer to contract
+        **buyer.to_account_info().try_borrow_mut_lamports()? -= total_cost;
+        **ctx.accounts.ico_account.to_account_info().try_borrow_mut_lamports()? += total_cost;
+
+        // Calculate commission (10%)
+        let commission = total_cost / 10;
+
+        // Transfer commission to commission account
+        **ctx.accounts.ico_account.to_account_info().try_borrow_mut_lamports()? -= commission;
+        **ctx.accounts.commission_account.to_account_info().try_borrow_mut_lamports()? += commission;
+
+        // Update token supply and price
+        ico_account.token_supply += amount;
+        ico_account.current_price = calculate_new_price(ico_account.token_supply, ico_account.current_price);
+
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = user, space = 8 + 8 + 8 + 32)]
+    pub ico_account: Account<'info, IcoAccount>,
+    #[account(mut)]
+    pub commission_account: AccountInfo<'info>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct BuyTokens<'info> {
+    #[account(mut)]
+    pub ico_account: Account<'info, IcoAccount>,
+    #[account(mut)]
+    pub buyer: Signer<'info>,
+    #[account(mut)]
+    pub commission_account: AccountInfo<'info>,
+}
+
+#[account]
+pub struct IcoAccount {
+    pub token_supply: u64,
+    pub current_price: u64,
+    pub commission_account: Pubkey,
+}
+
+fn calculate_cost(current_supply: u64, amount: u64, initial_price: u64) -> u64 {
+    // Simple linear bonding curve
+    (current_supply + amount) * initial_price - current_supply * initial_price
+}
+
+fn calculate_new_price(new_supply: u64, initial_price: u64) -> u64 {
+    // Price increases linearly with supply
+    initial_price + (new_supply / 1000) // Adjust this formula as needed
+}
+        </code>
+
+        <h2>3. Key Features Explained</h2>
+
+        <h3>Bonding Curve</h3>
+        <p>The <span class="highlight">calculate_cost</span> and <span class="highlight">calculate_new_price</span> functions implement our bonding curve. As more tokens are bought, the price increases, discouraging large purchases and bot activity.</p>
+
+        <h3>Commission</h3>
+        <p>In the <span class="highlight">buy_tokens</span> function, we calculate a 10% commission and transfer it to a designated commission account for marketing purposes.</p>
+
+        <h3>Solana Implementation</h3>
+        <p>This contract is written using Anchor, a popular framework for Solana development. Solana's high throughput and low transaction costs make it an excellent choice for ICOs.</p>
+
+        <h2>4. Deploying and Interacting with the Contract</h2>
+
+        <p>To deploy this contract:</p>
+        <ol>
+            <li>Set up your Solana development environment</li>
+            <li>Build the project using Anchor</li>
+            <li>Deploy to your chosen Solana cluster (devnet for testing, mainnet-beta for production)</li>
+        </ol>
+
+        <p>Interact with the contract using a Solana wallet and either a custom front-end or CLI commands.</p>
+
+        <h2>Conclusion</h2>
+
+        <p>This ICO system leverages Solana's efficiency, implements a bonding curve to stabilize token economics, and includes a commission system for sustainable marketing. Remember to thoroughly test your contract and consider having it audited before launching on mainnet.</p>
+
+        <div class="note">
+            <strong>Disclaimer:</strong> This is a basic implementation. In a real-world scenario, you'd need to add more features like token minting, withdrawal functions, and additional security measures.
+        </div>
+    </div>
+</body></html>

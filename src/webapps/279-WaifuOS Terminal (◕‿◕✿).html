@@ -1,0 +1,521 @@
+<html><head><base href="/">
+<style>
+:root {
+  --main-bg: #000000;
+  --text-color: #ff69b4;
+  --accent: #ff1493;
+  --secondary-accent: #ff8cc6;
+  --terminal-font: 'Courier New', monospace;
+}
+
+body {
+  background: var(--main-bg);
+  color: var(--text-color);
+  font-family: var(--terminal-font);
+  margin: 0;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  border: 2px solid var(--accent);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.main-content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 20px;
+}
+
+.window {
+  border: 2px solid var(--accent);
+  background: rgba(255, 20, 147, 0.1);
+  border-radius: 5px;
+}
+
+.window-header {
+  background: var(--accent);
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.window-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.window-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--secondary-accent);
+  cursor: pointer;
+}
+
+.window-content {
+  padding: 10px;
+}
+
+.menu-item {
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+}
+
+.menu-item:hover {
+  border-color: var(--accent);
+  background: rgba(255, 20, 147, 0.2);
+}
+
+.icon {
+  font-size: 20px;
+}
+
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+}
+
+.start-button {
+  background: var(--secondary-accent);
+  border: none;
+  padding: 5px 15px;
+  color: var(--main-bg);
+  cursor: pointer;
+  font-family: var(--terminal-font);
+}
+
+.terminal {
+  font-family: var(--terminal-font);
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Add sparkle animation */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.sparkle {
+  position: absolute;
+  pointer-events: none;
+  animation: sparkle 1s infinite;
+}
+
+.character-window {
+  position: fixed;
+  right: 20px;
+  bottom: 60px;
+  width: 300px;
+  height: 400px;
+  border: 2px solid var(--accent);
+  border-radius: 5px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.8);
+}
+
+#character-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.speech-bubble {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--main-bg);
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--accent);
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+</head>
+<body>
+<div class="sidebar">
+  <div class="menu-item">
+    <span class="icon">🌸</span> File System
+  </div>
+  <div class="menu-item">
+    <span class="icon">✨</span> Graphics
+  </div>
+  <div class="menu-item">
+    <span class="icon">💕</span> Network
+  </div>
+  <div class="menu-item">
+    <span class="icon">🎀</span> Settings
+  </div>
+  <div class="menu-item">
+    <span class="icon">📝</span> Editor
+  </div>
+  <div class="menu-item">
+    <span class="icon">🖥️</span> Terminal
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="window">
+    <div class="window-header">
+      <span>WaifuOS Terminal (◕‿◕✿)</span>
+      <div class="window-controls">
+        <div class="window-button" style="background: #ff69b4;"></div>
+        <div class="window-button" style="background: #ff1493;"></div>
+        <div class="window-button" style="background: #ff8cc6;"></div>
+      </div>
+    </div>
+    <div class="window-content">
+      <div class="terminal">
+        <div class="ascii-chan">
+          /\___/\
+         (  o o  )
+         (  =^=  ) 
+          (m___m)~
+        WaifuOS v1.0
+        </div>
+        
+        <div id="output">
+          WaifuOS (´･ω･`) - A Kawaii Common Lisp Operating System<br>
+          Based on TempleOS architecture with added kawaii features ✧˖°<br>
+          © 2023 WaifuOS Development Team<br><br>
+          Type 'help' for commands (｡♥‿♥｡)
+        </div>
+
+        <div class="command-line">
+          <span class="prompt">kawaii@waifuos:~$</span>
+          <input type="text" id="command-input" autofocus>
+          <span class="cursor">▌</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="taskbar">
+  <button class="start-button">♥ Start</button>
+  <span style="color: var(--main-bg);">Running processes: WaifuOS Terminal</span>
+</div>
+
+<div class="character-window">
+  <div class="window-header">
+    <span>AI Assistant (◕‿◕✿)</span>
+    <div class="window-controls">
+      <div class="window-button" style="background: #ff69b4;"></div>
+      <div class="window-button" style="background: #ff1493;"></div>
+      <div class="window-button" style="background: #ff8cc6;"></div>
+    </div>
+  </div>
+  <canvas id="character-canvas"></canvas>
+  <div class="speech-bubble"></div>
+</div>
+
+<script>
+const commandInput = document.getElementById('command-input');
+const output = document.getElementById('output');
+
+const commands = {
+  help: () => `
+    Available commands:
+    • nyaa - Display system information
+    • kawaii - Toggle extra kawaii mode
+    • lisp - Open Lisp REPL
+    • clear - Clear terminal
+    • shutdown - Exit WaifuOS (;´□｀)
+  `,
+  nyaa: () => `
+    WaifuOS System Information:
+    • Kernel: KawaiiKernel 1.0
+    • Architecture: x86-64 (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+    • Memory: 16GB RAM (so powerful!)
+    • Graphics: KawaiiGL v2.3
+    • Common Lisp Version: SBCL 2.3.0
+  `,
+  clear: () => {
+    output.innerHTML = '';
+    return '';
+  },
+  lisp: () => {
+    return `
+      WaifuOS LISP REPL (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+      Try these Common Lisp system commands:
+      
+      (os:list-processes)  ; List running processes
+      (os:memory-stats)    ; Show memory usage
+      (os:spawn "program") ; Launch a program
+      (os:file-read "/path/to/file")
+      (graphics:draw-window x y width height)
+      
+      Example:
+      > (+ 2 3)
+      5
+      > (defun greet (name) (format nil "Hello ~A!" name))
+      GREET
+      > (greet "User")
+      "Hello User!"
+    `;
+  },
+  
+  eval: (input) => {
+    // Simulate LISP evaluation
+    try {
+      if (input.startsWith("(os:")) {
+        return simulateOSCommand(input);
+      }
+      return simulateLispEval(input);
+    } catch (e) {
+      return `Error: ${e.message} (｡•́︿•̀｡)`;
+    }
+  }
+};
+
+function simulateLispEval(code) {
+  const lispPatterns = {
+    '(+ 2 3)': '5',
+    '(defun greet (name) (format nil "Hello ~A!" name))': 'GREET',
+    '(greet "User")': '"Hello User!"',
+    '(list 1 2 3)': '(1 2 3)',
+    '(car (list 1 2 3))': '1',
+    '(cdr (list 1 2 3))': '(2 3)'
+  };
+  return lispPatterns[code] || 'nil';
+}
+
+function simulateOSCommand(cmd) {
+  const osCommands = {
+    '(os:list-processes)': `
+      PID  NAME           STATUS
+      1    kernel         running
+      2    window-manager running
+      3    network        running
+      4    terminal       running
+    `,
+    '(os:memory-stats)': `
+      Total Memory: 16384 MB
+      Used: 4096 MB
+      Free: 12288 MB
+      Swap: 2048 MB
+    `,
+    '(os:spawn "editor")': 'Launching editor... Done!',
+    '(os:file-read "/home/user/test.txt")': 'Contents of test.txt'
+  };
+  return osCommands[cmd] || 'Command executed successfully.';
+}
+
+commandInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const input = commandInput.value.trim();
+    let response;
+    
+    if (input.startsWith('(')) {
+      // LISP expression
+      response = commands.eval(input);
+    } else {
+      // Normal command
+      const command = input.toLowerCase();
+      response = commands[command] ? commands[command]() : `Command not found: ${command} (｡•́︿•̀｡)`;
+    }
+    
+    output.innerHTML += `<br>> ${input}<br>${response}`;
+    commandInput.value = '';
+    output.scrollTop = output.scrollHeight;
+    
+    // Trigger character response
+    const charResponse = input.startsWith('(') ? 
+      "Evaluating your LISP expression! (⌐■_■)" :
+      (characterResponses[input] || characterResponses.default);
+    
+    speechBubble.textContent = charResponse;
+    speechBubble.style.opacity = '1';
+    setTimeout(() => {
+      speechBubble.style.opacity = '0';
+    }, 3000);
+  }
+});
+
+// Add sparkle effect on click
+document.addEventListener('click', (e) => {
+  const sparkle = document.createElement('div');
+  sparkle.className = 'sparkle';
+  sparkle.innerHTML = '✨';
+  sparkle.style.left = e.pageX + 'px';
+  sparkle.style.top = e.pageY + 'px';
+  document.body.appendChild(sparkle);
+  
+  setTimeout(() => sparkle.remove(), 1000);
+});
+
+// Make windows draggable
+document.querySelectorAll('.window-header').forEach(header => {
+  let isDragging = false;
+  let currentX;
+  let currentY;
+  let initialX;
+  let initialY;
+  
+  header.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    const window = header.parentElement;
+    
+    initialX = e.clientX - window.offsetLeft;
+    initialY = e.clientY - window.offsetTop;
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      const window = header.parentElement;
+      
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
+      
+      window.style.position = 'absolute';
+      window.style.left = currentX + 'px';
+      window.style.top = currentY + 'px';
+    }
+  });
+  
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+});
+
+// Update 3D Character Setup for anime style
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, 300/400, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById('character-canvas'),
+  alpha: true
+});
+renderer.setSize(300, 400);
+
+// Create anime character head (larger eyes, smaller chin)
+const headGeometry = new THREE.SphereGeometry(1, 32, 32);
+const headMaterial = new THREE.MeshPhongMaterial({
+  color: 0xffd7e6,
+  shininess: 100
+});
+const head = new THREE.Mesh(headGeometry, headMaterial);
+scene.add(head);
+
+// Add large anime eyes
+const eyeGeometry = new THREE.SphereGeometry(0.35, 32, 32);
+const eyeMaterial = new THREE.MeshPhongMaterial({color: 0x6699ff}); // Bright anime eyes
+const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+leftEye.position.set(-0.4, 0.1, 0.8);
+rightEye.position.set(0.4, 0.1, 0.8);
+head.add(leftEye);
+head.add(rightEye);
+
+// Add eye highlights
+const highlightGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+const highlightMaterial = new THREE.MeshPhongMaterial({color: 0xffffff});
+const leftHighlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+const rightHighlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+leftHighlight.position.set(-0.25, 0.15, 1);
+rightHighlight.position.set(0.55, 0.15, 1);
+head.add(leftHighlight);
+head.add(rightHighlight);
+
+// Add anime hair
+const hairGeometry = new THREE.ConeGeometry(1.2, 1.5, 32);
+const hairMaterial = new THREE.MeshPhongMaterial({
+  color: 0xff69b4, // Pink hair
+  shininess: 50
+});
+const hair = new THREE.Mesh(hairGeometry, hairMaterial);
+hair.position.set(0, 0.5, -0.2);
+head.add(hair);
+
+// Add side hair
+const sideHairGeometry = new THREE.CylinderGeometry(0.2, 0.1, 2, 32);
+const leftSideHair = new THREE.Mesh(sideHairGeometry, hairMaterial);
+const rightSideHair = new THREE.Mesh(sideHairGeometry, hairMaterial);
+leftSideHair.position.set(-1, -0.5, 0);
+rightSideHair.position.set(1, -0.5, 0);
+leftSideHair.rotation.z = 0.2;
+rightSideHair.rotation.z = -0.2;
+head.add(leftSideHair);
+head.add(rightSideHair);
+
+// Add lighting
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(0, 1, 1);
+scene.add(light);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+camera.position.z = 5;
+
+// Enhanced Animation
+function animate() {
+  requestAnimationFrame(animate);
+  
+  // Gentle swaying motion
+  head.rotation.y = Math.sin(Date.now() * 0.001) * 0.2;
+  head.position.y = Math.sin(Date.now() * 0.002) * 0.1;
+  
+  // Hair physics simulation
+  hair.rotation.x = Math.sin(Date.now() * 0.002) * 0.05;
+  leftSideHair.rotation.z = 0.2 + Math.sin(Date.now() * 0.002) * 0.05;
+  rightSideHair.rotation.z = -0.2 - Math.sin(Date.now() * 0.002) * 0.05;
+  
+  renderer.render(scene, camera);
+}
+animate();
+
+// Character responses
+const speechBubble = document.querySelector('.speech-bubble');
+const characterResponses = {
+  help: "Let me show you around WaifuOS! (◠‿◠)",
+  nyaa: "Here's your system info! Everything's running purrfectly~ ♪",
+  kawaii: "Enabling maximum kawaii mode! ⭐️",
+  lisp: "Opening LISP REPL... I love coding! (◕‿◕✿)",
+  clear: "All clean now! So fresh~",
+  default: "I don't know that command... but I'd love to learn! (｡•́︿•̀｡)",
+  '(': "Let me evaluate that LISP expression for you! (◕‿◕✿)",
+  '(os:': "Executing OS command through LISP! System power! ⚡️",
+  '(defun': "Defining a new function! You're so creative! 🌟",
+  '(graphics:': "Drawing something beautiful! 🎨"
+};
+
+// Initial focus
+commandInput.focus();
+</script>
+</body></html>

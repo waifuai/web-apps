@@ -1,0 +1,89 @@
+<html><head><base href="https://websim.ai/" /><title>WebXR Chatbot Interface</title><script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script><script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script><style>
+    body { margin: 0; }
+    #ui { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 10px; }
+    #chatbox { width: 300px; height: 200px; overflow-y: scroll; border: 1px solid #ccc; margin-bottom: 10px; }
+    #modelSelect { margin-bottom: 10px; }
+    #fileUpload { display: none; }
+    .button { background: #4CAF50; border: none; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; }
+</style></head><body>
+<a-scene background="color: #FAFAFA">
+    <a-assets>
+        <a-asset-item id="model1" src="https://cdn.aframe.io/test-models/models/glTF-2.0/virtualcity/VC.gltf"></a-asset-item>
+        <a-asset-item id="model2" src="https://cdn.aframe.io/examples/ui/sphereWithText.gltf"></a-asset-item>
+    </a-assets>
+
+    <a-entity id="rig" position="0 1.6 0">
+        <a-entity id="camera" camera look-controls></a-entity>
+        <a-entity id="leftHand" hand-controls="hand: left"></a-entity>
+        <a-entity id="rightHand" hand-controls="hand: right"></a-entity>
+    </a-entity>
+
+    <a-entity id="avatar" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
+
+    <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+    <a-sky color="#ECECEC"></a-sky>
+</a-scene>
+
+<div id="ui">
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+    <br><br>
+    <select id="modelSelect" onchange="changeModel()">
+        <option value="model1">City Model</option>
+        <option value="model2">Sphere Model</option>
+    </select>
+    <br>
+    <button class="button" onclick="document.getElementById('fileUpload').click()">Upload Custom Model</button>
+    <input type="file" id="fileUpload" accept=".gltf,.glb" onchange="uploadModel(event)">
+</div>
+
+<script>
+    let currentModel = 'model1';
+
+    function changeModel() {
+        currentModel = document.getElementById('modelSelect').value;
+        updateAvatar();
+    }
+
+    function updateAvatar() {
+        const avatar = document.getElementById('avatar');
+        avatar.setAttribute('gltf-model', `#${currentModel}`);
+    }
+
+    function uploadModel(event) {
+        const file = event.target.files[0];
+        const objectURL = URL.createObjectURL(file);
+        
+        const assets = document.querySelector('a-assets');
+        const newModel = document.createElement('a-asset-item');
+        newModel.setAttribute('id', 'customModel');
+        newModel.setAttribute('src', objectURL);
+        assets.appendChild(newModel);
+
+        currentModel = 'customModel';
+        updateAvatar();
+    }
+
+    function sendMessage() {
+        const userInput = document.getElementById('userInput');
+        const chatbox = document.getElementById('chatbox');
+        
+        if (userInput.value.trim() !== '') {
+            chatbox.innerHTML += `<p><strong>You:</strong> ${userInput.value}</p>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Simulated bot response
+            setTimeout(() => {
+                chatbox.innerHTML += `<p><strong>Bot:</strong> I received your message: "${userInput.value}"</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }, 1000);
+
+            userInput.value = '';
+        }
+    }
+
+    // Initialize with default model
+    updateAvatar();
+</script>
+</body></html>

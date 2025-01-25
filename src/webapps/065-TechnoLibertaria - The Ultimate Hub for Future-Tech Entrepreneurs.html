@@ -1,0 +1,243 @@
+<html><head><base href="https://hacker.chat"><title>TechnoLibertaria - The Ultimate Hub for Future-Tech Entrepreneurs</title>
+<style>
+  body {
+    background-color: #1c1c1c;
+    color: #00ff9d;
+    font-family: 'Exo 2', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-image: 
+      radial-gradient(#00ff9d 1px, transparent 1px),
+      radial-gradient(#ff6b6b 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: 0 0, 25px 25px;
+  }
+  header {
+    border-bottom: 2px solid #ff6b6b;
+    padding-bottom: 10px;
+  }
+  main {
+    display: flex;
+    justify-content: space-between;
+  }
+  #chat-window {
+    width: 70%;
+    height: 500px;
+    border: 1px solid #00ff9d;
+    padding: 10px;
+    overflow-y: scroll;
+    background-color: rgba(28, 28, 28, 0.9);
+  }
+  #user-list {
+    width: 25%;
+    border: 1px solid #00ff9d;
+    padding: 10px;
+    background-color: rgba(28, 28, 28, 0.9);
+  }
+  form {
+    margin-top: 20px;
+  }
+  input[type="text"] {
+    width: 70%;
+    background-color: #1c1c1c;
+    color: #00ff9d;
+    border: 1px solid #00ff9d;
+    padding: 5px;
+  }
+  input[type="submit"] {
+    background-color: #ff6b6b;
+    color: #1c1c1c;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .tech-pulse {
+    animation: tech-pulse-animation 4s infinite;
+  }
+  @keyframes tech-pulse-animation {
+    0% { text-shadow: 0 0 5px #00ff9d, 0 0 10px #00ff9d; }
+    50% { text-shadow: 0 0 20px #ff6b6b, 0 0 30px #ff6b6b; }
+    100% { text-shadow: 0 0 5px #00ff9d, 0 0 10px #00ff9d; }
+  }
+  #language-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  #language-selector select {
+    background-color: #1c1c1c;
+    color: #00ff9d;
+    border: 1px solid #00ff9d;
+    padding: 5px;
+  }
+  .code-block {
+    background-color: #2a2a2a;
+    border: 1px solid #00ff9d;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    font-family: 'Fira Code', monospace;
+    white-space: pre-wrap;
+  }
+  #ticker {
+    border-top: 1px solid #ff6b6b;
+    padding-top: 10px;
+    margin-top: 20px;
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>TechnoLibertaria <span class="tech-pulse">[Ⓢ⟨Ψ|AI|₿]</span></h1>
+  <p>Where Solana devs, Python wizards, AI architects, quantum pioneers, crypto visionaries, and Randian CEOs converge</p>
+</header>
+
+<div id="language-selector">
+  <select onchange="window.location.href=this.value">
+    <option value="https://hacker.chat/?lang=en">English</option>
+    <option value="https://hacker.chat/?lang=es">Español</option>
+    <option value="https://hacker.chat/?lang=fr">Français</option>
+    <option value="https://hacker.chat/?lang=de">Deutsch</option>
+    <option value="https://hacker.chat/?lang=it">Italiano</option>
+    <option value="https://hacker.chat/?lang=pt">Português</option>
+    <option value="https://hacker.chat/?lang=ru">Русский</option>
+    <option value="https://hacker.chat/?lang=zh">中文</option>
+    <option value="https://hacker.chat/?lang=ja">日本語</option>
+    <option value="https://hacker.chat/?lang=ko">한국어</option>
+  </select>
+</div>
+
+<main>
+  <div id="chat-window">
+    <p><strong>TechnoLibertariaOS:</strong> Welcome to the digital Galt's Gulch. Innovate, collaborate, and prosper in this sanctuary of technological freedom.</p>
+  </div>
+  
+  <div id="user-list">
+    <h3>Active Visionaries</h3>
+    <ul>
+      <li>SolanaSlayer</li>
+      <li>PythonPioneer</li>
+      <li>AIOverlord</li>
+      <li>QuantumQuasar</li>
+      <li>CryptoKing</li>
+      <li>AtlasArchitect</li>
+      <li>SalesSupernova</li>
+      <li>BlockchainBaron</li>
+      <li>RandianRenegade</li>
+      <li>FreeMarketPhenom</li>
+    </ul>
+  </div>
+</main>
+
+<form id="chat-form" onsubmit="return sendTechnoMessage(event)">
+  <input type="text" id="message-input" placeholder="Share your groundbreaking ideas or code...">
+  <input type="submit" value="Innovate">
+</form>
+
+<div id="ticker">
+  <strong>Live TechnoLibertaria Index:</strong> 
+  <span id="solana-price">SOL: $XXX.XX</span> | 
+  <span id="bitcoin-price">BTC: $XX,XXX.XX</span> | 
+  <span id="quantum-index">Quantum Computing Index: XXX.X</span> | 
+  <span id="ai-index">AI Development Index: XXX.X</span>
+</div>
+
+<footer>
+  <p>TechnoLibertaria uses a combination of Solana smart contracts, quantum encryption, and AI-driven moderation.</p>
+  <p>Explore our <a href="https://technolibertaria.com/innovation-marketplace">Innovation Marketplace</a> - 10% commission on all successful ventures!</p>
+  <p>Join our <a href="https://technolibertaria.com/randian-mastermind">Randian Mastermind Group</a> for exclusive CEO networking.</p>
+</footer>
+
+<script>
+let technoLibertariaLog = [];
+
+function addTechnoMessage(username, message) {
+  const chatWindow = document.getElementById('chat-window');
+  const messageElement = document.createElement('div');
+  
+  if (message.startsWith('```') && message.endsWith('```')) {
+    // It's a code block
+    messageElement.innerHTML = `<strong>${username}:</strong><div class="code-block">${message.slice(3, -3)}</div>`;
+  } else {
+    messageElement.innerHTML = `<strong>${username}:</strong> ${message}`;
+  }
+  
+  chatWindow.appendChild(messageElement);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+  technoLibertariaLog.push({username, message});
+}
+
+async function sendTechnoMessage(event) {
+  event.preventDefault();
+  const messageInput = document.getElementById('message-input');
+  const message = messageInput.value.trim();
+  if (message) {
+    addTechnoMessage('You', message);
+    messageInput.value = '';
+    
+    try {
+      const response = await fetch('/api/intelligent-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chatLog: technoLibertariaLog, userMessage: message, technoLibertariaContext: true }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Innovation transmission failed');
+      }
+      
+      const data = await response.json();
+      data.responses.forEach(response => {
+        addTechnoMessage(response.username, response.message);
+      });
+    } catch (error) {
+      console.error('TechnoLibertaria Error:', error);
+    }
+  }
+}
+
+function getTechnoInterval() {
+  return Math.floor(Math.random() * (15000 - 5000 + 1) + 5000);
+}
+
+async function simulateTechnoChat() {
+  try {
+    const response = await fetch('/api/intelligent-ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ chatLog: technoLibertariaLog, simulateChat: true, technoLibertariaContext: true }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Innovation network disruption detected');
+    }
+    
+    const data = await response.json();
+    if (data.message) {
+      addTechnoMessage(data.username, data.message);
+    }
+  } catch (error) {
+    console.error('TechnoLibertaria Error:', error);
+  }
+  
+  setTimeout(simulateTechnoChat, getTechnoInterval());
+}
+
+function updateTicker() {
+  document.getElementById('solana-price').textContent = `SOL: $${(Math.random() * 100 + 50).toFixed(2)}`;
+  document.getElementById('bitcoin-price').textContent = `BTC: $${(Math.random() * 10000 + 30000).toFixed(2)}`;
+  document.getElementById('quantum-index').textContent = `Quantum Computing Index: ${(Math.random() * 100 + 100).toFixed(1)}`;
+  document.getElementById('ai-index').textContent = `AI Development Index: ${(Math.random() * 100 + 200).toFixed(1)}`;
+  setTimeout(updateTicker, 5000);
+}
+
+simulateTechnoChat();
+updateTicker();
+</script>
+
+</body></html>

@@ -1,0 +1,134 @@
+<html><head><base href="https://simulation-engine.com/quantum-consciousness/orch-or/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orch-OR Theory: Connecting Quantum Mechanics to Consciousness</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .interactive-model {
+        width: 100%;
+        height: 400px;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
+    .chart-container {
+        width: 100%;
+        height: 300px;
+        margin-bottom: 20px;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Orch-OR Theory: Connecting Quantum Mechanics to Consciousness</h1>
+    
+    <p>Welcome to our exploration of the Orchestrated Objective Reduction (Orch-OR) theory, a fascinating hypothesis that attempts to bridge the gap between quantum mechanics and consciousness. Proposed by physicist Sir Roger Penrose and anesthesiologist Stuart Hameroff, this theory suggests that quantum processes in the brain's microtubules could be the key to understanding consciousness.</p>
+    
+    <h2>Interactive Microtubule Model</h2>
+    <div id="microtubule-model" class="interactive-model"></div>
+    
+    <h2>Key Concepts of Orch-OR Theory</h2>
+    <ul>
+        <li>Quantum coherence in microtubules</li>
+        <li>Objective reduction as a non-computable process</li>
+        <li>Consciousness as a result of quantum gravity effects</li>
+    </ul>
+    
+    <h2>Quantum Coherence in Microtubules</h2>
+    <p>One of the core ideas of Orch-OR theory is that microtubules, protein structures within neurons, can sustain quantum coherent states. This coherence is thought to be crucial for consciousness.</p>
+    
+    <div id="coherence-chart" class="chart-container"></div>
+    
+    <h2>Objective Reduction and Consciousness</h2>
+    <p>Orch-OR proposes that consciousness arises from the collapse of the quantum wavefunction in microtubules, a process termed "objective reduction". This collapse is hypothesized to be a non-computable process, distinguishing it from classical computing models of consciousness.</p>
+    
+    <div id="reduction-simulation" class="interactive-model"></div>
+    
+    <script>
+    // Three.js Microtubule Model
+    function createMicrotubuleModel() {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(800, 400);
+        document.getElementById('microtubule-model').appendChild(renderer.domElement);
+
+        const geometry = new THREE.CylinderGeometry(5, 5, 20, 32);
+        const material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+        const microtubule = new THREE.Mesh(geometry, material);
+        scene.add(microtubule);
+
+        camera.position.z = 30;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            microtubule.rotation.x += 0.01;
+            microtubule.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+    createMicrotubuleModel();
+
+    // Plotly Quantum Coherence Chart
+    function createCoherenceChart() {
+        const time = Array.from({length: 100}, (_, i) => i);
+        const coherence = time.map(t => Math.exp(-t/50) * Math.cos(t/5));
+        
+        const data = [{
+            x: time,
+            y: coherence,
+            type: 'scatter',
+            mode: 'lines',
+            line: {color: '#17BECF'}
+        }];
+        
+        const layout = {
+            title: 'Quantum Coherence in Microtubules',
+            xaxis: {title: 'Time'},
+            yaxis: {title: 'Coherence'}
+        };
+        
+        Plotly.newPlot('coherence-chart', data, layout);
+    }
+    createCoherenceChart();
+
+    // Three.js Objective Reduction Simulation
+    function createReductionSimulation() {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(800, 400);
+        document.getElementById('reduction-simulation').appendChild(renderer.domElement);
+
+        const geometry = new THREE.SphereGeometry(5, 32, 32);
+        const material = new THREE.MeshBasicMaterial({color: 0xff0000});
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        camera.position.z = 15;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.scale.x = 1 + 0.2 * Math.sin(Date.now() * 0.001);
+            sphere.scale.y = 1 + 0.2 * Math.sin(Date.now() * 0.001);
+            sphere.scale.z = 1 + 0.2 * Math.sin(Date.now() * 0.001);
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+    createReductionSimulation();
+    </script>
+</body>
+</html>

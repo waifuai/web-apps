@@ -1,0 +1,163 @@
+<html><head><base href="https://github.com/">
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    line-height: 1.6;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f8f9fa;
+  }
+  
+  .proof-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .math-block {
+    background: #f1f3f5;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  .interactive-demo {
+    border: 1px solid #dee2e6;
+    padding: 1rem;
+    margin: 2rem 0;
+    border-radius: 4px;
+  }
+
+  svg {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    display: block;
+    margin: 2rem auto;
+  }
+
+  .controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+  }
+
+  .slider {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+</style>
+</head>
+<body>
+<div class="proof-container">
+  <h1>Parking Rectangle Algorithm Visualization</h1>
+  
+  <div class="interactive-demo">
+    <div class="controls">
+      <div class="slider">
+        <label for="theta">Street Orientation (θ):</label>
+        <input type="range" id="theta" min="0" max="360" value="0">
+      </div>
+      <div class="slider">
+        <label for="k">Distance (K):</label>
+        <input type="range" id="k" min="5" max="50" value="20">
+      </div>
+      <div class="slider">
+        <label for="h">Height (H):</label>
+        <input type="range" id="h" min="10" max="100" value="40">
+      </div>
+      <div class="slider">
+        <label for="w">Width (W):</label>
+        <input type="range" id="w" min="5" max="30" value="15">
+      </div>
+    </div>
+
+    <svg id="visualization" viewBox="-100 -100 200 200">
+      <!-- Street line -->
+      <line id="street" x1="-80" y1="0" x2="80" y2="0" 
+            stroke="#666" stroke-width="2"/>
+      
+      <!-- Rectangles will be drawn here -->
+      <path id="rectangle1" fill="#4dabf7" fill-opacity="0.5" stroke="#339af0"/>
+      <path id="rectangle2" fill="#ff8787" fill-opacity="0.5" stroke="#fa5252"/>
+      
+      <!-- Origin point -->
+      <circle cx="0" cy="0" r="2" fill="#212529"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+function rotatePoint(x, y, theta) {
+  const cos = Math.cos(theta);
+  const sin = Math.sin(theta);
+  return {
+    x: x * cos - y * sin,
+    y: x * sin + y * cos
+  };
+}
+
+function updateVisualization() {
+  const theta = document.getElementById('theta').value * Math.PI / 180;
+  const k = parseInt(document.getElementById('k').value);
+  const h = parseInt(document.getElementById('h').value);
+  const w = parseInt(document.getElementById('w').value);
+
+  // Generate base rectangle points
+  const basePoints = [
+    {x: k, y: -h/2},
+    {x: k, y: h/2},
+    {x: k + w, y: h/2},
+    {x: k + w, y: -h/2}
+  ];
+
+  // Rotate points
+  const rotatedPoints1 = basePoints.map(p => rotatePoint(p.x, p.y, theta));
+  const rotatedPoints2 = basePoints.map(p => rotatePoint(-p.x, p.y, theta));
+
+  // Create SVG paths
+  const path1 = `M ${rotatedPoints1[0].x} ${rotatedPoints1[0].y} 
+                 L ${rotatedPoints1[1].x} ${rotatedPoints1[1].y}
+                 L ${rotatedPoints1[2].x} ${rotatedPoints1[2].y}
+                 L ${rotatedPoints1[3].x} ${rotatedPoints1[3].y} Z`;
+                 
+  const path2 = `M ${rotatedPoints2[0].x} ${rotatedPoints2[0].y}
+                 L ${rotatedPoints2[1].x} ${rotatedPoints2[1].y}
+                 L ${rotatedPoints2[2].x} ${rotatedPoints2[2].y}
+                 L ${rotatedPoints2[3].x} ${rotatedPoints2[3].y} Z`;
+
+  document.getElementById('rectangle1').setAttribute('d', path1);
+  document.getElementById('rectangle2').setAttribute('d', path2);
+  
+  // Rotate street line
+  const streetLen = 80;
+  const streetEnd1 = rotatePoint(streetLen, 0, theta);
+  const streetEnd2 = rotatePoint(-streetLen, 0, theta);
+  
+  document.getElementById('street').setAttribute('x1', streetEnd2.x);
+  document.getElementById('street').setAttribute('y1', streetEnd2.y);
+  document.getElementById('street').setAttribute('x2', streetEnd1.x);
+  document.getElementById('street').setAttribute('y2', streetEnd1.y);
+}
+
+// Add event listeners
+document.getElementById('theta').addEventListener('input', updateVisualization);
+document.getElementById('k').addEventListener('input', updateVisualization);
+document.getElementById('h').addEventListener('input', updateVisualization);
+document.getElementById('w').addEventListener('input', updateVisualization);
+
+// Initial visualization
+updateVisualization();
+</script>
+</body>
+</html>

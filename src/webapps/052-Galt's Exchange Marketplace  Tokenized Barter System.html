@@ -1,0 +1,193 @@
+<html><head><base href="https://galtsretreat.com/exchange/marketplace">
+<title>Galt's Exchange Marketplace | Tokenized Barter System</title>
+<style>
+  body {
+    font-family: 'Georgia', serif;
+    background-color: #f4f1e8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  header {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px 0;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .nav-links a {
+    color: #ecf0f1;
+    text-decoration: none;
+    margin-left: 20px;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .marketplace {
+    display: flex;
+    margin-top: 30px;
+  }
+  .token-list {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    margin-right: 20px;
+  }
+  .token-item {
+    border-bottom: 1px solid #ecf0f1;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .token-item:last-child {
+    border-bottom: none;
+  }
+  .trade-interface {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  .trade-form {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  input, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  .trade-button {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  footer {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">Galt's Exchange</div>
+        <div class="nav-links">
+          <a href="https://galtsretreat.com/exchange/">Home</a>
+          <a href="https://galtsretreat.com/exchange/account">My Account</a>
+          <a href="https://galtsretreat.com/exchange/portfolio">Portfolio</a>
+          <a href="https://galtsretreat.com/exchange/create-token">Create Token</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Token Interswap Marketplace</h1>
+    <p>Welcome to the heart of Galt's Exchange. Here you can trade tokens, invest in community projects, and participate in the free market of ideas and value.</p>
+
+    <div class="marketplace">
+      <div class="token-list">
+        <h2>Available Tokens</h2>
+        <div class="token-item">
+          <span>ReardenMetal (RDM)</span>
+          <span>1.24 GC</span>
+        </div>
+        <div class="token-item">
+          <span>AtlantisEnergy (ATE)</span>
+          <span>0.89 GC</span>
+        </div>
+        <div class="token-item">
+          <span>WyattOil (WYO)</span>
+          <span>1.56 GC</span>
+        </div>
+        <div class="token-item">
+          <span>DAgnyAir (DAA)</span>
+          <span>1.12 GC</span>
+        </div>
+        <div class="token-item">
+          <span>MulligenWheat (MUW)</span>
+          <span>0.95 GC</span>
+        </div>
+        <div class="token-item">
+          <span>HammondHarvester (HAH)</span>
+          <span>1.03 GC</span>
+        </div>
+      </div>
+
+      <div class="trade-interface">
+        <h2>Trade Tokens</h2>
+        <form class="trade-form" action="https://galtsretreat.com/exchange/marketplace/trade" method="POST">
+          <div class="form-group">
+            <label for="from-token">From Token:</label>
+            <select id="from-token" name="from-token" required>
+              <option value="">Select Token</option>
+              <option value="RDM">ReardenMetal (RDM)</option>
+              <option value="ATE">AtlantisEnergy (ATE)</option>
+              <option value="WYO">WyattOil (WYO)</option>
+              <option value="DAA">DAgnyAir (DAA)</option>
+              <option value="MUW">MulligenWheat (MUW)</option>
+              <option value="HAH">HammondHarvester (HAH)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="to-token">To Token:</label>
+            <select id="to-token" name="to-token" required>
+              <option value="">Select Token</option>
+              <option value="RDM">ReardenMetal (RDM)</option>
+              <option value="ATE">AtlantisEnergy (ATE)</option>
+              <option value="WYO">WyattOil (WYO)</option>
+              <option value="DAA">DAgnyAir (DAA)</option>
+              <option value="MUW">MulligenWheat (MUW)</option>
+              <option value="HAH">HammondHarvester (HAH)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" min="0.01" step="0.01" required>
+          </div>
+          <button type="submit" class="trade-button">Execute Trade</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2023 Galt's Exchange. All rights reserved. | <a href="https://galtsretreat.com/exchange/terms" style="color: #ecf0f1;">Terms of Service</a> | <a href="https://galtsretreat.com/exchange/privacy" style="color: #ecf0f1;">Privacy Policy</a></p>
+      <p>Warning: Token trading involves risks. Past performance does not guarantee future results. Trade responsibly.</p>
+    </div>
+  </footer>
+</body>
+</html>

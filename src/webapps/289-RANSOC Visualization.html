@@ -1,0 +1,204 @@
+<html><head><base href="." target="_blank">
+<style>
+:root {
+  --space-black: #0a0a2a;
+  --star-yellow: #ffde00;
+}
+
+body {
+  margin: 0;
+  background: var(--space-black);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, sans-serif;
+  color: white;
+  overflow: hidden;
+}
+
+.space {
+  position: relative;
+  width: 800px;
+  height: 600px;
+}
+
+.star {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--star-yellow);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s;
+  filter: drop-shadow(0 0 10px var(--star-yellow));
+}
+
+.star:hover {
+  transform: scale(1.2);
+}
+
+.planet {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #666;
+  border-radius: 50%;
+  transition: all 0.5s ease-out;
+}
+
+.mass-label {
+  position: absolute;
+  font-size: 12px;
+  color: white;
+  pointer-events: none;
+}
+
+.controls {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <h3>RANSOC Visualization</h3>
+  <p>Click and drag the star to see how planets' weights adapt</p>
+  <button onclick="resetSimulation()">Reset Simulation</button>
+</div>
+
+<div class="space" id="space"></div>
+
+<script>
+class Planet {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.mass = 1;
+    this.element = document.createElement('div');
+    this.element.className = 'planet';
+    this.massLabel = document.createElement('div');
+    this.massLabel.className = 'mass-label';
+    this.updatePosition();
+  }
+
+  updatePosition() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
+    this.element.style.transform = `scale(${this.mass})`;
+    this.massLabel.style.left = `${this.x + 35}px`;
+    this.massLabel.style.top = `${this.y}px`;
+    this.massLabel.textContent = this.mass.toFixed(2);
+  }
+}
+
+class Star {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.element = document.createElement('div');
+    this.element.className = 'star';
+    this.updatePosition();
+    this.setupDrag();
+  }
+
+  updatePosition() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
+  }
+
+  setupDrag() {
+    let isDragging = false;
+    let startX, startY;
+
+    this.element.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX - this.x;
+      startY = e.clientY - this.y;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      
+      const space = document.getElementById('space');
+      const rect = space.getBoundingClientRect();
+      
+      this.x = Math.max(0, Math.min(e.clientX - startX - rect.left, space.offsetWidth - 20));
+      this.y = Math.max(0, Math.min(e.clientY - startY - rect.top, space.offsetHeight - 20));
+      
+      this.updatePosition();
+      updatePlanets();
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  }
+}
+
+const space = document.getElementById('space');
+let planets = [];
+let star;
+const ALPHA = 0.1;
+
+function initializeSimulation() {
+  // Create planets in a grid
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 4; j++) {
+      const planet = new Planet(
+        100 + i * 150,
+        100 + j * 150
+      );
+      planets.push(planet);
+      space.appendChild(planet.element);
+      space.appendChild(planet.massLabel);
+    }
+  }
+
+  // Create draggable star
+  star = new Star(400, 300);
+  space.appendChild(star.element);
+}
+
+function distance(p1, p2) {
+  return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
+
+function updatePlanets() {
+  // Calculate weights
+  const weights = planets.map(p => ({
+    planet: p,
+    weight: p.mass / distance(p, star)
+  }));
+
+  // Find planet with maximum weight
+  const hitPlanet = weights.reduce((a, b) => 
+    a.weight > b.weight ? a : b
+  ).planet;
+
+  // Update masses
+  planets.forEach(p => {
+    if (p === hitPlanet) {
+      p.mass = (1 - ALPHA) * p.mass;
+    } else {
+      p.mass = (1 + ALPHA / (planets.length - 1)) * p.mass;
+    }
+    p.updatePosition();
+  });
+}
+
+function resetSimulation() {
+  space.innerHTML = '';
+  planets = [];
+  initializeSimulation();
+}
+
+initializeSimulation();
+</script>
+
+</body></html>

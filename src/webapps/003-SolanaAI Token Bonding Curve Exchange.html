@@ -1,0 +1,298 @@
+<html><head><base href="https://websim.ai" /><title>SolanaAI Token Bonding Curve Exchange</title><style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .container {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+  }
+  h1, h2 {
+    color: #60a5fa;
+    text-align: center;
+  }
+  .exchange-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  .exchange-box {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    width: 45%;
+  }
+  .chart-container {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+  }
+  .input-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #a0aec0;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    background-color: #2d3748;
+    color: #e2e8f0;
+  }
+  button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  button:hover {
+    background-color: #2563eb;
+  }
+  .info {
+    background-color: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 20px;
+  }
+  .product-container {
+    margin-top: 30px;
+  }
+  .product-box {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>SolanaAI Token Bonding Curve Exchange</h1>
+    <div class="exchange-container">
+      <div class="exchange-box">
+        <h2>Buy SolanaAI Tokens</h2>
+        <div class="input-group">
+          <label for="solAmount">SOL Amount:</label>
+          <input type="number" id="solAmount" value="1" min="0.1" step="0.1">
+        </div>
+        <div class="input-group">
+          <label for="tokenAmount">SolanaAI Tokens:</label>
+          <input type="number" id="tokenAmount" readonly>
+        </div>
+        <button id="buyTokens">Buy Tokens</button>
+      </div>
+      <div class="exchange-box">
+        <h2>Sell SolanaAI Tokens</h2>
+        <div class="input-group">
+          <label for="sellTokenAmount">SolanaAI Tokens:</label>
+          <input type="number" id="sellTokenAmount" value="1" min="0.1" step="0.1">
+        </div>
+        <div class="input-group">
+          <label for="receiveSolAmount">Receive SOL:</label>
+          <input type="number" id="receiveSolAmount" readonly>
+        </div>
+        <button id="sellTokens">Sell Tokens</button>
+      </div>
+    </div>
+    <div class="exchange-container">
+      <div class="exchange-box">
+        <h2>Your Balance</h2>
+        <div class="input-group">
+          <label>SOL Balance:</label>
+          <input type="number" id="solBalance" value="100" readonly>
+        </div>
+        <div class="input-group">
+          <label>SolanaAI Token Balance:</label>
+          <input type="number" id="tokenBalance" value="0" readonly>
+        </div>
+      </div>
+      <div class="exchange-box">
+        <h2>Current Stats</h2>
+        <div class="input-group">
+          <label>Total Supply:</label>
+          <input type="number" id="totalSupply" readonly>
+        </div>
+        <div class="input-group">
+          <label>Current Price (SOL):</label>
+          <input type="number" id="currentPrice" readonly>
+        </div>
+      </div>
+    </div>
+    <div id="chart" class="chart-container"></div>
+    <div class="product-container">
+      <h2>Purchase API Credits</h2>
+      <div class="product-box">
+        <div class="input-group">
+          <label for="apiCredits">API Credits:</label>
+          <input type="number" id="apiCredits" value="100" min="100" step="100">
+        </div>
+        <div class="input-group">
+          <label for="creditCost">Cost in SolanaAI Tokens:</label>
+          <input type="number" id="creditCost" readonly>
+        </div>
+        <button id="buyCredits">Buy API Credits</button>
+      </div>
+    </div>
+    <div class="info">
+      <p>SolanaAI tokens are traded on a bonding curve. The price increases as more tokens are minted and decreases as tokens are burned. Tokens can be used to purchase API credits for our advanced AI services. The exchange rate and credit costs are dynamic based on the current position on the bonding curve.</p>
+    </div>
+  </div>
+  <script>
+    const solPrice = 45; // 1 SOL = $45 USD
+    let tokenSupply = 1000; // Initial token supply
+    const reserveRatio = 0.5; // 50% reserve ratio
+    const initialReserve = 10; // Initial reserve in SOL
+
+    function calculateTokenPrice(supply) {
+      return initialReserve * Math.pow(Math.E, supply / (tokenSupply * reserveRatio));
+    }
+
+    function calculatePurchaseReturn(solAmount) {
+      const supply = tokenSupply;
+      const reserveBalance = calculateReserveBalance(supply);
+      return supply * (Math.pow(1 + solAmount / reserveBalance, reserveRatio) - 1);
+    }
+
+    function calculateSaleReturn(tokenAmount) {
+      const supply = tokenSupply;
+      const reserveBalance = calculateReserveBalance(supply);
+      return reserveBalance * (1 - Math.pow(1 - tokenAmount / supply, 1 / reserveRatio));
+    }
+
+    function calculateReserveBalance(supply) {
+      return initialReserve * Math.pow(Math.E, supply / (tokenSupply * reserveRatio));
+    }
+
+    function updateChart() {
+      const supplyValues = [];
+      const priceValues = [];
+      const maxSupply = tokenSupply * 2;
+
+      for (let i = 0; i <= 100; i++) {
+        const supply = (maxSupply * i) / 100;
+        supplyValues.push(supply);
+        priceValues.push(calculateTokenPrice(supply));
+      }
+
+      const data = [{
+        x: supplyValues,
+        y: priceValues,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Bonding Curve',
+        line: { color: '#60a5fa' }
+      }, {
+        x: [tokenSupply],
+        y: [calculateTokenPrice(tokenSupply)],
+        type: 'scatter',
+        mode: 'markers',
+        name: 'Current Position',
+        marker: { color: '#f59e0b', size: 10 }
+      }];
+
+      const layout = {
+        title: 'SolanaAI Token Bonding Curve',
+        xaxis: { title: 'Token Supply' },
+        yaxis: { title: 'Token Price (SOL)' },
+        plot_bgcolor: '#2d3748',
+        paper_bgcolor: '#1e293b',
+        font: { color: '#e2e8f0' }
+      };
+
+      Plotly.newPlot('chart', data, layout);
+    }
+
+    function updateUI() {
+      const solAmount = parseFloat(document.getElementById('solAmount').value);
+      const tokenAmount = calculatePurchaseReturn(solAmount);
+      document.getElementById('tokenAmount').value = tokenAmount.toFixed(4);
+
+      const sellTokenAmount = parseFloat(document.getElementById('sellTokenAmount').value);
+      const receiveSolAmount = calculateSaleReturn(sellTokenAmount);
+      document.getElementById('receiveSolAmount').value = receiveSolAmount.toFixed(4);
+
+      const apiCredits = parseInt(document.getElementById('apiCredits').value);
+      const creditCost = apiCredits * 0.01; // 1 API credit costs 0.01 SolanaAI tokens
+      document.getElementById('creditCost').value = creditCost.toFixed(4);
+
+      document.getElementById('totalSupply').value = tokenSupply.toFixed(2);
+      document.getElementById('currentPrice').value = calculateTokenPrice(tokenSupply).toFixed(6);
+
+      updateChart();
+    }
+
+    document.getElementById('solAmount').addEventListener('input', updateUI);
+    document.getElementById('sellTokenAmount').addEventListener('input', updateUI);
+    document.getElementById('apiCredits').addEventListener('input', updateUI);
+
+    document.getElementById('buyTokens').addEventListener('click', function() {
+      const solAmount = parseFloat(document.getElementById('solAmount').value);
+      const tokenAmount = calculatePurchaseReturn(solAmount);
+      const solBalance = parseFloat(document.getElementById('solBalance').value);
+      const tokenBalance = parseFloat(document.getElementById('tokenBalance').value);
+
+      if (solAmount <= solBalance) {
+        document.getElementById('solBalance').value = (solBalance - solAmount).toFixed(2);
+        document.getElementById('tokenBalance').value = (tokenBalance + tokenAmount).toFixed(4);
+        tokenSupply += tokenAmount;
+        updateUI();
+      } else {
+        alert('Insufficient SOL balance!');
+      }
+    });
+
+    document.getElementById('sellTokens').addEventListener('click', function() {
+      const sellTokenAmount = parseFloat(document.getElementById('sellTokenAmount').value);
+      const receiveSolAmount = calculateSaleReturn(sellTokenAmount);
+      const solBalance = parseFloat(document.getElementById('solBalance').value);
+      const tokenBalance = parseFloat(document.getElementById('tokenBalance').value);
+
+      if (sellTokenAmount <= tokenBalance) {
+        document.getElementById('solBalance').value = (solBalance + receiveSolAmount).toFixed(2);
+        document.getElementById('tokenBalance').value = (tokenBalance - sellTokenAmount).toFixed(4);
+        tokenSupply -= sellTokenAmount;
+        updateUI();
+      } else {
+        alert('Insufficient SolanaAI token balance!');
+      }
+    });
+
+    document.getElementById('buyCredits').addEventListener('click', function() {
+      const apiCredits = parseInt(document.getElementById('apiCredits').value);
+      const creditCost = apiCredits * 0.01;
+      const tokenBalance = parseFloat(document.getElementById('tokenBalance').value);
+
+      if (creditCost <= tokenBalance) {
+        document.getElementById('tokenBalance').value = (tokenBalance - creditCost).toFixed(4);
+        alert(`Successfully purchased ${apiCredits} API credits!`);
+        updateUI();
+      } else {
+        alert('Insufficient SolanaAI token balance!');
+      }
+    });
+
+    // Initial UI update
+    updateUI();
+  </script>
+</body></html>

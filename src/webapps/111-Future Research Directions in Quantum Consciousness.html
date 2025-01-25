@@ -1,0 +1,193 @@
+<html><head><base href="https://quantum-consciousness.org/future-research/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Future Research Directions in Quantum Consciousness</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .chart-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    #research-topics {
+        width: 100%;
+        height: 400px;
+    }
+    #funding-chart {
+        width: 100%;
+        height: 300px;
+    }
+    .interactive-element {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: inline-block;
+        margin: 10px 0;
+    }
+    #quantum-simulator {
+        width: 100%;
+        height: 300px;
+        border: 1px solid #ccc;
+        margin-top: 20px;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+    <h1>Future Research Directions in Quantum Consciousness</h1>
+    
+    <p>As the field of quantum consciousness and Orchestrated Objective Reduction (Orch OR) continues to evolve, numerous exciting research directions emerge. This page explores potential avenues for future investigation and the challenges that lie ahead.</p>
+
+    <h2>Key Research Topics</h2>
+    <div class="chart-container">
+        <canvas id="research-topics"></canvas>
+    </div>
+
+    <h2>Funding Allocation for Quantum Consciousness Research</h2>
+    <div class="chart-container">
+        <canvas id="funding-chart"></canvas>
+    </div>
+
+    <h2>Interactive Quantum Coherence Simulator</h2>
+    <p>Explore how quantum coherence might work in microtubules with our interactive simulator:</p>
+    <div class="interactive-element" onclick="startSimulation()">Start Simulation</div>
+    <div id="quantum-simulator"></div>
+
+    <h2>Challenges and Opportunities</h2>
+    <p>The future of quantum consciousness research faces several challenges but also presents numerous opportunities:</p>
+    <ul id="challenges-list">
+        <!-- Challenges will be dynamically added here -->
+    </ul>
+
+    <script>
+    // Research Topics Chart
+    const topicsCtx = document.getElementById('research-topics').getContext('2d');
+    new Chart(topicsCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Quantum Biology', 'Neuroscience', 'Quantum Computing', 'Philosophy of Mind', 'Experimental Physics', 'Cognitive Science'],
+            datasets: [{
+                label: 'Research Interest',
+                data: [85, 90, 75, 60, 70, 80],
+                fill: true,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                pointBackgroundColor: 'rgb(54, 162, 235)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(54, 162, 235)'
+            }]
+        },
+        options: {
+            elements: {
+                line: { tension: 0.4 }
+            },
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(0, 0, 0, 0.2)' },
+                    gridLines: { color: 'rgba(0, 0, 0, 0.1)' }
+                }
+            }
+        }
+    });
+
+    // Funding Allocation Chart
+    const fundingCtx = document.getElementById('funding-chart').getContext('2d');
+    new Chart(fundingCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Government Grants', 'Private Institutions', 'Universities', 'Crowdfunding', 'Corporate Sponsorship'],
+            datasets: [{
+                data: [40, 25, 20, 10, 5],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    text: 'Projected Funding Sources (2023-2028)'
+                }
+            }
+        }
+    });
+
+    // Quantum Coherence Simulator
+    function startSimulation() {
+        const width = 600;
+        const height = 300;
+        const svg = d3.select("#quantum-simulator")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        const simulation = d3.forceSimulation()
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("charge", d3.forceManyBody().strength(-50))
+            .force("collide", d3.forceCollide(10));
+
+        const particles = Array.from({ length: 50 }, () => ({ r: Math.random() * 5 + 2 }));
+
+        simulation.nodes(particles)
+            .on("tick", () => {
+                const circles = svg.selectAll("circle")
+                    .data(particles)
+                    .join("circle")
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y)
+                    .attr("r", d => d.r)
+                    .attr("fill", (d, i) => d3.interpolateRainbow(i / particles.length));
+            });
+
+        setInterval(() => {
+            particles.forEach(p => {
+                p.r = Math.random() * 5 + 2;
+            });
+            simulation.alpha(0.3).restart();
+        }, 2000);
+    }
+
+    // Dynamically add challenges
+    const challenges = [
+        "Developing more sensitive quantum measurement techniques for biological systems",
+        "Bridging the gap between quantum physics and neuroscience",
+        "Designing experiments to test Orch OR predictions in vivo",
+        "Improving our understanding of quantum effects at room temperature",
+        "Integrating consciousness research with artificial intelligence development"
+    ];
+
+    const challengesList = document.getElementById('challenges-list');
+    challenges.forEach(challenge => {
+        const li = document.createElement('li');
+        li.textContent = challenge;
+        challengesList.appendChild(li);
+    });
+    </script>
+</body>
+</html>

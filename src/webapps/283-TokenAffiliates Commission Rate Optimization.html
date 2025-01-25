@@ -1,0 +1,214 @@
+<html><head><base href="." />
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f0f2f5;
+  }
+  
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .chart-container {
+    height: 300px;
+    margin: 1rem 0;
+  }
+  
+  .rates-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .rates-table th,
+  .rates-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn:hover {
+    background: #1d4ed8;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .optimization-status {
+    padding: 1rem;
+    background: #dcfce7;
+    border-radius: 6px;
+    margin: 1rem 0;
+    animation: pulse 2s infinite;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+</head>
+<body>
+  <h1>TokenAffiliates Commission Rate Optimization</h1>
+  
+  <div class="dashboard">
+    <div class="card">
+      <h2>Current Commission Rates</h2>
+      <div class="chart-container">
+        <canvas id="ratesChart"></canvas>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Investment Volume</h2>
+      <div class="chart-container">
+        <canvas id="volumeChart"></canvas>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Token Performance</h2>
+      <table class="rates-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Current Rate</th>
+            <th>Optimal Rate</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TOKEN1</td>
+            <td>2.5%</td>
+            <td>3.1%</td>
+            <td><button class="btn" onclick="updateRate('TOKEN1')">Update</button></td>
+          </tr>
+          <tr>
+            <td>TOKEN2</td>
+            <td>1.8%</td>
+            <td>1.9%</td>
+            <td><button class="btn" onclick="updateRate('TOKEN2')">Update</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="optimization-status" id="status">
+    Optimization algorithm running... analyzing market conditions
+  </div>
+
+<script>
+// Initialize charts
+const createRatesChart = () => {
+  const ctx = document.getElementById('ratesChart').getContext('2d');
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Commission Rate Trend',
+        data: [2.1, 2.3, 2.5, 2.4, 2.6, 2.5],
+        borderColor: '#2563eb',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Historical Commission Rates'
+        }
+      }
+    }
+  });
+};
+
+const createVolumeChart = () => {
+  const ctx = document.getElementById('volumeChart').getContext('2d');
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Investment Volume',
+        data: [150000, 180000, 210000, 240000, 270000, 300000],
+        backgroundColor: '#93c5fd'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Monthly Investment Volume'
+        }
+      }
+    }
+  });
+};
+
+// Smart contract interaction
+const updateRate = async (token) => {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    
+    // Sample contract ABI and address (replace with actual values)
+    const contractABI = ["function updateCommissionRate(string token, uint256 rate)"];
+    const contractAddress = "0x..."; // Replace with actual contract address
+    
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    
+    // Convert rate to proper format (e.g., basis points)
+    const rate = 310; // 3.1% = 310 basis points
+    
+    const tx = await contract.updateCommissionRate(token, rate);
+    await tx.wait();
+    
+    document.getElementById('status').textContent = `Successfully updated rate for ${token}`;
+  } catch (error) {
+    console.error('Error updating rate:', error);
+    document.getElementById('status').textContent = 'Error updating rate. Please try again.';
+  }
+};
+
+// Initialize charts on page load
+document.addEventListener('DOMContentLoaded', () => {
+  createRatesChart();
+  createVolumeChart();
+});
+</script>
+
+</body></html>

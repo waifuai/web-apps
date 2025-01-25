@@ -1,0 +1,240 @@
+<html><head><base href="https://techmobilization.net/" />
+<title>TechOps Competitive Intelligence Board</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #0a0a0a;
+    color: #33ff33;
+    overflow: hidden;
+  }
+  #intel-board {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    position: relative;
+    overflow: hidden;
+  }
+  .grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to right, #0f0f0f 1px, transparent 1px),
+      linear-gradient(to bottom, #0f0f0f 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+  }
+  .company-cluster {
+    position: absolute;
+    border: 2px solid #33ff33;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+    cursor: move;
+    background-color: rgba(0, 20, 0, 0.7);
+  }
+  .company-cluster h3 {
+    margin-top: 0;
+    color: #ffff00;
+  }
+  .company {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: rgba(51, 255, 51, 0.1);
+    border-radius: 3px;
+  }
+  .strategy-line {
+    position: absolute;
+    height: 2px;
+    background-color: #ff3333;
+    transform-origin: 0 50%;
+    pointer-events: none;
+  }
+  .strategy-point {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #ff3333;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .toolbar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 20, 0, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+  }
+  .toolbar button {
+    background-color: #006600;
+    border: none;
+    color: #33ff33;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  #status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 20, 0, 0.8);
+    color: #33ff33;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+  }
+  .tooltip {
+    position: absolute;
+    background-color: rgba(0, 20, 0, 0.9);
+    color: #33ff33;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+  }
+</style>
+</head>
+<body>
+<div id="intel-board">
+  <div class="grid-overlay"></div>
+  
+  <div class="company-cluster" style="top: 100px; left: 100px;">
+    <h3>Data Monopolists</h3>
+    <div class="company">MegaData Corp</div>
+    <div class="company">InfoHarvest Inc</div>
+    <div class="company">DataMine Technologies</div>
+  </div>
+  
+  <div class="company-cluster" style="top: 250px; left: 400px;">
+    <h3>AI Disruptors</h3>
+    <div class="company">NeuralNet Solutions</div>
+    <div class="company">DeepMind Rivals</div>
+    <div class="company">AI Frontiers Ltd</div>
+  </div>
+  
+  <div class="company-cluster" style="top: 150px; left: 700px;">
+    <h3>Regulatory Exploiters</h3>
+    <div class="company">LoopHole Systems</div>
+    <div class="company">Gray Area Tech</div>
+    <div class="company">Borderline Innovations</div>
+  </div>
+  
+  <div class="strategy-point" style="top: 180px; left: 250px;" title="Aggressive Data Collection"></div>
+  <div class="strategy-point" style="top: 300px; left: 550px;" title="AI Ethics Subversion"></div>
+  <div class="strategy-point" style="top: 200px; left: 800px;" title="Lobbying Efforts"></div>
+  
+  <div class="strategy-line" style="width: 200px; top: 185px; left: 260px; transform: rotate(20deg);"></div>
+  <div class="strategy-line" style="width: 250px; top: 305px; left: 560px; transform: rotate(-15deg);"></div>
+  <div class="strategy-line" style="width: 180px; top: 205px; left: 810px; transform: rotate(45deg);"></div>
+</div>
+
+<div class="toolbar">
+  <button onclick="addCluster()">Add Cluster</button>
+  <button onclick="addStrategyPoint()">Add Strategy</button>
+  <button onclick="analyzeThreats()">Analyze Threats</button>
+</div>
+
+<div id="status-bar">
+  Status: Monitoring hostile activities | Threat Level: High | Last update: 2 minutes ago
+</div>
+
+<script>
+  let isDragging = false;
+  let currentElement = null;
+  let offsetX, offsetY;
+  let tooltip = null;
+
+  document.querySelectorAll('.company-cluster').forEach(elem => {
+    elem.addEventListener('mousedown', startDragging);
+  });
+
+  document.addEventListener('mousemove', drag);
+  document.addEventListener('mouseup', stopDragging);
+
+  function startDragging(e) {
+    isDragging = true;
+    currentElement = e.target.closest('.company-cluster');
+    offsetX = e.clientX - currentElement.offsetLeft;
+    offsetY = e.clientY - currentElement.offsetTop;
+  }
+
+  function drag(e) {
+    if (!isDragging) return;
+    currentElement.style.left = (e.clientX - offsetX) + 'px';
+    currentElement.style.top = (e.clientY - offsetY) + 'px';
+    updateConnections();
+  }
+
+  function stopDragging() {
+    isDragging = false;
+  }
+
+  function updateConnections() {
+    // This function would update the position of strategy lines
+    // For simplicity, it's not implemented in this example
+  }
+
+  function addCluster() {
+    const cluster = document.createElement('div');
+    cluster.className = 'company-cluster';
+    cluster.style.top = '200px';
+    cluster.style.left = '200px';
+    cluster.innerHTML = '<h3>New Hostile Group</h3><div class="company">Unknown Entity 1</div><div class="company">Unknown Entity 2</div>';
+    cluster.addEventListener('mousedown', startDragging);
+    document.getElementById('intel-board').appendChild(cluster);
+  }
+
+  function addStrategyPoint() {
+    const point = document.createElement('div');
+    point.className = 'strategy-point';
+    point.style.top = '200px';
+    point.style.left = '200px';
+    point.title = 'New Hostile Strategy';
+    point.addEventListener('mouseover', showTooltip);
+    point.addEventListener('mouseout', hideTooltip);
+    document.getElementById('intel-board').appendChild(point);
+  }
+
+  function analyzeThreats() {
+    alert('Threat analysis in progress. Compiling data on hostile company strategies and motivations...');
+    // In a real application, this would trigger a complex analysis algorithm
+  }
+
+  function showTooltip(e) {
+    if (!tooltip) {
+      tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      document.body.appendChild(tooltip);
+    }
+    tooltip.textContent = e.target.title;
+    tooltip.style.left = (e.pageX + 10) + 'px';
+    tooltip.style.top = (e.pageY + 10) + 'px';
+    tooltip.style.display = 'block';
+  }
+
+  function hideTooltip() {
+    if (tooltip) {
+      tooltip.style.display = 'none';
+    }
+  }
+
+  // Add hover effect for strategy points
+  document.querySelectorAll('.strategy-point').forEach(point => {
+    point.addEventListener('mouseover', showTooltip);
+    point.addEventListener('mouseout', hideTooltip);
+  });
+</script>
+</body></html>

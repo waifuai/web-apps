@@ -1,0 +1,156 @@
+<html><head><base href="https://example.com"><title>Interactive Algorithm Visualization</title><style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 2rem;
+  background: #f0f0f0;
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.visualization {
+  width: 100%;
+  height: 400px;
+  border: 1px solid #ccc;
+  margin: 1rem 0;
+  background: #fff;
+}
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+label {
+  font-weight: bold;
+}
+input {
+  width: 100px;
+  padding: 0.5rem;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Parking Rectangle Algorithm Visualization</h1>
+  
+  <div class="visualization">
+    <svg id="canvas" width="100%" height="100%" viewBox="-200 -200 400 400">
+      <!-- Street line -->
+      <line id="street" x1="-150" y1="0" x2="150" y2="0" 
+            stroke="gray" stroke-width="4"/>
+      
+      <!-- Rectangles will be drawn here -->
+      <path id="rectangle1" fill="#88c9ff" fill-opacity="0.5" stroke="#2196f3"/>
+      <path id="rectangle2" fill="#ffb74d" fill-opacity="0.5" stroke="#ff9800"/>
+      
+      <!-- Center point -->
+      <circle cx="0" cy="0" r="4" fill="red"/>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="theta">Street Angle (θ)</label>
+      <input type="range" id="theta" min="0" max="360" value="0">
+    </div>
+    <div class="control-group">
+      <label for="k">Distance (K)</label>
+      <input type="range" id="k" min="10" max="50" value="30">
+    </div>
+    <div class="control-group">
+      <label for="h">Height (H)</label>
+      <input type="range" id="h" min="20" max="100" value="60">
+    </div>
+    <div class="control-group">
+      <label for="w">Width (W)</label>
+      <input type="range" id="w" min="10" max="50" value="20">
+    </div>
+  </div>
+</div>
+
+<script>
+function updateVisualization() {
+  const theta = document.getElementById('theta').value * Math.PI / 180;
+  const k = parseInt(document.getElementById('k').value);
+  const h = parseInt(document.getElementById('h').value);
+  const w = parseInt(document.getElementById('w').value);
+
+  // Matrix M definition
+  const M = [
+    [1, 0, 0],
+    [1, 1, 0],
+    [1, 1, 1],
+    [1, 0, 1]
+  ];
+
+  // Compute base rectangle points
+  const B = [k, h, w];
+  const basePoints = M.map(row => {
+    return row.reduce((sum, val, i) => sum + val * B[i], 0);
+  });
+
+  // Rotation function
+  function rotate(x, y, theta) {
+    return [
+      x * Math.cos(theta) - y * Math.sin(theta),
+      x * Math.sin(theta) + y * Math.cos(theta)
+    ];
+  }
+
+  // Generate rectangle points
+  const points1 = [
+    rotate(-w/2, k, theta),
+    rotate(-w/2, k+h, theta),
+    rotate(w/2, k+h, theta),
+    rotate(w/2, k, theta)
+  ];
+
+  const points2 = points1.map(p => [-p[0], -p[1]]);
+
+  // Create SVG paths
+  const path1 = `M ${points1[0][0]},${points1[0][1]} 
+                 L ${points1[1][0]},${points1[1][1]} 
+                 L ${points1[2][0]},${points1[2][1]} 
+                 L ${points1[3][0]},${points1[3][1]} Z`;
+                 
+  const path2 = `M ${points2[0][0]},${points2[0][1]} 
+                 L ${points2[1][0]},${points2[1][1]} 
+                 L ${points2[2][0]},${points2[2][1]} 
+                 L ${points2[3][0]},${points2[3][1]} Z`;
+
+  // Update SVG elements
+  document.getElementById('rectangle1').setAttribute('d', path1);
+  document.getElementById('rectangle2').setAttribute('d', path2);
+  
+  // Update street line rotation
+  const streetLength = 150;
+  const x1 = -streetLength * Math.cos(theta);
+  const y1 = -streetLength * Math.sin(theta);
+  const x2 = streetLength * Math.cos(theta);
+  const y2 = streetLength * Math.sin(theta);
+  
+  document.getElementById('street').setAttribute('x1', x1);
+  document.getElementById('street').setAttribute('y1', y1);
+  document.getElementById('street').setAttribute('x2', x2);
+  document.getElementById('street').setAttribute('y2', y2);
+}
+
+// Add event listeners
+document.getElementById('theta').addEventListener('input', updateVisualization);
+document.getElementById('k').addEventListener('input', updateVisualization);
+document.getElementById('h').addEventListener('input', updateVisualization);
+document.getElementById('w').addEventListener('input', updateVisualization);
+
+// Initial update
+updateVisualization();
+</script>
+</body></html>

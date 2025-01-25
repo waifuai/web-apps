@@ -1,0 +1,297 @@
+<html><head><base href="https://websim.ai/"><title>websim - Advanced Guide: HTMX Streaming</title>
+<style>
+  :root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --accent-color: #e74c3c;
+    --background-color: #ecf0f1;
+    --text-color: #34495e;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  h1, h2, h3 {
+    color: var(--secondary-color);
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  h2 {
+    font-size: 1.8em;
+    margin-top: 40px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+  }
+  h3 {
+    font-size: 1.4em;
+    margin-top: 30px;
+  }
+  p {
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+  }
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    transform: perspective(1000px) rotateX(0deg);
+  }
+  .card:hover {
+    transform: perspective(1000px) rotateX(2deg) translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.1);
+  }
+  .tip, .warning, .example {
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .tip {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left: 5px solid var(--primary-color);
+  }
+  .warning {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 5px solid var(--accent-color);
+  }
+  .example {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  code {
+    background-color: #f7f9fa;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 2px 5px;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .footer {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+  }
+  .nav-links {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .nav-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 5px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+  .nav-link:hover, .nav-link.active {
+    background-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  a:hover {
+    color: var(--accent-color);
+  }
+  .gradient-box {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 8px;
+    padding: 20px;
+    color: #e94560;
+    font-weight: 500;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .italic {
+    font-style: italic;
+    color: #7f8c8d;
+  }
+  #darkModeToggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  #darkModeToggle:hover {
+    background-color: var(--accent-color);
+  }
+  body.websimDarkmode {
+    --background-color: #1a1a2e;
+    --text-color: #e0e0e0;
+  }
+  body.websimDarkmode .card,
+  body.websimDarkmode .nav-links {
+    background-color: #16213e;
+    color: #e0e0e0;
+  }
+  body.websimDarkmode .example {
+    background-color: #2c3e50;
+    border-color: #34495e;
+  }
+  body.websimDarkmode code {
+    background-color: #2c3e50;
+    border-color: #34495e;
+    color: #e0e0e0;
+  }
+  body.websimDarkmode h1, 
+  body.websimDarkmode h2, 
+  body.websimDarkmode h3 {
+    color: #e0e0e0;
+  }
+  body.websimDarkmode a {
+    color: #3498db;
+  }
+  body.websimDarkmode a:hover {
+    color: #e74c3c;
+  }
+  .code-block {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+  body.websimDarkmode .code-block {
+    background-color: #2c3e50;
+    border-color: #34495e;
+    color: #e0e0e0;
+  }
+</style>
+</head><body>
+<div class="container">
+  <h1>websim - Advanced Guide: HTMX Streaming</h1>
+  
+  <button id="darkModeToggle">🌓</button>
+
+  <nav class="nav-links">
+    <a href="#what-is-htmx" class="nav-link">What is HTMX?</a>
+    <a href="#implementing-htmx" class="nav-link">Implementing HTMX</a>
+    <a href="#examples" class="nav-link">Examples</a>
+    <a href="#best-practices" class="nav-link">Best Practices</a>
+  </nav>
+
+  <div class="card">
+    <h2 id="what-is-htmx">What is HTMX?</h2>
+    <p>HTMX is a powerful library that allows you to access AJAX, CSS Transitions, WebSockets, and Server Sent Events directly in HTML, without writing JavaScript. In the context of websim, HTMX enables dynamic content loading and real-time updates without full page reloads.</p>
+    <div class="gradient-box">
+      HTMX allows for seamless, interactive experiences by updating specific parts of a webpage without refreshing the entire page.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="implementing-htmx">Implementing HTMX in websim</h2>
+    <p>To use HTMX in your websim project, simply mention that you want to use HTMX in your prompt. The AI will then include the necessary HTMX library and implement the appropriate attributes in your HTML.</p>
+    <div class="example">
+      <p><strong>Example prompt:</strong> "Create a chat interface using HTMX for real-time updates without page reloads."</p>
+    </div>
+    <p>The AI will then generate HTML with HTMX attributes, such as <code>hx-post</code>, <code>hx-trigger</code>, and <code>hx-target</code>.</p>
+  </div>
+
+  <div class="card">
+    <h2 id="examples">HTMX Examples in websim</h2>
+    <h3>1. Underground Martian Expedition</h3>
+    <p>In the <a href="https://websim.ai/c/KXDW1T4axz29kNW1C">Underground Martian Expedition</a> project, HTMX is used to allow users to search for Martian plants without waiting for a full page reload. This creates a smooth, app-like experience.</p>
+    
+    <h3>2. Rudy's Boom Boom Room</h3>
+    <p>Another great example is <a href="https://websim.ai/@purplemoonbeam87332597/rudy-s-boom-boom-room-private-lightning-chat-2">Rudy's Boom Boom Room - Lightning Round</a> by Jazmaan/OneMeatball. This project uses HTMX for live chatting with various AI personas, demonstrating how HTMX can be used for real-time interactions.</p>
+    
+    <h3>3. Basic HTMX Chat Example</h3>
+    <div class="code-block">
+      <pre><code>&lt;div id="chat-container"&gt;
+  &lt;div id="chat-messages"&gt;&lt;/div&gt;
+  &lt;form hx-post="/api/send-message" hx-target="#chat-messages" hx-swap="beforeend"&gt;
+    &lt;input type="text" name="message" placeholder="Type your message..."&gt;
+    &lt;button type="submit"&gt;Send&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <p>In this example, when the form is submitted, HTMX will send a POST request to "/api/send-message" and append the response to the "chat-messages" div.</p>
+  </div>
+
+  <div class="card">
+    <h2 id="best-practices">Best Practices for HTMX in websim</h2>
+    <ul>
+      <li>Use HTMX for small, focused updates rather than loading large chunks of content.</li>
+      <li>Combine HTMX with CSS transitions for smooth visual updates.</li>
+      <li>Utilize websim's simulated backend (/api/) endpoints for dynamic data.</li>
+      <li>Consider using HTMX events to trigger custom behaviors or animations.</li>
+      <li>Test your HTMX implementations thoroughly to ensure they work as expected.</li>
+    </ul>
+    <div class="tip">
+      <strong>Tip:</strong> HTMX works best when you have a clear idea of what parts of your page need to be dynamic. Plan your UI and interactions before implementing HTMX.
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Explore more about HTMX in our <a href="https://discord.gg/websim">Discord community</a>.</p>
+  </div>
+</div>
+
+<script>
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const body = document.body;
+
+  darkModeToggle.addEventListener('click', () => {
+    body.classList.toggle('websimDarkmode');
+    if (body.classList.contains('websimDarkmode')) {
+      darkModeToggle.textContent = '☀️';
+    } else {
+      darkModeToggle.textContent = '🌓';
+    }
+  });
+
+  // Highlight the active nav link
+  const navLinks = document.querySelectorAll('.nav-link');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      navLinks.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body></html>

@@ -1,0 +1,275 @@
+<html><head><base href="https://quantum.mind.university/convergence/">
+<title>The Superconducting Brain: Neural Electromagnetics</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        color: #2d3436;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f7f9fc;
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin: 20px 0;
+    }
+    .chart-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    .full-width {
+        grid-column: 1 / -1;
+    }
+    h1 {
+        background: linear-gradient(45deg, #3498db, #2c3e50);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2.5em;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .interactive-controls {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+    }
+    button {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button:hover {
+        background: #2980b9;
+    }
+    canvas {
+        width: 100% !important;
+        height: 300px !important;
+    }
+</style>
+</head>
+<body>
+    <h1>The Superconducting Brain: Neural Electromagnetics</h1>
+
+    <div class="grid-container">
+        <div class="chart-container full-width">
+            <h2>Microtubule Quantum Coherence Over Time</h2>
+            <div id="coherenceChart"></div>
+            <div class="interactive-controls">
+                <button onclick="updateCoherenceData('ambient')">Ambient Temperature</button>
+                <button onclick="updateCoherenceData('cold')">Cold Temperature</button>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Neural EM Field Strength Distribution</h2>
+            <div id="emFieldChart"></div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Microtubule Resonance Frequencies</h2>
+            <canvas id="resonanceChart"></canvas>
+        </div>
+
+        <div class="chart-container full-width">
+            <h2>Brain Network Topology</h2>
+            <div id="networkChart"></div>
+        </div>
+    </div>
+
+<script>
+// Quantum Coherence Chart
+function generateCoherenceData(temp) {
+    const timePoints = Array.from({length: 100}, (_, i) => i * 0.1);
+    const baseCoherence = temp === 'cold' ? 0.8 : 0.5;
+    return timePoints.map(t => ({
+        x: t,
+        y: baseCoherence * Math.exp(-t/10) * (1 + 0.1 * Math.sin(t))
+    }));
+}
+
+const coherencePlot = {
+    data: [{
+        x: generateCoherenceData('ambient').map(p => p.x),
+        y: generateCoherenceData('ambient').map(p => p.y),
+        type: 'scatter',
+        mode: 'lines',
+        line: {color: '#3498db'},
+        name: 'Coherence'
+    }],
+    layout: {
+        title: 'Quantum Coherence Decay',
+        xaxis: {title: 'Time (ps)'},
+        yaxis: {title: 'Coherence Magnitude'},
+        plot_bgcolor: '#f8f9fa',
+        paper_bgcolor: '#f8f9fa'
+    }
+};
+
+Plotly.newPlot('coherenceChart', coherencePlot.data, coherencePlot.layout);
+
+function updateCoherenceData(temp) {
+    const newData = generateCoherenceData(temp);
+    Plotly.update('coherenceChart', {
+        x: [newData.map(p => p.x)],
+        y: [newData.map(p => p.y)]
+    });
+}
+
+// EM Field Strength Distribution
+const emFieldData = {
+    x: Array.from({length: 50}, (_, i) => i * 0.2),
+    y: Array.from({length: 50}, (_, i) => {
+        const x = i * 0.2;
+        return Math.exp(-(x-5)*(x-5)/4) * Math.cos(x);
+    })
+};
+
+const emFieldPlot = {
+    data: [{
+        x: emFieldData.x,
+        y: emFieldData.y,
+        type: 'scatter',
+        mode: 'lines',
+        fill: 'tozeroy',
+        line: {color: '#2ecc71'}
+    }],
+    layout: {
+        title: 'EM Field Strength Distribution',
+        xaxis: {title: 'Distance (μm)'},
+        yaxis: {title: 'Field Strength (relative)'},
+        plot_bgcolor: '#f8f9fa',
+        paper_bgcolor: '#f8f9fa'
+    }
+};
+
+Plotly.newPlot('emFieldChart', emFieldPlot.data, emFieldPlot.layout);
+
+// Resonance Frequencies Chart
+document.addEventListener('DOMContentLoaded', function() {
+    const resonanceData = {
+        labels: ['Alpha', 'Beta', 'Gamma', 'Delta', 'Theta'],
+        datasets: [{
+            data: [10, 20, 40, 4, 6],
+            backgroundColor: [
+                '#3498db',
+                '#2ecc71',
+                '#e74c3c',
+                '#f1c40f',
+                '#9b59b6'
+            ]
+        }]
+    };
+
+    const resonanceCtx = document.getElementById('resonanceChart');
+    if (resonanceCtx) {
+        new Chart(resonanceCtx, {
+            type: 'polarArea',
+            data: resonanceData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Frequency Band Distribution'
+                    }
+                }
+            }
+        });
+    }
+});
+
+// Network Topology Visualization
+const width = document.getElementById('networkChart').clientWidth;
+const height = 400;
+
+const svg = d3.select('#networkChart')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+const simulation = d3.forceSimulation()
+    .force('link', d3.forceLink().id(d => d.id))
+    .force('charge', d3.forceManyBody())
+    .force('center', d3.forceCenter(width / 2, height / 2));
+
+const nodes = Array.from({length: 30}, (_, i) => ({id: i}));
+const links = Array.from({length: 40}, () => ({
+    source: Math.floor(Math.random() * 30),
+    target: Math.floor(Math.random() * 30)
+}));
+
+const link = svg.append('g')
+    .selectAll('line')
+    .data(links)
+    .enter().append('line')
+    .style('stroke', '#999')
+    .style('stroke-opacity', 0.6);
+
+const node = svg.append('g')
+    .selectAll('circle')
+    .data(nodes)
+    .enter().append('circle')
+    .attr('r', 5)
+    .style('fill', '#3498db')
+    .call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended));
+
+simulation
+    .nodes(nodes)
+    .on('tick', ticked);
+
+simulation.force('link')
+    .links(links);
+
+function ticked() {
+    link
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
+
+    node
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y);
+}
+
+function dragstarted(event) {
+    if (!event.active) simulation.alphaTarget(0.3).restart();
+    event.subject.fx = event.subject.x;
+    event.subject.fy = event.subject.y;
+}
+
+function dragged(event) {
+    event.subject.fx = event.x;
+    event.subject.fy = event.y;
+}
+
+function dragended(event) {
+    if (!event.active) simulation.alphaTarget(0);
+    event.subject.fx = null;
+    event.subject.fy = null;
+}
+</script>
+
+</body></html>

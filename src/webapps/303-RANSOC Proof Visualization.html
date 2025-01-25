@@ -1,0 +1,245 @@
+<html><head><base href="/" />
+<title>RANSOC Proof Visualization</title>
+<style>
+:root {
+  --primary: #2a4b8d;
+  --secondary: #1abc9c;
+  --bg: #f7f9fc;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--bg);
+  color: #2c3e50;
+}
+
+.proof-step {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.proof-step:hover {
+  transform: translateY(-2px);
+}
+
+.step-number {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.math {
+  font-family: "Times New Roman", serif;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.visualization {
+  width: 100%;
+  height: 300px;
+  margin: 1rem 0;
+}
+
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+
+<h1>RANSOC Proof: Step by Step Visualization</h1>
+
+<div class="proof-step">
+  <span class="step-number">1</span>
+  <h3>Initial Setup</h3>
+  <p>Given a set of planets P = {p₁, p₂, ..., pₙ} with initial masses and distances from query star s.</p>
+  <div class="math">
+    w(pᵢ, s) = mᵢ/d(pᵢ, s)<br>
+    0 < α < 1 (learning rate)
+  </div>
+  <div id="initial-setup" class="visualization"></div>
+</div>
+
+<div class="proof-step">
+  <span class="step-number">2</span>
+  <h3>Mass Conservation</h3>
+  <p>Proof that total mass M remains constant after updates:</p>
+  <div class="math">
+    M = Σmᵢ (constant)<br>
+    mₕᵢₜ_new = (1-α)mₕᵢₜ<br>
+    mⱼ_new = (1 + α/(n-1))mⱼ for j ≠ hit<br>
+    ΔM = -αmₕᵢₜ + α/(n-1) * (M - mₕᵢₜ) = 0
+  </div>
+  <div id="mass-conservation" class="visualization"></div>
+</div>
+
+<div class="proof-step">
+  <span class="step-number">3</span>
+  <h3>Mass Growth for Unselected Planets</h3>
+  <p>After k iterations without selection, a planet's mass grows exponentially:</p>
+  <div class="math">
+    mᵢ(k) = mᵢ(0) * (1 + α/(n-1))ᵏ
+  </div>
+  <div id="mass-growth" class="visualization"></div>
+</div>
+
+<div class="proof-step">
+  <span class="step-number">4</span>
+  <h3>Eventual Selection Guarantee</h3>
+  <p>Any unselected planet will eventually be chosen because:</p>
+  <div class="math">
+    w(pᵢ, s) = mᵢ(k)/d(pᵢ, s)<br>
+    As k → ∞, mᵢ(k) → ∞<br>
+    Therefore w(pᵢ, s) will exceed any finite weight
+  </div>
+  <div id="selection-guarantee" class="visualization"></div>
+</div>
+
+<script>
+// Initial Setup Visualization
+const setupVis = d3.select("#initial-setup")
+  .append("svg")
+  .attr("width", "100%")
+  .attr("height", "100%")
+  .attr("viewBox", "0 0 600 300");
+
+// Sample planets data
+const planets = [
+  {x: 100, y: 150, mass: 30, id: 1},
+  {x: 250, y: 100, mass: 40, id: 2},
+  {x: 400, y: 200, mass: 20, id: 3},
+  {x: 500, y: 150, mass: 35, id: 4}
+];
+
+// Draw star
+setupVis.append("circle")
+  .attr("cx", 300)
+  .attr("cy", 150)
+  .attr("r", 15)
+  .attr("fill", "#f39c12");
+
+// Draw planets
+planets.forEach(planet => {
+  setupVis.append("circle")
+    .attr("cx", planet.x)
+    .attr("cy", planet.y)
+    .attr("r", Math.sqrt(planet.mass) * 2)
+    .attr("fill", "#2980b9")
+    .attr("opacity", 0.7);
+    
+  setupVis.append("text")
+    .attr("x", planet.x)
+    .attr("y", planet.y + 30)
+    .text(`p${planet.id}`)
+    .attr("text-anchor", "middle");
+});
+
+// Mass Conservation Visualization
+const massVis = d3.select("#mass-conservation")
+  .append("svg")
+  .attr("width", "100%")
+  .attr("height", "100%")
+  .attr("viewBox", "0 0 600 300");
+
+const timeScale = d3.scaleLinear()
+  .domain([0, 10])
+  .range([50, 550]);
+
+const massScale = d3.scaleLinear()
+  .domain([0, 100])
+  .range([250, 50]);
+
+// Draw axes
+massVis.append("line")
+  .attr("x1", 50)
+  .attr("y1", 250)
+  .attr("x2", 550)
+  .attr("y2", 250)
+  .attr("stroke", "black");
+
+massVis.append("line")
+  .attr("x1", 50)
+  .attr("y1", 250)
+  .attr("x2", 50)
+  .attr("y2", 50)
+  .attr("stroke", "black");
+
+// Draw total mass line
+massVis.append("path")
+  .attr("d", `M50,150 L550,150`)
+  .attr("stroke", "#e74c3c")
+  .attr("stroke-width", 2)
+  .attr("fill", "none");
+
+// Mass Growth Visualization
+const growthVis = d3.select("#mass-growth")
+  .append("svg")
+  .attr("width", "100%")
+  .attr("height", "100%")
+  .attr("viewBox", "0 0 600 300");
+
+const line = d3.line()
+  .x(d => timeScale(d.x))
+  .y(d => massScale(d.y))
+  .curve(d3.curveMonotoneX);
+
+const data = Array.from({length: 11}, (_, i) => ({
+  x: i,
+  y: 20 * Math.pow(1.1, i)
+}));
+
+growthVis.append("path")
+  .datum(data)
+  .attr("d", line)
+  .attr("stroke", "#27ae60")
+  .attr("stroke-width", 2)
+  .attr("fill", "none");
+
+// Selection Guarantee Visualization
+const selectionVis = d3.select("#selection-guarantee")
+  .append("svg")
+  .attr("width", "100%")
+  .attr("height", "100%")
+  .attr("viewBox", "0 0 600 300");
+
+// Create animated selection demonstration
+const animate = () => {
+  const planet = selectionVis.selectAll(".planet")
+    .data([{x: 100, y: 150}])
+    .join("circle")
+    .attr("class", "planet")
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y)
+    .attr("r", 20)
+    .attr("fill", "#2980b9");
+
+  planet.transition()
+    .duration(2000)
+    .attr("r", 40)
+    .transition()
+    .duration(2000)
+    .attr("r", 20)
+    .on("end", animate);
+};
+
+animate();
+
+</script>
+
+</body>
+</html>

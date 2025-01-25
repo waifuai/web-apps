@@ -1,0 +1,275 @@
+<html><head><base href="/" /><title>Parking Rectangle Algorithm Visualization</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.step {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.visualization {
+    width: 100%;
+    height: 300px;
+    background: white;
+    border: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.matrix {
+    font-family: monospace;
+    margin: 10px 0;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+.controls {
+    margin: 20px 0;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Parking Rectangle Algorithm Step-by-Step</h1>
+    
+    <div class="controls">
+        <button id="prevStep">Previous Step</button>
+        <button id="nextStep">Next Step</button>
+    </div>
+    
+    <div id="steps">
+        <div class="step" id="step1">
+            <h2>Step 1: Input Parameters</h2>
+            <div class="visualization"></div>
+            <p>Starting with:</p>
+            <div class="matrix">
+                v = [x, y] (street center)<br>
+                θ = angle from north<br>
+                B = [K, H, W] (dimensions)
+            </div>
+        </div>
+        
+        <div class="step" id="step2">
+            <h2>Step 2: Generate Base Rectangle</h2>
+            <div class="visualization"></div>
+            <p>Applying vertex template matrix:</p>
+            <div class="matrix">
+                M = [<br>
+                &nbsp;&nbsp;[1, 0, 0],<br>
+                &nbsp;&nbsp;[1, 1, 0],<br>
+                &nbsp;&nbsp;[1, 1, 1],<br>
+                &nbsp;&nbsp;[1, 0, 1]<br>
+                ]
+            </div>
+        </div>
+        
+        <div class="step" id="step3">
+            <h2>Step 3: Apply Rotation</h2>
+            <div class="visualization"></div>
+            <p>Rotating by angle θ using:</p>
+            <div class="matrix">
+                R(θ) = [<br>
+                &nbsp;&nbsp;[cos(θ), -sin(θ)],<br>
+                &nbsp;&nbsp;[sin(θ), cos(θ)]<br>
+                ]
+            </div>
+        </div>
+        
+        <div class="step" id="step4">
+            <h2>Step 4: Convert to Geographic Coordinates</h2>
+            <div class="visualization"></div>
+            <p>Applying normalization matrix G:</p>
+            <div class="matrix">
+                G = [<br>
+                &nbsp;&nbsp;[g_lat, 0],<br>
+                &nbsp;&nbsp;[0, g_lon]<br>
+                ]
+            </div>
+        </div>
+        
+        <div class="step" id="step5">
+            <h2>Step 5: Generate Final Rectangles</h2>
+            <div class="visualization"></div>
+            <p>Creating symmetric rectangles R₁ and R₂</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 5;
+
+// SVG setup for each visualization
+d3.selectAll('.visualization').each(function(d, i) {
+    const svg = d3.select(this)
+        .append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%');
+        
+    // Add coordinate system
+    const g = svg.append('g')
+        .attr('transform', 'translate(450,150)');
+        
+    // Add axes
+    g.append('line')
+        .attr('x1', -400)
+        .attr('x2', 400)
+        .attr('y1', 0)
+        .attr('y2', 0)
+        .style('stroke', '#ccc');
+        
+    g.append('line')
+        .attr('x1', 0)
+        .attr('x2', 0)
+        .attr('y1', -120)
+        .attr('y2', 120)
+        .style('stroke', '#ccc');
+});
+
+function updateVisualizations() {
+    // Hide all steps
+    d3.selectAll('.step').style('display', 'none');
+    
+    // Show current step
+    d3.select(`#step${currentStep}`).style('display', 'block');
+    
+    // Update visualizations based on current step
+    const svg = d3.select(`#step${currentStep} svg g`);
+    
+    svg.selectAll('*').remove();
+    
+    // Add basic axes
+    svg.append('line')
+        .attr('x1', -400)
+        .attr('x2', 400)
+        .attr('y1', 0)
+        .attr('y2', 0)
+        .style('stroke', '#ccc');
+        
+    svg.append('line')
+        .attr('x1', 0)
+        .attr('x2', 0)
+        .attr('y1', -120)
+        .attr('y2', 120)
+        .style('stroke', '#ccc');
+    
+    // Step-specific visualizations
+    switch(currentStep) {
+        case 1:
+            // Show input point and angle
+            svg.append('circle')
+                .attr('cx', 0)
+                .attr('cy', 0)
+                .attr('r', 5)
+                .style('fill', 'red');
+                
+            svg.append('line')
+                .attr('x1', 0)
+                .attr('x2', 50)
+                .attr('y1', 0)
+                .attr('y2', -50)
+                .style('stroke', 'blue')
+                .style('stroke-dasharray', '5,5');
+            break;
+            
+        case 2:
+            // Show base rectangle
+            const points = [[-30,50], [-30,-50], [30,-50], [30,50]];
+            svg.append('path')
+                .datum(points)
+                .attr('d', d3.line())
+                .style('fill', 'none')
+                .style('stroke', 'blue');
+            break;
+            
+        case 3:
+            // Show rotated rectangle
+            const rotatedPoints = [[-40,40], [-20,-60], [40,-40], [20,60]];
+            svg.append('path')
+                .datum(rotatedPoints)
+                .attr('d', d3.line())
+                .style('fill', 'none')
+                .style('stroke', 'green');
+            break;
+            
+        case 4:
+            // Show normalized rectangle
+            const normalizedPoints = [[-45,35], [-25,-65], [35,-45], [15,55]];
+            svg.append('path')
+                .datum(normalizedPoints)
+                .attr('d', d3.line())
+                .style('fill', 'none')
+                .style('stroke', 'purple');
+            break;
+            
+        case 5:
+            // Show final rectangles
+            const rect1 = [[-45,35], [-25,-65], [35,-45], [15,55]];
+            const rect2 = [[45,-35], [25,65], [-35,45], [-15,-55]];
+            
+            svg.append('path')
+                .datum(rect1)
+                .attr('d', d3.line())
+                .style('fill', 'rgba(255,0,0,0.2)')
+                .style('stroke', 'red');
+                
+            svg.append('path')
+                .datum(rect2)
+                .attr('d', d3.line())
+                .style('fill', 'rgba(0,0,255,0.2)')
+                .style('stroke', 'blue');
+                
+            // Add street center line
+            svg.append('line')
+                .attr('x1', -100)
+                .attr('x2', 100)
+                .attr('y1', 0)
+                .attr('y2', 0)
+                .style('stroke', 'black')
+                .style('stroke-width', 2);
+            break;
+    }
+}
+
+// Button handlers
+d3.select('#prevStep').on('click', () => {
+    if (currentStep > 1) {
+        currentStep--;
+        updateVisualizations();
+    }
+});
+
+d3.select('#nextStep').on('click', () => {
+    if (currentStep < totalSteps) {
+        currentStep++;
+        updateVisualizations();
+    }
+});
+
+// Initial visualization
+updateVisualizations();
+</script>
+</body></html>

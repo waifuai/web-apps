@@ -1,0 +1,218 @@
+<html><head><base href="https://websim.ai/catgirlchat">
+<title>CatgirlChat - Your Anime Companion</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #FFF0F5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .chat-container {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 80%;
+    max-width: 800px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .chat-header {
+    background-color: #FF69B4;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .message {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+  }
+  .catgirl-message {
+    flex-direction: row;
+  }
+  .user-message {
+    flex-direction: row-reverse;
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0 10px;
+  }
+  .message-content {
+    background-color: #F0F0F0;
+    border-radius: 18px;
+    padding: 10px 15px;
+    max-width: 70%;
+  }
+  .catgirl-message .message-content {
+    background-color: #FFE4E1;
+  }
+  .user-message .message-content {
+    background-color: #E6E6FA;
+  }
+  .chat-input {
+    display: flex;
+    padding: 20px;
+    background-color: #F8F8F8;
+  }
+  .chat-input input {
+    flex-grow: 1;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-size: 16px;
+    outline: none;
+  }
+  .chat-input button {
+    background-color: #FF69B4;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  .chat-input button:hover {
+    background-color: #FF1493;
+  }
+  @keyframes nyancat {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .nyancat {
+    position: fixed;
+    top: 10px;
+    left: -100px;
+    animation: nyancat 10s linear infinite;
+  }
+  @keyframes catgirl-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .catgirl-avatar {
+    animation: catgirl-bounce 2s ease-in-out infinite;
+  }
+  @keyframes heart-float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-50px) rotate(360deg); opacity: 0; }
+  }
+  .floating-heart {
+    position: absolute;
+    font-size: 24px;
+    color: #FF69B4;
+    pointer-events: none;
+    animation: heart-float 2s ease-out forwards;
+  }
+</style>
+</head>
+<body>
+  <div class="nyancat">
+    <img src="https://upload.wikimedia.org/wikipedia/en/e/ed/Nyan_cat_250px_frame.PNG" alt="Nyan Cat" width="100">
+  </div>
+  <div class="chat-container">
+    <div class="chat-header">CatgirlChat</div>
+    <div id="chat-messages" class="chat-messages">
+      <div class="message catgirl-message">
+        <img class="avatar catgirl-avatar" src="https://websim.ai/catgirl_avatar.png" alt="Catgirl Avatar">
+        <div class="message-content">
+          Nyaa~ Welcome to CatgirlChat, nya! I'm Neko-chan, your purr-sonal anime catgirl companion. How can I make your day more kawaii? ≧◡≦
+        </div>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    function createFloatingHeart(x, y) {
+      const heart = document.createElement('div');
+      heart.innerHTML = '♥';
+      heart.className = 'floating-heart';
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => {
+        document.body.removeChild(heart);
+      }, 2000);
+    }
+
+    document.addEventListener('click', (event) => {
+      createFloatingHeart(event.clientX, event.clientY);
+    });
+
+    function addMessage(content, isUser = false) {
+      const messagesContainer = document.getElementById('chat-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'catgirl-message'}`;
+      
+      const avatar = document.createElement('img');
+      avatar.className = 'avatar' + (isUser ? '' : ' catgirl-avatar');
+      avatar.src = isUser ? 'https://websim.ai/user_avatar.png' : 'https://websim.ai/catgirl_avatar.png';
+      avatar.alt = isUser ? 'User Avatar' : 'Catgirl Avatar';
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      contentDiv.textContent = content;
+      
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(contentDiv);
+      messagesContainer.appendChild(messageDiv);
+      
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const userInput = document.getElementById('user-input');
+      const message = userInput.value.trim();
+      if (message) {
+        addMessage(message, true);
+        userInput.value = '';
+
+        try {
+          const response = await fetch('https://websim.ai/api/catgirlchat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+
+          const data = await response.json();
+          addMessage(data.response);
+        } catch (error) {
+          console.error('Error:', error);
+          addMessage("Nyaa~ Sorry, I'm having trouble communicating right now. Can we try again later?");
+        }
+      }
+    }
+
+    document.getElementById('user-input').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body></html>

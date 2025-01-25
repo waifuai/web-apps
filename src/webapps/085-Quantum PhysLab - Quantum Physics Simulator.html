@@ -1,0 +1,388 @@
+<html><head><base href="https://quantum-phys.lab/"><title>Quantum PhysLab - Quantum Physics Simulator</title><style>
+body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: Arial, sans-serif; background-color: #000; color: #0f0; }
+#info { position: absolute; top: 10px; left: 10px; background: rgba(0,30,0,0.7); padding: 10px; border-radius: 5px; }
+#controls { position: absolute; bottom: 10px; left: 10px; background: rgba(0,30,0,0.7); padding: 10px; border-radius: 5px; }
+#sidebar { position: absolute; top: 0; right: 0; width: 300px; height: 100%; background: rgba(0,30,0,0.7); padding: 20px; overflow-y: auto; }
+#sidebar h2 { margin-top: 20px; margin-bottom: 10px; }
+#quantumCircuit, #quantumAlgorithm, #measurementDistribution { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; }
+button, select { margin-right: 5px; margin-bottom: 5px; background: #0f0; color: #000; border: none; padding: 5px 10px; }
+canvas { display: block; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<div id="info">Quantum PhysLab - Exploring the Quantum Realm</div>
+<div id="sidebar">
+    <h2>Quantum Circuit</h2>
+    <div id="quantumCircuit"></div>
+    <h2>Quantum Algorithm</h2>
+    <div id="quantumAlgorithm"></div>
+    <h2>Measurement Distribution</h2>
+    <div id="measurementDistribution"></div>
+</div>
+<div id="controls">
+    <button id="addQubit">Add Qubit</button>
+    <button id="applyHadamard">Apply Hadamard</button>
+    <button id="applyCNOT">Apply CNOT</button>
+    <button id="measure">Measure</button>
+    <button id="reset">Reset Simulation</button>
+    <select id="presetSelector">
+        <option value="">Select Quantum Circuit</option>
+        <option value="bellState">Bell State</option>
+        <option value="quantumTeleportation">Quantum Teleportation</option>
+        <option value="groversAlgorithm">Grover's Algorithm</option>
+    </select>
+    <p>WASD to move, Right-click & drag to rotate, Scroll to zoom</p>
+</div>
+<script>
+// Set up Three.js scene
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Quantum simulation variables
+let qubits = [];
+let gates = [];
+
+class Qubit {
+    constructor(x, y, z) {
+        this.state = [1, 0]; // |0⟩ state
+        this.mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(0.5, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true })
+        );
+        this.mesh.position.set(x, y, z);
+        scene.add(this.mesh);
+
+        this.blochSphere = new THREE.Group();
+        const equator = new THREE.Mesh(
+            new THREE.TorusGeometry(0.6, 0.02, 16, 100),
+            new THREE.MeshBasicMaterial({ color: 0x444444 })
+        );
+        this.blochSphere.add(equator);
+        
+        const meridian = equator.clone();
+        meridian.rotation.x = Math.PI / 2;
+        this.blochSphere.add(meridian);
+
+        this.stateVector = new THREE.ArrowHelper(
+            new THREE.Vector3(0, 1, 0),
+            new THREE.Vector3(0, 0, 0),
+            0.5,
+            0x00ff00
+        );
+        this.blochSphere.add(this.stateVector);
+
+        this.blochSphere.position.copy(this.mesh.position);
+        scene.add(this.blochSphere);
+    }
+
+    applyGate(gate) {
+        this.state = gate.apply(this.state);
+        this.updateBlochSphere();
+    }
+
+    updateBlochSphere() {
+        const [a, b] = this.state;
+        const theta = 2 * Math.acos(Math.abs(a));
+        const phi = Math.atan2(b.imag, b.real);
+        
+        const x = Math.sin(theta) * Math.cos(phi);
+        const y = Math.cos(theta);
+        const z = Math.sin(theta) * Math.sin(phi);
+        
+        this.stateVector.setDirection(new THREE.Vector3(x, y, z));
+    }
+
+    measure() {
+        const prob0 = Math.pow(Math.abs(this.state[0]), 2);
+        const result = Math.random() < prob0 ? 0 : 1;
+        this.state = result === 0 ? [1, 0] : [0, 1];
+        this.updateBlochSphere();
+        return result;
+    }
+}
+
+class QuantumGate {
+    constructor(name, matrix, qubit) {
+        this.name = name;
+        this.matrix = matrix;
+        this.qubit = qubit;
+    }
+
+    apply(state) {
+        return [
+            this.matrix[0][0] * state[0] + this.matrix[0][1] * state[1],
+            this.matrix[1][0] * state[0] + this.matrix[1][1] * state[1]
+        ];
+    }
+}
+
+const hadamardGate = new QuantumGate('H', [
+    [1/Math.sqrt(2), 1/Math.sqrt(2)],
+    [1/Math.sqrt(2), -1/Math.sqrt(2)]
+]);
+
+function addQubit() {
+    const x = (Math.random() - 0.5) * 5;
+    const y = (Math.random() - 0.5) * 5;
+    const z = (Math.random() - 0.5) * 5;
+    const qubit = new Qubit(x, y, z);
+    qubits.push(qubit);
+    updateQuantumCircuit();
+}
+
+function applyHadamard() {
+    qubits.forEach((qubit, index) => {
+        qubit.applyGate(hadamardGate);
+        gates.push(new QuantumGate('H', hadamardGate.matrix, index));
+    });
+    updateQuantumCircuit();
+    updateQuantumAlgorithm();
+}
+
+function applyCNOT() {
+    if (qubits.length < 2) return;
+    // Simplified CNOT for visualization purposes
+    if (qubits[0].state[1] !== 0) {
+        qubits[1].state = [qubits[1].state[1], qubits[1].state[0]];
+        qubits[1].updateBlochSphere();
+    }
+    gates.push(new QuantumGate('CNOT', null, [0, 1]));
+    updateQuantumCircuit();
+    updateQuantumAlgorithm();
+}
+
+function measure() {
+    let results = [];
+    qubits.forEach(qubit => {
+        const result = qubit.measure();
+        results.push(result);
+        console.log(`Qubit measured: ${result}`);
+    });
+    updateMeasurementDistribution(results);
+}
+
+function updateMeasurementDistribution(results) {
+    const distributionElement = document.getElementById('measurementDistribution');
+    const counts = results.reduce((acc, val) => {
+        acc[val] = (acc[val] || 0) + 1;
+        return acc;
+    }, {});
+    
+    let html = '<ul>';
+    for (let state in counts) {
+        const percentage = (counts[state] / results.length * 100).toFixed(2);
+        html += `<li>|${state}>: ${counts[state]} (${percentage}%)</li>`;
+    }
+    html += '</ul>';
+    
+    distributionElement.innerHTML = html;
+}
+
+function resetSimulation() {
+    qubits.forEach(qubit => {
+        scene.remove(qubit.mesh);
+        scene.remove(qubit.blochSphere);
+    });
+    qubits = [];
+    gates = [];
+    updateQuantumCircuit();
+    updateQuantumAlgorithm();
+    document.getElementById('measurementDistribution').innerHTML = '';
+}
+
+function updateQuantumCircuit() {
+    const circuitElement = document.getElementById('quantumCircuit');
+    let html = '<div style="font-family: monospace;">';
+    qubits.forEach((_, index) => {
+        html += `q${index}: --`;
+        gates.forEach(gate => {
+            if (gate.qubit === index) {
+                html += `[${gate.name}]--`;
+            } else {
+                html += '------';
+            }
+        });
+        html += '<br>';
+    });
+    html += '</div>';
+    circuitElement.innerHTML = html;
+}
+
+function updateQuantumAlgorithm() {
+    const algorithmElement = document.getElementById('quantumAlgorithm');
+    let html = '<ul>';
+    gates.forEach(gate => {
+        html += `<li>${gate.name} on qubit ${gate.qubit}</li>`;
+    });
+    html += '</ul>';
+    algorithmElement.innerHTML = html;
+}
+
+function bellState() {
+    resetSimulation();
+    addQubit();
+    addQubit();
+    applyHadamard();
+    applyCNOT();
+}
+
+function quantumTeleportation() {
+    resetSimulation();
+    for (let i = 0; i < 3; i++) addQubit();
+    applyHadamard();
+    applyCNOT();
+    // Additional gates would be applied here in a real quantum teleportation circuit
+}
+
+function groversAlgorithm() {
+    resetSimulation();
+    for (let i = 0; i < 4; i++) addQubit();
+    qubits.forEach(qubit => qubit.applyGate(hadamardGate));
+    // Simplified representation of Grover's algorithm
+    for (let i = 0; i < 2; i++) {
+        // Oracle (simplified)
+        qubits[3].state = [-qubits[3].state[0], -qubits[3].state[1]];
+        // Diffusion
+        qubits.forEach(qubit => qubit.applyGate(hadamardGate));
+        qubits.forEach(qubit => {
+            qubit.state = [-qubit.state[0], -qubit.state[1]];
+            qubit.updateBlochSphere();
+        });
+        qubits.forEach(qubit => qubit.applyGate(hadamardGate));
+    }
+}
+
+document.getElementById('addQubit').addEventListener('click', addQubit);
+document.getElementById('applyHadamard').addEventListener('click', applyHadamard);
+document.getElementById('applyCNOT').addEventListener('click', applyCNOT);
+document.getElementById('measure').addEventListener('click', measure);
+document.getElementById('reset').addEventListener('click', resetSimulation);
+document.getElementById('presetSelector').addEventListener('change', (event) => {
+    switch (event.target.value) {
+        case 'bellState': bellState(); break;
+        case 'quantumTeleportation': quantumTeleportation(); break;
+        case 'groversAlgorithm': groversAlgorithm(); break;
+    }
+    event.target.value = ''; // Reset selection
+});
+
+camera.position.z = 10;
+
+// Camera controls
+const cameraSpeed = 0.1;
+const cameraRotationSpeed = 0.005;
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
+let isRotating = false;
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+// Camera rotation
+const cameraRotation = new THREE.Euler(0, 0, 0, 'YXZ');
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Camera movement relative to camera rotation
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+    
+    if (moveForward) camera.position.addScaledVector(forward, cameraSpeed);
+    if (moveBackward) camera.position.addScaledVector(forward, -cameraSpeed);
+    if (moveLeft) camera.position.addScaledVector(right, -cameraSpeed);
+    if (moveRight) camera.position.addScaledVector(right, cameraSpeed);
+
+    // Apply camera rotation
+    camera.rotation.copy(cameraRotation);
+
+    // Rotate qubits for visual effect
+    qubits.forEach(qubit => {
+        qubit.blochSphere.rotation.y += 0.01;
+    });
+
+    renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Mouse event listeners for rotating camera
+renderer.domElement.addEventListener('mousedown', onMouseDown);
+renderer.domElement.addEventListener('mousemove', onMouseMove);
+renderer.domElement.addEventListener('mouseup', onMouseUp);
+renderer.domElement.addEventListener('wheel', onWheel);
+
+function onMouseDown(event) {
+    if (event.button === 2) { // Right click
+        isRotating = true;
+        lastMouseX = event.clientX;
+        lastMouseY = event.clientY;
+    }
+}
+
+function onMouseMove(event) {
+    if (isRotating) {
+        const deltaX = event.clientX - lastMouseX;
+        const deltaY = event.clientY - lastMouseY;
+        
+        cameraRotation.y -= deltaX * cameraRotationSpeed;
+        cameraRotation.x -= deltaY * cameraRotationSpeed;
+        
+        // Clamp vertical rotation to avoid flipping
+        cameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.x));
+        
+        lastMouseX = event.clientX;
+        lastMouseY = event.clientY;
+    }
+}
+
+function onMouseUp(event) {
+    if (event.button === 2) {
+        isRotating = false;
+    }
+}
+
+function onWheel(event) {
+    event.preventDefault();
+    
+    // Zoom in/out
+    camera.position.addScaledVector(camera.getWorldDirection(new THREE.Vector3()), event.deltaY * 0.01);
+}
+
+// Keyboard event listeners for camera movement
+document.addEventListener('keydown', onKeyDown);
+document.addEventListener('keyup', onKeyUp);
+
+function onKeyDown(event) {
+    switch(event.code) {
+        case 'KeyW': moveForward = true; break;
+        case 'KeyS': moveBackward = true; break;
+        case 'KeyA': moveLeft = true; break;
+        case 'KeyD': moveRight = true; break;
+    }
+}
+
+function onKeyUp(event) {
+    switch(event.code) {
+        case 'KeyW': moveForward = false; break;
+        case 'KeyS': moveBackward = false; break;
+        case 'KeyA': moveLeft = false; break;
+        case 'KeyD': moveRight = false; break;
+    }
+}
+
+// Prevent context menu on right-click
+renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
+</script>
+</body></html>

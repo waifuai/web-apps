@@ -1,0 +1,242 @@
+<html><head><base href="https://tokenaffiliates.websim.ai/"><title>TokenAffiliates: Commission Sales Dashboard</title><style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f9;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    header {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 1rem;
+        text-align: center;
+    }
+    h1, h2, h3 {
+        color: #2c3e50;
+    }
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+    .chart-container {
+        height: 300px;
+    }
+    .stat {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #3498db;
+    }
+    .btn {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+        background-color: #2980b9;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style></head><body>
+    <header>
+        <h1>TokenAffiliates Dashboard</h1>
+    </header>
+    <div class="container">
+        <div class="dashboard">
+            <div class="card">
+                <h2>Total Commission Earned</h2>
+                <p class="stat">$<span id="totalCommission">0</span></p>
+                <div class="chart-container">
+                    <canvas id="commissionChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Tokens Sold</h2>
+                <p class="stat"><span id="tokensSold">0</span></p>
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Referral Performance</h2>
+                <div class="chart-container">
+                    <canvas id="referralChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Token Price</h2>
+                <p class="stat">$<span id="currentPrice">0</span></p>
+                <div class="chart-container">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 20px;">
+            <h2>Recent Transactions</h2>
+            <table id="transactionTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Tokens Sold</th>
+                        <th>Commission Earned</th>
+                        <th>Buyer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Transaction rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="generateReportBtn" class="btn">Generate Detailed Report</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Simulated data
+        const commissionData = [1200, 1500, 1800, 2200, 2600, 3000, 3500];
+        const salesData = [10000, 12000, 15000, 18000, 22000, 26000, 30000];
+        const referralData = {
+            labels: ['Direct', 'Social Media', 'Email', 'Blog', 'Paid Ads'],
+            data: [30, 25, 20, 15, 10]
+        };
+        const priceData = [0.1, 0.12, 0.15, 0.18, 0.22, 0.26, 0.3];
+
+        // Update stats
+        document.getElementById('totalCommission').textContent = commissionData[commissionData.length - 1];
+        document.getElementById('tokensSold').textContent = salesData[salesData.length - 1];
+        document.getElementById('currentPrice').textContent = priceData[priceData.length - 1];
+
+        // Commission Chart
+        new Chart(document.getElementById('commissionChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                datasets: [{
+                    label: 'Commission ($)',
+                    data: commissionData,
+                    borderColor: '#3498db',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Sales Chart
+        new Chart(document.getElementById('salesChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                datasets: [{
+                    label: 'Tokens Sold',
+                    data: salesData,
+                    backgroundColor: '#2ecc71'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Referral Chart
+        new Chart(document.getElementById('referralChart').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: referralData.labels,
+                datasets: [{
+                    data: referralData.data,
+                    backgroundColor: ['#3498db', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Price Chart
+        new Chart(document.getElementById('priceChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                datasets: [{
+                    label: 'Token Price ($)',
+                    data: priceData,
+                    borderColor: '#e74c3c',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Populate transaction table
+        const transactionTableBody = document.querySelector('#transactionTable tbody');
+        const transactions = [
+            { date: '2023-06-01', tokens: 1000, commission: 120, buyer: '0x1234...abcd' },
+            { date: '2023-06-02', tokens: 1500, commission: 180, buyer: '0x5678...efgh' },
+            { date: '2023-06-03', tokens: 800, commission: 96, buyer: '0x91011...ijkl' },
+            { date: '2023-06-04', tokens: 2000, commission: 240, buyer: '0x1213...mnop' },
+            { date: '2023-06-05', tokens: 1200, commission: 144, buyer: '0x1415...qrst' }
+        ];
+
+        transactions.forEach(tx => {
+            const row = transactionTableBody.insertRow();
+            row.insertCell(0).textContent = tx.date;
+            row.insertCell(1).textContent = tx.tokens;
+            row.insertCell(2).textContent = '$' + tx.commission;
+            row.insertCell(3).textContent = tx.buyer;
+        });
+
+        // Generate report button
+        document.getElementById('generateReportBtn').addEventListener('click', function() {
+            alert('Generating detailed report... This feature would typically create a comprehensive PDF report of your affiliate performance.');
+        });
+    </script>
+
+    <footer style="background-color: #2c3e50; color: #ecf0f1; text-align: center; padding: 1rem; margin-top: 2rem;">
+        <p>TokenAffiliates Dashboard - Empowering Commission-Based Token Sales</p>
+        <nav>
+            <a href="https://tokenaffiliates.websim.ai/guide" style="color: #3498db;">Affiliate Guide</a> |
+            <a href="https://tokenaffiliates.websim.ai/terms" style="color: #3498db;">Terms of Service</a> |
+            <a href="https://tokenaffiliates.websim.ai/support" style="color: #3498db;">Support</a>
+        </nav>
+    </footer>
+</body></html>

@@ -1,0 +1,160 @@
+<html><head><base href="https://quantumconsciousness.org/microtubules-and-quantum-coherence/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microtubules and Quantum Coherence in the Brain</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    h1, h2 {
+        color: #2c3e50;
+    }
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #microtubuleModel {
+        width: 100%;
+        height: 400px;
+        margin-bottom: 20px;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .interactive-button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Microtubules and Quantum Coherence in the Brain</h1>
+        
+        <p>Welcome to our exploration of microtubules and quantum coherence in the brain, a crucial component of the Orchestrated Objective Reduction (Orch OR) theory. This page delves into the fascinating world where quantum mechanics meets neurobiology, potentially unlocking the secrets of consciousness.</p>
+        
+        <h2>3D Model of a Microtubule</h2>
+        <div id="microtubuleModel"></div>
+        
+        <h2>Quantum Coherence in Microtubules</h2>
+        <p>Quantum coherence in microtubules is a cornerstone of the Orch OR theory. Let's visualize how quantum effects might manifest in these cellular structures.</p>
+        
+        <div class="chart-container">
+            <canvas id="coherenceChart"></canvas>
+        </div>
+        
+        <h2>Interactive Exploration: Decoherence Time</h2>
+        <p>Explore how different factors affect the decoherence time in microtubules:</p>
+        <button id="temperatureBtn" class="interactive-button">Adjust Temperature</button>
+        <button id="sizeBtn" class="interactive-button">Change Microtubule Size</button>
+        <div class="chart-container">
+            <canvas id="decoherenceChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // 3D Microtubule Model
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(document.getElementById('microtubuleModel').clientWidth, 400);
+        document.getElementById('microtubuleModel').appendChild(renderer.domElement);
+
+        const geometry = new THREE.CylinderGeometry(1, 1, 10, 13);
+        const material = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+        const microtubule = new THREE.Mesh(geometry, material);
+        scene.add(microtubule);
+
+        camera.position.z = 15;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            microtubule.rotation.x += 0.01;
+            microtubule.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Quantum Coherence Chart
+        const coherenceCtx = document.getElementById('coherenceChart').getContext('2d');
+        new Chart(coherenceCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 100}, (_, i) => i),
+                datasets: [{
+                    label: 'Quantum Coherence',
+                    data: Array.from({length: 100}, () => Math.random()),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Decoherence Time Chart
+        const decoherenceCtx = document.getElementById('decoherenceChart').getContext('2d');
+        const decoherenceChart = new Chart(decoherenceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Current'],
+                datasets: [{
+                    label: 'Decoherence Time (ms)',
+                    data: [25],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Interactive buttons
+        document.getElementById('temperatureBtn').addEventListener('click', () => {
+            const newTime = Math.random() * 50 + 10;
+            decoherenceChart.data.datasets[0].data = [newTime];
+            decoherenceChart.update();
+        });
+
+        document.getElementById('sizeBtn').addEventListener('click', () => {
+            const newTime = Math.random() * 50 + 10;
+            decoherenceChart.data.datasets[0].data = [newTime];
+            decoherenceChart.update();
+        });
+    </script>
+</body>
+</html>

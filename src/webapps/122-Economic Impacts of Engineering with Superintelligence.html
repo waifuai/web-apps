@@ -1,0 +1,318 @@
+<html><head><base href="https://superintelligence-engineering.com/economic-impacts/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Economic Impacts of Engineering with Superintelligence</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+  }
+  h1, h2 {
+    color: #2c3e50;
+  }
+  .chart-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    padding: 20px;
+  }
+  #gdp-impact {
+    width: 100%;
+    height: 400px;
+  }
+  #job-displacement {
+    width: 100%;
+    height: 500px;
+  }
+  #wealth-distribution {
+    width: 100%;
+    height: 400px;
+  }
+  .interactive-slider {
+    width: 100%;
+    margin: 20px 0;
+  }
+  .slider-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .slider-container label {
+    min-width: 200px;
+  }
+  .slider-container input {
+    flex-grow: 1;
+  }
+  .slider-value {
+    min-width: 50px;
+    text-align: right;
+    margin-left: 10px;
+  }
+</style>
+</head>
+<body>
+  <h1>Economic Impacts of Engineering with Superintelligence</h1>
+  
+  <p>As we venture into the era of superintelligence, the economic landscape is poised for unprecedented transformation. This page explores the multifaceted economic impacts of engineering with superintelligent systems, from GDP growth to job market disruptions and wealth distribution shifts.</p>
+
+  <h2>1. GDP Impact Projection</h2>
+  <div class="chart-container">
+    <canvas id="gdp-impact"></canvas>
+  </div>
+
+  <h2>2. Job Displacement and Creation</h2>
+  <div class="chart-container">
+    <div id="job-displacement"></div>
+  </div>
+
+  <h2>3. Wealth Distribution Shift</h2>
+  <div class="chart-container">
+    <canvas id="wealth-distribution"></canvas>
+  </div>
+
+  <h2>4. Economic Impact Simulator</h2>
+  <div class="chart-container">
+    <h3>Adjust parameters to see potential economic outcomes:</h3>
+    <div class="interactive-slider">
+      <div class="slider-container">
+        <label for="ai-adoption-rate">AI Adoption Rate:</label>
+        <input type="range" id="ai-adoption-rate" min="0" max="100" value="50">
+        <span class="slider-value" id="ai-adoption-rate-value">50%</span>
+      </div>
+      <div class="slider-container">
+        <label for="job-automation-level">Job Automation Level:</label>
+        <input type="range" id="job-automation-level" min="0" max="100" value="30">
+        <span class="slider-value" id="job-automation-level-value">30%</span>
+      </div>
+      <div class="slider-container">
+        <label for="new-industry-growth">New Industry Growth:</label>
+        <input type="range" id="new-industry-growth" min="0" max="100" value="20">
+        <span class="slider-value" id="new-industry-growth-value">20%</span>
+      </div>
+    </div>
+    <canvas id="economic-impact-simulation"></canvas>
+  </div>
+
+  <script>
+    // GDP Impact Projection Chart
+    const gdpCtx = document.getElementById('gdp-impact').getContext('2d');
+    new Chart(gdpCtx, {
+      type: 'line',
+      data: {
+        labels: ['2025', '2030', '2035', '2040', '2045', '2050'],
+        datasets: [{
+          label: 'Baseline GDP Growth',
+          data: [100, 110, 121, 133, 146, 161],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          tension: 0.1
+        }, {
+          label: 'GDP with Superintelligence',
+          data: [100, 115, 140, 180, 240, 320],
+          borderColor: 'rgba(255, 99, 132, 1)',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Projected GDP Growth with Superintelligence (Indexed, 2025=100)'
+          }
+        }
+      }
+    });
+
+    // Job Displacement and Creation Chart
+    const jobData = [
+      {category: "Manufacturing", displaced: -30, created: 10},
+      {category: "Healthcare", displaced: -20, created: 25},
+      {category: "Education", displaced: -15, created: 20},
+      {category: "Finance", displaced: -25, created: 15},
+      {category: "Retail", displaced: -35, created: 5},
+      {category: "Tech", displaced: -10, created: 40},
+      {category: "Energy", displaced: -20, created: 30},
+      {category: "Transport", displaced: -40, created: 15}
+    ];
+
+    const margin = {top: 20, right: 30, bottom: 40, left: 90},
+    width = 800 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+    const svg = d3.select("#job-displacement")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleLinear()
+      .domain([-50, 50])
+      .range([0, width]);
+
+    svg.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x));
+
+    const y = d3.scaleBand()
+      .range([0, height])
+      .domain(jobData.map(d => d.category))
+      .padding(.1);
+
+    svg.append("g")
+      .call(d3.axisLeft(y));
+
+    svg.selectAll("rect.displaced")
+      .data(jobData)
+      .join("rect")
+      .attr("x", d => x(Math.min(0, d.displaced)))
+      .attr("y", d => y(d.category))
+      .attr("width", d => Math.abs(x(d.displaced) - x(0)))
+      .attr("height", y.bandwidth())
+      .attr("fill", "#ff6361");
+
+    svg.selectAll("rect.created")
+      .data(jobData)
+      .join("rect")
+      .attr("x", x(0))
+      .attr("y", d => y(d.category))
+      .attr("width", d => x(d.created) - x(0))
+      .attr("height", y.bandwidth())
+      .attr("fill", "#003f5c");
+
+    svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("x", width)
+      .attr("y", height + margin.top + 20)
+      .text("Jobs (in millions)");
+
+    svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -margin.left + 20)
+      .attr("x", -margin.top)
+      .text("Industry Sectors");
+
+    // Wealth Distribution Chart
+    const wealthCtx = document.getElementById('wealth-distribution').getContext('2d');
+    new Chart(wealthCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Bottom 50%', 'Middle 40%', 'Top 10%', 'Top 1%'],
+        datasets: [{
+          label: 'Current Wealth Distribution',
+          data: [1, 30, 69, 45],
+          backgroundColor: 'rgba(75, 192, 192, 0.6)'
+        }, {
+          label: 'Projected Distribution with Superintelligence',
+          data: [5, 25, 70, 55],
+          backgroundColor: 'rgba(255, 99, 132, 0.6)'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Wealth Distribution: Current vs Projected with Superintelligence'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Percentage of Total Wealth'
+            }
+          }
+        }
+      }
+    });
+
+    // Economic Impact Simulator
+    const simulationCtx = document.getElementById('economic-impact-simulation').getContext('2d');
+    let simulationChart = new Chart(simulationCtx, {
+      type: 'radar',
+      data: {
+        labels: ['GDP Growth', 'Job Creation', 'Income Inequality', 'Innovation Rate', 'Productivity'],
+        datasets: [{
+          label: 'Economic Impact',
+          data: [50, 50, 50, 50, 50],
+          fill: true,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(255, 99, 132)'
+        }]
+      },
+      options: {
+        elements: {
+          line: {
+            borderWidth: 3
+          }
+        },
+        scales: {
+          r: {
+            angleLines: {
+              display: false
+            },
+            suggestedMin: 0,
+            suggestedMax: 100
+          }
+        }
+      }
+    });
+
+    // Update simulation based on slider values
+    function updateSimulation() {
+      const aiAdoptionRate = parseInt(document.getElementById('ai-adoption-rate').value);
+      const jobAutomationLevel = parseInt(document.getElementById('job-automation-level').value);
+      const newIndustryGrowth = parseInt(document.getElementById('new-industry-growth').value);
+
+      // Simple formulas to calculate economic impacts (these can be made more complex)
+      const gdpGrowth = aiAdoptionRate * 0.8 + newIndustryGrowth * 0.5;
+      const jobCreation = newIndustryGrowth - jobAutomationLevel * 0.5;
+      const incomeInequality = jobAutomationLevel * 0.7 - newIndustryGrowth * 0.3;
+      const innovationRate = aiAdoptionRate * 0.6 + newIndustryGrowth * 0.4;
+      const productivity = aiAdoptionRate * 0.7 + jobAutomationLevel * 0.3;
+
+      simulationChart.data.datasets[0].data = [
+        gdpGrowth,
+        Math.max(0, jobCreation),
+        incomeInequality,
+        innovationRate,
+        productivity
+      ];
+      simulationChart.update();
+    }
+
+    // Add event listeners to sliders
+    document.getElementById('ai-adoption-rate').addEventListener('input', function(e) {
+      document.getElementById('ai-adoption-rate-value').textContent = e.target.value + '%';
+      updateSimulation();
+    });
+
+    document.getElementById('job-automation-level').addEventListener('input', function(e) {
+      document.getElementById('job-automation-level-value').textContent = e.target.value + '%';
+      updateSimulation();
+    });
+
+    document.getElementById('new-industry-growth').addEventListener('input', function(e) {
+      document.getElementById('new-industry-growth-value').textContent = e.target.value + '%';
+      updateSimulation();
+    });
+
+    // Initial simulation update
+    updateSimulation();
+  </script>
+</body></html>

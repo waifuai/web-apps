@@ -1,0 +1,186 @@
+<html><head><base href="https://techmobilization.net/" />
+<title>TechOps Investor Threat Scanner</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Courier New', monospace;
+    background-color: #000;
+    color: #00ff00;
+    overflow: hidden;
+  }
+  #scanner-interface {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  #radar-display {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .radar-circle {
+    position: absolute;
+    border: 2px solid #00ff00;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  #radar-sweep {
+    position: absolute;
+    width: 50%;
+    height: 2px;
+    background-color: #00ff00;
+    top: 50%;
+    left: 50%;
+    transform-origin: left center;
+    animation: sweep 5s infinite linear;
+  }
+  @keyframes sweep {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .investor-blip {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ffff00;
+    transform: translate(-50%, -50%);
+  }
+  .investor-blip.hostile {
+    background-color: #ff0000;
+  }
+  #control-panel {
+    background-color: #001100;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  button {
+    background-color: #003300;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #004400;
+  }
+  #status-log {
+    height: 150px;
+    overflow-y: auto;
+    background-color: #001100;
+    padding: 10px;
+    border-top: 1px solid #00ff00;
+  }
+  .log-entry {
+    margin-bottom: 5px;
+  }
+  #threat-details {
+    position: absolute;
+    background-color: rgba(0, 17, 0, 0.9);
+    border: 1px solid #00ff00;
+    padding: 10px;
+    display: none;
+    z-index: 1000;
+  }
+</style>
+</head>
+<body>
+<div id="scanner-interface">
+  <div id="radar-display">
+    <div class="radar-circle" style="width: 200px; height: 200px;"></div>
+    <div class="radar-circle" style="width: 400px; height: 400px;"></div>
+    <div class="radar-circle" style="width: 600px; height: 600px;"></div>
+    <div id="radar-sweep"></div>
+  </div>
+  <div id="control-panel">
+    <button onclick="startScan()">Start Deep Scan</button>
+    <button onclick="analyzeThreats()">Analyze Threats</button>
+    <span id="scan-status">Status: Idle</span>
+  </div>
+  <div id="status-log"></div>
+</div>
+<div id="threat-details"></div>
+
+<script>
+  const investors = [
+    { name: "Benevolent Capital", threat: 0, agenda: "Ethical tech growth" },
+    { name: "Data Harvester Fund", threat: 75, agenda: "Mass surveillance" },
+    { name: "AI Dominance LLC", threat: 90, agenda: "AGI monopoly" },
+    { name: "Green Tech Ventures", threat: 10, agenda: "Sustainable innovation" },
+    { name: "Shadow Syndicate", threat: 95, agenda: "Market manipulation" },
+    { name: "Quantum Leap Investments", threat: 60, agenda: "Disruptive tech control" }
+  ];
+
+  function startScan() {
+    document.getElementById('scan-status').textContent = 'Status: Scanning';
+    document.getElementById('status-log').innerHTML = '';
+    log('Initiating deep scan of investor network...');
+    
+    investors.forEach((investor, index) => {
+      setTimeout(() => {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 250 + 50;
+        const x = Math.cos(angle) * distance + 300;
+        const y = Math.sin(angle) * distance + 300;
+        
+        const blip = document.createElement('div');
+        blip.className = `investor-blip ${investor.threat > 50 ? 'hostile' : ''}`;
+        blip.style.left = `${x}px`;
+        blip.style.top = `${y}px`;
+        blip.addEventListener('mouseover', () => showThreatDetails(investor, event));
+        blip.addEventListener('mouseout', hideThreatDetails);
+        document.getElementById('radar-display').appendChild(blip);
+        
+        log(`Detected: ${investor.name} - Threat Level: ${investor.threat}%`);
+      }, index * 1000);
+    });
+
+    setTimeout(() => {
+      document.getElementById('scan-status').textContent = 'Status: Scan Complete';
+      log('Deep scan completed. Analyze threats for detailed report.');
+    }, investors.length * 1000);
+  }
+
+  function analyzeThreats() {
+    log('Analyzing detected threats...');
+    setTimeout(() => {
+      let highThreats = investors.filter(inv => inv.threat > 70);
+      log(`Analysis complete. ${highThreats.length} high-threat investors detected.`);
+      highThreats.forEach(inv => {
+        log(`WARNING: ${inv.name} - Threat Level: ${inv.threat}% - Agenda: ${inv.agenda}`);
+      });
+    }, 2000);
+  }
+
+  function log(message) {
+    const logEntry = document.createElement('div');
+    logEntry.className = 'log-entry';
+    logEntry.textContent = `> ${message}`;
+    document.getElementById('status-log').appendChild(logEntry);
+    document.getElementById('status-log').scrollTop = document.getElementById('status-log').scrollHeight;
+  }
+
+  function showThreatDetails(investor, event) {
+    const detailsBox = document.getElementById('threat-details');
+    detailsBox.innerHTML = `
+      <h3>${investor.name}</h3>
+      <p>Threat Level: ${investor.threat}%</p>
+      <p>Agenda: ${investor.agenda}</p>
+    `;
+    detailsBox.style.display = 'block';
+    detailsBox.style.left = `${event.clientX + 10}px`;
+    detailsBox.style.top = `${event.clientY + 10}px`;
+  }
+
+  function hideThreatDetails() {
+    document.getElementById('threat-details').style.display = 'none';
+  }
+</script>
+</body></html>

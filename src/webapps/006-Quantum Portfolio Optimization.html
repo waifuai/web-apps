@@ -1,0 +1,225 @@
+<html><head><base href="https://websim.ai" /><title>Quantum Portfolio Optimization</title><style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .container {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 100%;
+  }
+  h1, h2 {
+    color: #60a5fa;
+    text-align: center;
+  }
+  .input-section {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .input-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #a0aec0;
+  }
+  input[type="number"], select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    background-color: #2d3748;
+    color: #e2e8f0;
+  }
+  button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  button:hover {
+    background-color: #2563eb;
+  }
+  .chart-container {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+  }
+  .result-section {
+    background-color: #2d3748;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Quantum Portfolio Optimization</h1>
+    <div class="input-section">
+      <h2>Portfolio Configuration</h2>
+      <div class="input-group">
+        <label for="numAssets">Number of Assets:</label>
+        <input type="number" id="numAssets" value="10" min="2" max="100">
+      </div>
+      <div class="input-group">
+        <label for="riskTolerance">Risk Tolerance (0-1):</label>
+        <input type="number" id="riskTolerance" value="0.5" min="0" max="1" step="0.1">
+      </div>
+      <div class="input-group">
+        <label for="quantumComputer">Quantum Computer:</label>
+        <select id="quantumComputer">
+          <option value="25">IBM Q System One (25 qubits)</option>
+          <option value="65">IBM Q Eagle (65 qubits)</option>
+          <option value="127">IBM Q Condor (127 qubits)</option>
+          <option value="1000">IBM Q Flamingo (1,000 qubits)</option>
+          <option value="10000">IBM Q Kookaburra (10,000 qubits)</option>
+          <option value="100000">IBM Q Hummingbird (100,000 qubits)</option>
+          <option value="1000000">IBM Q Colibri (1,000,000 qubits)</option>
+        </select>
+      </div>
+      <button id="runOptimization">Run Quantum Optimization</button>
+    </div>
+    <div id="accuracyChart" class="chart-container"></div>
+    <div id="portfolioChart" class="chart-container"></div>
+    <div id="result" class="result-section" style="display: none;"></div>
+  </div>
+  <script>
+    function runQuantumOptimization() {
+      const numAssets = parseInt(document.getElementById('numAssets').value);
+      const riskTolerance = parseFloat(document.getElementById('riskTolerance').value);
+      const quantumComputer = parseInt(document.getElementById('quantumComputer').value);
+
+      // Simulate optimization results
+      const accuracy = simulateAccuracy(numAssets, quantumComputer);
+      const portfolio = generatePortfolio(numAssets, riskTolerance, accuracy);
+
+      // Update charts
+      updateAccuracyChart();
+      updatePortfolioChart(portfolio);
+
+      // Display results
+      displayResults(accuracy, portfolio);
+    }
+
+    function simulateAccuracy(numAssets, numQubits) {
+      // This is a simplified model and not representative of actual quantum computing performance
+      const baseAccuracy = 0.7;
+      const assetComplexity = Math.log(numAssets) / Math.log(2);
+      const qubitPower = Math.log(numQubits) / Math.log(2);
+      let accuracy = baseAccuracy + (1 - baseAccuracy) * (1 - Math.exp(-qubitPower / assetComplexity));
+      return Math.min(accuracy, 0.9999); // Cap at 99.99% accuracy
+    }
+
+    function generatePortfolio(numAssets, riskTolerance, accuracy) {
+      let portfolio = [];
+      let remainingAllocation = 1;
+
+      for (let i = 0; i < numAssets; i++) {
+        if (i === numAssets - 1) {
+          portfolio.push(remainingAllocation);
+        } else {
+          // Generate a random allocation, biased by risk tolerance and accuracy
+          let allocation = Math.random() * remainingAllocation * (1 - riskTolerance) * accuracy;
+          allocation = Math.min(allocation, remainingAllocation);
+          portfolio.push(allocation);
+          remainingAllocation -= allocation;
+        }
+      }
+
+      // Normalize to ensure sum is 1
+      const sum = portfolio.reduce((a, b) => a + b, 0);
+      return portfolio.map(p => p / sum);
+    }
+
+    function updateAccuracyChart() {
+      const qubitValues = [25, 65, 127, 1000, 10000, 100000, 1000000];
+      const numAssets = parseInt(document.getElementById('numAssets').value);
+      const accuracyValues = qubitValues.map(qubits => simulateAccuracy(numAssets, qubits));
+
+      const data = [{
+        x: qubitValues,
+        y: accuracyValues,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Accuracy',
+        line: { color: '#60a5fa' }
+      }];
+
+      const layout = {
+        title: 'Estimated Optimization Accuracy by Number of Qubits',
+        xaxis: { 
+          title: 'Number of Qubits',
+          type: 'log',
+          autorange: true
+        },
+        yaxis: { 
+          title: 'Estimated Accuracy',
+          range: [0.5, 1]
+        },
+        plot_bgcolor: '#2d3748',
+        paper_bgcolor: '#1e293b',
+        font: { color: '#e2e8f0' }
+      };
+
+      Plotly.newPlot('accuracyChart', data, layout);
+    }
+
+    function updatePortfolioChart(portfolio) {
+      const data = [{
+        values: portfolio,
+        labels: portfolio.map((_, i) => `Asset ${i+1}`),
+        type: 'pie',
+        textinfo: "label+percent",
+        insidetextorientation: "radial"
+      }];
+
+      const layout = {
+        title: 'Optimized Portfolio Allocation',
+        height: 400,
+        width: 500,
+        paper_bgcolor: '#1e293b',
+        font: { color: '#e2e8f0' }
+      };
+
+      Plotly.newPlot('portfolioChart', data, layout);
+    }
+
+    function displayResults(accuracy, portfolio) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `
+        <h2>Optimization Results</h2>
+        <p><strong>Estimated Accuracy:</strong> ${(accuracy * 100).toFixed(2)}%</p>
+        <p><strong>Portfolio Allocation:</strong></p>
+        <ul>
+          ${portfolio.map((allocation, i) => `<li>Asset ${i+1}: ${(allocation * 100).toFixed(2)}%</li>`).join('')}
+        </ul>
+        <p>Note: This is a simulated result. Actual quantum optimization would require access to real quantum hardware and may produce different results.</p>
+      `;
+    }
+
+    document.getElementById('runOptimization').addEventListener('click', runQuantumOptimization);
+    
+    // Initial chart update
+    updateAccuracyChart();
+  </script>
+</body></html>

@@ -1,0 +1,167 @@
+<html><head><base href="https://quantum-consciousness-research.net/orch-or/"><title>Entanglement Dynamics in Neural Networks: A Quantum Computing Approach</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f8ff;
+}
+h1, h2 {
+    color: #2c3e50;
+}
+.interactive-chart {
+    width: 100%;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.data-vis {
+    width: 100%;
+    height: 300px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Entanglement Dynamics in Neural Networks: A Quantum Computing Approach</h1>
+    </header>
+    
+    <nav>
+        <a href="5-quantum-coherence-simulations.html">Previous: Quantum Coherence in Biological Systems</a> |
+        <a href="7-decoherence-timescales.html">Next: Decoherence Timescales</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>Introduction</h2>
+            <p>In this chapter, we explore the fascinating intersection of quantum entanglement and neural networks, leveraging quantum computing approaches to model and analyze the potential quantum effects in brain function. We'll investigate how quantum entanglement might play a role in the complex dynamics of neural networks and its implications for the Orchestrated Objective Reduction (Orch-OR) theory.</p>
+        </section>
+
+        <section>
+            <h2>Quantum Entanglement in Neural Networks</h2>
+            <p>Quantum entanglement is a phenomenon where two or more quantum particles become correlated in such a way that the quantum state of each particle cannot be described independently. In the context of neural networks, we hypothesize that quantum entanglement could potentially occur between microtubules in neurons, influencing information processing in the brain.</p>
+            
+            <div id="entanglement-visualization" class="interactive-chart"></div>
+        </section>
+
+        <section>
+            <h2>Modeling Entanglement Dynamics</h2>
+            <p>Using quantum computing simulations, we can model the entanglement dynamics in simplified neural network structures. This allows us to explore how quantum effects might propagate and influence larger scale neural activity.</p>
+            
+            <div id="entanglement-dynamics" class="data-vis"></div>
+        </section>
+
+        <section>
+            <h2>Quantum Neural Networks</h2>
+            <p>We can also design quantum neural networks that incorporate entanglement as a fundamental feature. These models provide insights into how quantum effects might enhance information processing in biological neural networks.</p>
+            
+            <div id="quantum-nn-comparison" class="interactive-chart"></div>
+        </section>
+
+        <section>
+            <h2>Implications for Orch-OR Theory</h2>
+            <p>The study of entanglement dynamics in neural networks has significant implications for the Orch-OR theory. If quantum entanglement can be shown to play a role in neural information processing, it would provide strong support for the quantum basis of consciousness proposed by Orch-OR.</p>
+        </section>
+    </main>
+
+    <script>
+    // Entanglement Visualization
+    function generateEntanglementData() {
+        const t = math.range(0, 10, 0.1).toArray();
+        const y1 = t.map(val => Math.sin(val) * Math.exp(-val/5));
+        const y2 = t.map(val => Math.cos(val) * Math.exp(-val/5));
+        return {t, y1, y2};
+    }
+
+    const entanglementData = generateEntanglementData();
+
+    const entanglementVis = {
+        x: entanglementData.t,
+        y: entanglementData.y1,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Qubit 1'
+    };
+
+    const entanglementVis2 = {
+        x: entanglementData.t,
+        y: entanglementData.y2,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Qubit 2'
+    };
+
+    Plotly.newPlot('entanglement-visualization', [entanglementVis, entanglementVis2], {
+        title: 'Quantum Entanglement Dynamics',
+        xaxis: {title: 'Time'},
+        yaxis: {title: 'Quantum State'}
+    });
+
+    // Entanglement Dynamics
+    function generateDynamicsData() {
+        const neurons = math.range(1, 51).toArray();
+        const entanglement = neurons.map(n => Math.exp(-n/20) * (1 + 0.2*Math.sin(n/2)));
+        return {neurons, entanglement};
+    }
+
+    const dynamicsData = generateDynamicsData();
+
+    const dynamicsVis = {
+        x: dynamicsData.neurons,
+        y: dynamicsData.entanglement,
+        type: 'bar',
+        marker: {
+            color: dynamicsData.entanglement,
+            colorscale: 'Viridis'
+        }
+    };
+
+    Plotly.newPlot('entanglement-dynamics', [dynamicsVis], {
+        title: 'Entanglement Strength in Neural Network',
+        xaxis: {title: 'Neuron Pair'},
+        yaxis: {title: 'Entanglement Strength'}
+    });
+
+    // Quantum vs Classical Neural Network Comparison
+    function generateComparisonData() {
+        const complexity = math.range(1, 21).toArray();
+        const quantum = complexity.map(c => 2**c);
+        const classical = complexity.map(c => c**2);
+        return {complexity, quantum, classical};
+    }
+
+    const comparisonData = generateComparisonData();
+
+    const quantumPlot = {
+        x: comparisonData.complexity,
+        y: comparisonData.quantum,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Quantum NN'
+    };
+
+    const classicalPlot = {
+        x: comparisonData.complexity,
+        y: comparisonData.classical,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Classical NN'
+    };
+
+    Plotly.newPlot('quantum-nn-comparison', [quantumPlot, classicalPlot], {
+        title: 'Quantum vs Classical Neural Network Computational Complexity',
+        xaxis: {title: 'Problem Complexity'},
+        yaxis: {title: 'Computational Steps', type: 'log'}
+    });
+    </script>
+</body></html>
