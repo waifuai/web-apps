@@ -1,0 +1,40 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Dynamics Simulator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="simulator-container">
+    <div class="controls">
+      <h1>Token Dynamics Simulator</h1>
+      <div class="strategy-select">
+        <label for="strategy">Airdrop Strategy:</label>
+        <select id="strategy">
+          <option value="linear">Linear Vesting</option>
+          <option value="cliff">Cliff Release</option>
+          <option value="exponential">Exponential Decay</option>
+        </select>
+      </div>
+      <div class="params">
+        <div class="param-group">
+          <label>Initial Supply:</label>
+          <input type="number" id="initialSupply" value="1000000">
+        </div>
+        <div class="param-group">
+          <label>Time Steps:</label>
+          <input type="number" id="timeSteps" value="30">
+        </div>
+      </div>
+      <button onclick="runSimulation()">Run Simulation</button>
+    </div>
+    <div class="charts">
+      <canvas id="priceChart"></canvas>
+      <canvas id="supplyChart"></canvas>
+    </div>
+  </div>
+  <script src="simulation.js"></script>
+</body>
+</html>

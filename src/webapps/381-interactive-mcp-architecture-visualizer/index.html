@@ -1,0 +1,250 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f0f4f8;
+}
+
+#diagram {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+#input-area {
+    margin: 20px 0;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+button {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #357abd;
+}
+
+.node {
+    fill: #fff;
+    stroke: #333;
+    stroke-width: 2px;
+}
+
+.link {
+    stroke: #666;
+    stroke-width: 2px;
+}
+
+.label {
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+}
+</style></head><body>
+    <h1>Interactive MCP Architecture Visualizer</h1>
+    <div id="input-area">
+        <textarea id="prompt" placeholder="Enter your description of an MCP architecture component or system...">The Model Context Protocol (MCP) facilitates secure integration between LLMs and external resources...</textarea>
+        <button onclick="generateDiagram()">Generate Diagram</button>
+    </div>
+    <svg id="diagram" width="800" height="600"></svg>
+
+<script>
+async function getArchitectureComponents(text) {
+    try {
+        const response = await fetch('/api/ai_completion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: `Analyze the following text and extract key MCP architecture components and their relationships. Return as a structured graph format.
+
+                <typescript-interface>
+                interface Node {
+                    id: string;
+                    label: string;
+                    type: "component" | "resource" | "service";
+                }
+
+                interface Link {
+                    source: string;
+                    target: string;
+                    label: string;
+                }
+
+                interface Response {
+                    nodes: Node[];
+                    links: Link[];
+                }
+                </typescript-interface>
+
+                <example>
+                {
+                    "nodes": [
+                        {"id": "llm", "label": "LLM Client", "type": "component"},
+                        {"id": "server", "label": "MCP Server", "type": "component"}
+                    ],
+                    "links": [
+                        {"source": "llm", "target": "server", "label": "JSON-RPC"}
+                    ]
+                }
+                </example>`,
+                data: text
+            })
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return {
+            nodes: [],
+            links: []
+        };
+    }
+}
+
+function renderDiagram(data) {
+    const svg = d3.select("#diagram");
+    svg.selectAll("*").remove();
+    
+    const width = 800;
+    const height = 600;
+    
+    const simulation = d3.forceSimulation(data.nodes)
+        .force("link", d3.forceLink(data.links).id(d => d.id).distance(150))
+        .force("charge", d3.forceManyBody().strength(-500))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+    const g = svg.append("g");
+
+    // Add zoom behavior
+    svg.call(d3.zoom()
+        .extent([[0, 0], [width, height]])
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+            g.attr("transform", event.transform);
+        }));
+
+    const link = g.append("g")
+        .selectAll("g")
+        .data(data.links)
+        .enter().append("g");
+
+    link.append("line")
+        .attr("class", "link");
+
+    link.append("text")
+        .attr("class", "label")
+        .attr("text-anchor", "middle")
+        .attr("dy", -5)
+        .text(d => d.label);
+
+    const node = g.append("g")
+        .selectAll(".node")
+        .data(data.nodes)
+        .enter().append("g")
+        .attr("class", "node")
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    node.append("circle")
+        .attr("class", "node")
+        .attr("r", 30)
+        .attr("fill", d => {
+            switch(d.type) {
+                case "component": return "#4a90e2";
+                case "resource": return "#50C878";
+                case "service": return "#FFB347";
+                default: return "#gray";
+            }
+        });
+
+    node.append("text")
+        .attr("class", "label")
+        .attr("text-anchor", "middle")
+        .attr("dy", 5)
+        .text(d => d.label)
+        .call(wrap, 60);
+
+    simulation.on("tick", () => {
+        link.select("line")
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        link.select("text")
+            .attr("x", d => (d.source.x + d.target.x) / 2)
+            .attr("y", d => (d.source.y + d.target.y) / 2);
+
+        node.attr("transform", d => `translate(${d.x},${d.y})`);
+    });
+
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+
+    function wrap(text, width) {
+        text.each(function() {
+            const text = d3.select(this);
+            const words = text.text().split(/\s+/);
+            const lines = [];
+            let line = [];
+
+            words.forEach(word => {
+                line.push(word);
+                if (line.join(" ").length > width/6) {
+                    lines.push(line.join(" "));
+                    line = [];
+                }
+            });
+            if (line.length > 0) lines.push(line.join(" "));
+
+            text.text(null);
+            lines.forEach((line, i) => {
+                text.append("tspan")
+                    .attr("x", 0)
+                    .attr("dy", i === 0 ? 0 : "1.2em")
+                    .text(line);
+            });
+        });
+    }
+}
+
+async function generateDiagram() {
+    const promptText = document.getElementById("prompt").value;
+    const data = await getArchitectureComponents(promptText);
+    renderDiagram(data);
+}
+
+// Initial diagram generation
+generateDiagram();
+</script></body></html>

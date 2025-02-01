@@ -1,0 +1,93 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokenized Economy Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+</head>
+<body>
+  <div class="dex-container">
+    <div class="header">
+      <svg class="solana-logo" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 0L8.31 3.69 12 7.38 15.69 3.69 12 0zm0 7.38L8.31 11.07 12 14.76l3.69-3.69L12 7.38zm0 7.37l-3.69 3.69L12 24l3.69-3.69L12 14.75z"/>
+      </svg>
+      <h1>Tokenized Economy Simulator</h1>
+      <div class="header-controls">
+        <button id="randomDataBtn" style="margin-right: 10px;">Randomize Economy</button>
+        <button id="resetBtn" style="background: #ff4757;">Reset Simulation</button>
+        <button id="autoBarterModeBtn" style="margin-left: 10px;">Start Autonomous Barter Mode</button>
+        <button id="autoIcoModeBtn" style="margin-left: 10px;">Start Autonomous ICO Mode</button>
+      </div>
+    </div>
+
+    <div class="grid-container">
+      <!-- New ICO Creation Card -->
+      <div class="card">
+        <h2>Launch New ICO</h2>
+        <form id="icoForm">
+          <div class="form-group">
+            <input type="text" id="icoName" placeholder="Project Name" required>
+          </div>
+          <div class="form-group">
+            <input type="number" id="totalSupply" placeholder="Total Supply" step="1" required>
+            <select id="curveType">
+              <option value="linear">Linear Bonding Curve</option>
+              <option value="exponential">Exponential Curve</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="number" id="basePrice" placeholder="Base Price (SOL)" step="0.01" required>
+            <button type="submit">Launch ICO</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Updated Balance Display -->
+      <div class="card">
+        <h2>Token Portfolio</h2>
+        <div id="tokenPortfolio" class="balance-display"></div>
+      </div>
+
+      <!-- ICO Marketplace -->
+      <div class="card" id="icoMarketplace">
+        <h2>Active ICOs</h2>
+        <div class="ico-list"></div>
+      </div>
+
+      <!-- Bonding Curve Visualizer -->
+      <div class="card">
+        <h2>Bonding Curve Analytics</h2>
+        <div class="chart-container">
+          <canvas id="curveChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Updated Swap Interface -->
+      <div class="card">
+        <h2>Token Barter</h2>
+        <form id="barterForm">
+          <div class="form-group">
+            <input type="number" id="barterAmount" placeholder="Amount" step="0.01" required>
+            <select id="barterFrom"></select>
+            <span class="arrow">→</span>
+            <select id="barterTo"></select>
+          </div>
+          <div class="form-group">
+            <button type="submit">Execute Barter</button>
+          </div>
+        </form>
+        <div id="barterResult" class="quote-result"></div>
+      </div>
+
+      <!-- Transaction Log -->
+      <div class="card">
+        <h2>Transaction History</h2>
+        <div id="transactionLog" class="transaction-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

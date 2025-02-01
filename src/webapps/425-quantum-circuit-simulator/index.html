@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quantum Circuit Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Random Quantum Circuit Generator, Simulator &amp; Optimizer</h1>
+  </header>
+  <main>
+    <section id="controls">
+      <button id="generateCircuit">Generate Random Circuit</button>
+      <button id="simulateCircuit">Simulate Circuit (with Noise)</button>
+      <button id="optimizeCircuit">Optimize Circuit</button>
+    </section>
+    <section id="output">
+      <h2>Circuit Diagram</h2>
+      <div id="circuitDiagram"></div>
+      <h2>Circuit Details</h2>
+      <pre id="circuitDetails"></pre>
+      <h2>Simulation Result</h2>
+      <pre id="simulationResult"></pre>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

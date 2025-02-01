@@ -1,0 +1,144 @@
+    <title>Interactive MCP Tutorial</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      .mcp-element {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f8f8f8;
+      }
+      .mcp-element h3 {
+        margin-top: 0;
+      }
+
+      .arrow {
+          width: 0;
+          height: 0;
+          border-top: 10px solid transparent;
+          border-bottom: 10px solid transparent;
+          border-left: 15px solid black;
+          display: inline-block;
+        }
+
+    </style>
+  </head><body>
+    <h1>Interactive Model Context Protocol (MCP) Tutorial</h1>
+
+    <div class="mcp-element">
+      <h3>1. Resources</h3>
+      <p>Resources are data exposed by the server. They can be text or binary, and are identified by URIs.</p>
+      <ul>
+        <li><b>resources/list:</b> Discover available resources.</li>
+        <li><b>resources/list_templates:</b> Discover dynamic resources generated from URI templates.</li>
+        <li><b>resources/read:</b> Read resource content.</li>
+        <li><b>notifications/resources/list_changed:</b> Real-time updates on available resources.</li>
+        <li><b>resources/subscribe:</b> Subscribe to changes in resource content.</li>
+      </ul>
+      <div id="resources-example">
+    </div>
+    </div>
+
+    <div class="mcp-element">
+      <h3>2. Prompts</h3>
+      <p>Prompts are reusable templates exposed by servers.  They allow for dynamic arguments and context inclusion.</p>
+      <ul>
+        <li><b>prompts/list:</b> Discover available prompts.</li>
+        <li><b>prompts/get:</b> Retrieve a prompt with arguments.</li>
+      </ul>
+    </div>
+
+
+    <div class="mcp-element">
+      <h3>3. Tools</h3>
+      <p>Tools are executable functions on the server, allowing LLMs to interact with external systems.</p>
+      <ul>
+        <li><b>tools/list:</b> Discover available tools.</li>
+        <li><b>tools/call:</b> Execute a tool with specified arguments.</li>
+      </ul>
+    </div>
+
+    <div class="mcp-element">
+      <h3>4. Sampling (Optional)</h3>
+      <p>Sampling allows servers to request LLM completions. Note: not all clients support sampling.</p>
+      <ul>
+        <li><b>sampling/createMessage:</b> Send conversation history and parameters to the LLM for completion.</li>
+      </ul>
+    </div>
+
+    <div class="mcp-element">
+      <h3>5. Transports</h3>
+      <p>Transports handle communication between clients and servers.</p>
+      <ul>
+        <li><b>stdio:</b> Standard input/output for local connections.</li>
+        <li><b>SSE:</b> Server-Sent Events over HTTP.</li>
+        <li><b>Custom Transports:</b>  Implement custom transports using the Transport interface.</li>
+      </ul>
+      <p>All transports use JSON-RPC 2.0 for message exchange.</p>
+    </div>
+
+    <div class="mcp-element">
+      <h3>6. Clients</h3>
+      <p>Various clients implement the MCP, including:</p>
+      <ul>
+        <li>Claude Desktop</li>
+        <li>Zed</li>
+        <li>Sourcegraph Cody</li>
+      </ul>
+      <p>Each client's MCP support varies.  Consult their documentation for specifics.</p>
+    </div>
+
+    <script>
+      async function getResourcesExample() {
+        try {
+        const response = await fetch('/api/ai_completion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+              prompt: `You are an API server that returns a JSON response mimicking the resources/list endpoint of the Model Context Protocol. Return file paths as URIs.
+
+<typescript-interface>
+interface Response {
+  resources: {uri: string, name: string, description: string, updated_at: string}[];
+}
+</typescript-interface>
+<example>
+
+{
+  "resources": [
+    {
+      "uri": "file:///path/to/file1.txt",
+      "name": "File 1",
+      "description": "This is the first file.",
+      "updated_at": "2024-08-16T12:00:00Z"
+    },
+    {
+      "uri": "file:///path/to/file2.pdf",
+      "name": "File 2",
+      "description": "This is the second file.",
+      "updated_at": "2024-08-16T13:00:00Z"
+    }
+  ]
+}
+</example>
+              `,
+              data: ""
+            }),
+          });
+          const data = await response.json();
+          const resourcesExampleDiv = document.getElementById('resources-example');
+          let html = "<p>Example 'resources/list' Response:</p><pre><code>" + JSON.stringify(data, null, 2) + "</code></pre>";
+          resourcesExampleDiv.innerHTML = html;
+        } catch (error) {
+            console.error('Error fetching AI response:', error);
+        }
+      }
+      getResourcesExample();
+    </script>
+
+  </body></html>

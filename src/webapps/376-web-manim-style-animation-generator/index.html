@@ -1,0 +1,247 @@
+<title>Web Manim-Style Animation Generator</title>
+<style>
+  body {
+    margin: 0;
+    padding: 20px;
+    background: #1a1a1a;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .canvas-container {
+    background: #000;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  
+  canvas {
+    width: 100%;
+    height: 600px;
+    background: #111;
+    border-radius: 4px;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  button {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  button:hover {
+    background: #1976D2;
+  }
+  
+  .code-editor {
+    width: 100%;
+    height: 200px;
+    background: #2d2d2d;
+    color: #fff;
+    font-family: monospace;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+
+  .prompt-input {
+    width: 100%;
+    padding: 10px;
+    background: #2d2d2d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-family: 'Arial', sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Web Manim-Style Animation Generator</h1>
+  
+  <input type="text" class="prompt-input" placeholder="Enter your animation prompt (e.g., 'Create a circle that grows and moves to the right')">
+  
+  <textarea class="code-editor" placeholder="Enter your animation code here...">// Example:
+createShape('circle', {x: 100, y: 100, radius: 50})
+  .animate({x: 30000, duration: 2000})
+  .animate({scale: 2, duration: 1000})
+  .animate({opacity: 0, duration: 1000});</textarea>
+  
+  <div class="controls">
+    <button onclick="generateFromPrompt()">Generate from Prompt</button>
+    <button onclick="runAnimation()">Run Animation</button>
+    <button onclick="resetCanvas()">Reset</button>
+  </div>
+  
+  <div class="canvas-container">
+    <canvas id="animationCanvas"></canvas>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+const canvas = document.getElementById('animationCanvas');
+const ctx = canvas.getContext('2d');
+let shapes = [];
+let timeline = gsap.timeline();
+
+// Set canvas size with proper scaling
+function setupCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+}
+
+setupCanvas();
+window.addEventListener('resize', setupCanvas);
+
+class Shape {
+  constructor(type, props) {
+    this.type = type;
+    this.x = props.x || 0;
+    this.y = props.y || 0;
+    this.radius = props.radius || 50;
+    this.width = props.width || 100;
+    this.height = props.height || 100;
+    this.color = props.color || '#2196F3';
+    this.opacity = 1;
+    this.scale = 1;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.scale, this.scale);
+    
+    ctx.beginPath();
+    ctx.fillStyle = this.color;
+    
+    if (this.type === 'circle') {
+      ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+    } else if (this.type === 'rectangle') {
+      ctx.rect(-this.width/2, -this.height/2, this.width, this.height);
+    }
+    
+    ctx.fill();
+    ctx.restore();
+  }
+
+  animate(props) {
+    timeline.to(this, {
+      ...props,
+      onUpdate: () => drawFrame()
+    });
+    return this;
+  }
+}
+
+function createShape(type, props) {
+  const shape = new Shape(type, props);
+  shapes.push(shape);
+  return shape;
+}
+
+function drawFrame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  shapes.forEach(shape => shape.draw());
+}
+
+async function generateFromPrompt() {
+  const promptInput = document.querySelector('.prompt-input').value;
+  if (!promptInput) {
+    alert('Please enter a prompt first!');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: `Convert the following animation description into JavaScript code using the available functions:
+        - createShape(type, props) - creates a shape (circle or rectangle)
+        - .animate(props) - animates properties like x, y, scale, opacity with duration
+        
+        Available shape types: circle, rectangle
+        Properties: x, y, radius (for circles), width/height (for rectangles), color
+        Animation properties: x, y, scale, opacity, duration (in ms)
+        
+        Return only the JavaScript code without any explanation.
+        
+        <typescript-interface>
+        interface Response {
+          code: string;
+        }
+        </typescript-interface>
+        
+        <example-response>
+        {
+          "code": "createShape('circle', {x: 100, y: 100, radius: 50, color: '#2196F3'}).animate({x: 300, duration: 2000})"
+        }
+        </example-response>`,
+        data: promptInput
+      })
+    });
+
+    const data = await response.json();
+    document.querySelector('.code-editor').value = data.code;
+  } catch (error) {
+    console.error('Error generating animation:', error);
+    alert('Error generating animation code. Please try again.');
+  }
+}
+
+function runAnimation() {
+  resetCanvas();
+  const code = document.querySelector('.code-editor').value;
+  try {
+    eval(code);
+  } catch (error) {
+    console.error('Animation error:', error);
+    alert('Error in animation code. Check console for details.');
+  }
+}
+
+function resetCanvas() {
+  shapes = [];
+  timeline.clear();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Initial example animation
+setTimeout(() => {
+  createShape('circle', {x: 100, y: 300, radius: 50, color: '#2196F3'})
+    .animate({x: 50000, duration: 2000})
+    .animate({scale: 2, duration: 1000})
+    .animate({opacity: 0, duration: 1000});
+    
+  createShape('rectangle', {x: 500, y: 300, width: 100, height: 100, color: '#4CAF50'})
+    .animate({x: 10000, duration: 2000})
+    .animate({rotation: 360, duration: 1000})
+    .animate({scale: 0.5, duration: 1000});
+}, 1000);
+</script>
+</body>
+</html>

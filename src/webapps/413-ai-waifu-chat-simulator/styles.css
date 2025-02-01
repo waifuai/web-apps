@@ -1,0 +1,114 @@
+body {
+  margin: 0;
+  background: #2b2b2b;
+  font-family: 'Arial', sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  display: flex;
+  gap: 2rem;
+  width: 90%;
+  max-width: 1200px;
+  height: 80vh;
+}
+
+.waifu-container {
+  flex: 1;
+  position: relative;
+}
+
+.chat-container {
+  flex: 2;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.message {
+  padding: 0.8rem 1.2rem;
+  border-radius: 15px;
+  max-width: 80%;
+  animation: slideIn 0.3s ease;
+}
+
+.user-message {
+  background: #4a9eff;
+  align-self: flex-end;
+}
+
+.bot-message {
+  background: #ff6b6b;
+  align-self: flex-start;
+}
+
+.input-container {
+  display: flex;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+input {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 25px;
+  background: #ff6b6b;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.waifu-character {
+  width: 100%;
+  height: auto;
+  transition: all 0.3s ease;
+}
+
+.eye {
+  transition: transform 0.2s, cy 0.2s;
+}
+
+.mouth {
+  transition: d 0.3s ease;
+}
+
+.blush {
+  transition: opacity 0.3s ease;
+}

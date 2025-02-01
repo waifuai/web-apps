@@ -1,0 +1,236 @@
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f5f5f5;
+  }
+
+  #diagram-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  #prompt-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  #generate-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #generate-btn:hover {
+    background: #0056b3;
+  }
+
+  .diagram {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .component {
+    fill: #fff;
+    stroke: #333;
+    stroke-width: 2;
+  }
+
+  .arrow {
+    stroke: #666;
+    stroke-width: 2;
+    fill: none;
+    marker-end: url(#arrowhead);
+  }
+
+  .label {
+    font-size: 14px;
+    fill: #333;
+  }
+
+  #loading {
+    display: none;
+    text-align: center;
+    margin: 20px;
+    font-style: italic;
+    color: #666;
+  }
+</style></head><body>
+  <div id="diagram-container">
+    <textarea id="prompt-input" rows="4" placeholder="Describe the software architecture you want to visualize..."></textarea>
+    <button id="generate-btn">Generate MCP Diagram</button>
+    <div id="loading">Generating diagram...</div>
+    <div id="diagram-output"></div>
+  </div>
+
+  <svg width="0" height="0">
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+      </marker>
+    </defs>
+  </svg>
+
+<script>
+async function generateDiagram(prompt) {
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: `Based on the provided software architecture description, generate an SVG diagram specification showing the key components and their relationships. The diagram should follow these rules:
+        - Use boxes for components
+        - Use arrows to show relationships
+        - Include clear labels
+        - Group related components
+        
+        Respond with a JSON object containing the SVG specifications.
+
+        <typescript-interface>
+        interface DiagramSpec {
+          width: number;
+          height: number;
+          components: Array<{
+            id: string;
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            label: string;
+          }>;
+          connections: Array<{
+            from: string;
+            to: string;
+            label?: string;
+          }>;
+        }
+        </typescript-interface>
+
+        <example>
+        {
+          "width": 800,
+          "height": 600,
+          "components": [
+            {
+              "id": "client",
+              "x": 50,
+              "y": 50,
+              "width": 120,
+              "height": 80,
+              "label": "LLM Client"
+            }
+          ],
+          "connections": [
+            {
+              "from": "client",
+              "to": "server",
+              "label": "JSON-RPC"
+            }
+          ]
+        }
+        </example>`,
+        data: prompt
+      }),
+    });
+
+    const spec = await response.json();
+    renderDiagram(spec);
+  } catch (error) {
+    console.error('Error generating diagram:', error);
+    document.getElementById('diagram-output').innerHTML = '<p>Error generating diagram</p>';
+  }
+}
+
+function renderDiagram(spec) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', spec.width);
+  svg.setAttribute('height', spec.height);
+  svg.setAttribute('viewBox', `0 0 ${spec.width} ${spec.height}`);
+
+  // Render components
+  spec.components.forEach(comp => {
+    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', comp.x);
+    rect.setAttribute('y', comp.y);
+    rect.setAttribute('width', comp.width);
+    rect.setAttribute('height', comp.height);
+    rect.setAttribute('class', 'component');
+    rect.setAttribute('rx', '5');
+    
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', comp.x + comp.width/2);
+    text.setAttribute('y', comp.y + comp.height/2);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('class', 'label');
+    text.textContent = comp.label;
+    
+    group.appendChild(rect);
+    group.appendChild(text);
+    svg.appendChild(group);
+  });
+
+  // Render connections
+  spec.connections.forEach(conn => {
+    const from = spec.components.find(c => c.id === conn.from);
+    const to = spec.components.find(c => c.id === conn.to);
+    
+    if (from && to) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      
+      const startX = from.x + from.width;
+      const startY = from.y + from.height/2;
+      const endX = to.x;
+      const endY = to.y + to.height/2;
+      
+      path.setAttribute('d', `M ${startX} ${startY} C ${(startX + endX)/2} ${startY}, ${(startX + endX)/2} ${endY}, ${endX} ${endY}`);
+      path.setAttribute('class', 'arrow');
+      
+      svg.appendChild(path);
+      
+      if (conn.label) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', (startX + endX)/2);
+        text.setAttribute('y', (startY + endY)/2 - 10);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('class', 'label');
+        text.textContent = conn.label;
+        svg.appendChild(text);
+      }
+    }
+  });
+
+  document.getElementById('diagram-output').innerHTML = '';
+  document.getElementById('diagram-output').appendChild(svg);
+}
+
+document.getElementById('generate-btn').addEventListener('click', async () => {
+  const prompt = document.getElementById('prompt-input').value;
+  if (prompt.trim()) {
+    document.getElementById('loading').style.display = 'block';
+    await generateDiagram(prompt);
+    document.getElementById('loading').style.display = 'none';
+  }
+});
+
+// Initial diagram generation with the MCP architecture
+generateDiagram(`The Model Context Protocol (MCP) facilitates secure integration between LLMs and external resources through a client-server architecture with Resources, Prompts, and Tools as key components.`);
+</script>
+</body></html>

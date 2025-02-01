@@ -1,0 +1,98 @@
+body {
+  background: #0a0a1a;
+  color: #e0e0ff;
+  font-family: 'Courier New', monospace;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.controls {
+  background: rgba(16, 16, 48, 0.9);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(5px);
+  border: 1px solid #303060;
+}
+
+.param-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+input, select {
+  background: #181838;
+  border: 1px solid #404080;
+  color: #e0e0ff;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+button {
+  background: #204080;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  filter: url(#neon-glow);
+}
+
+button:hover {
+  background: #3060c0;
+  transform: translateY(-1px);
+}
+
+.strategy-select {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#chart {
+  height: 500px;
+  background: rgba(16, 16, 48, 0.9);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.metric-box {
+  background: #181838;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #404080;
+}
+
+.metric-label {
+  display: block;
+  color: #8080ff;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+.metric-value {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #60f0f0;
+}

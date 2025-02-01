@@ -1,0 +1,192 @@
+body { 
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f5f7fa;
+}
+
+.container {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.diagram {
+  margin: 40px 0;
+}
+
+.interactive-demo {
+  margin: 40px 0;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.code-block {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: 'Fira Code', monospace;
+}
+
+.highlight {
+  background: #4299e1;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.architecture-diagram {
+  width: 100%;
+  height: 500px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.interactive {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.interactive:hover {
+  animation: pulse 1s infinite;
+}
+</style></head><body>
+
+<div class="container">
+  <h1>Model Context Protocol (MCP) Interactive Explorer</h1>
+  
+  <div class="architecture-diagram">
+    <svg width="100%" height="100%" viewBox="0 0 800 500">
+      <!-- Background Grid -->
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+      
+      <!-- Client Layer -->
+      <g transform="translate(50,50)">
+        <rect width="200" height="100" rx="10" fill="#4299e1" class="interactive" 
+              onmouseover="this.style.opacity='0.8'" 
+              onmouseout="this.style.opacity='1'"/>
+        <text x="100" y="55" text-anchor="middle" fill="white">MCP Clients</text>
+        <text x="100" y="75" text-anchor="middle" fill="white" font-size="12">Claude Desktop, Zed, Cody</text>
+      </g>
+      
+      <!-- Server Layer -->
+      <g transform="translate(550,50)">
+        <rect width="200" height="100" rx="10" fill="#48bb78" class="interactive"/>
+        <text x="100" y="55" text-anchor="middle" fill="white">MCP Servers</text>
+        <text x="100" y="75" text-anchor="middle" fill="white" font-size="12">Resource Providers</text>
+      </g>
+      
+      <!-- Connection Lines -->
+      <g stroke="#718096" stroke-width="2">
+        <path d="M 250,100 L 550,100" fill="none"/>
+        <text x="400" y="80" text-anchor="middle" fill="#718096">JSON-RPC 2.0</text>
+      </g>
+      
+      <!-- Components -->
+      <g transform="translate(50,200)">
+        <rect width="150" height="80" rx="8" fill="#ed8936" class="interactive"/>
+        <text x="75" y="45" text-anchor="middle" fill="white">Resources</text>
+      </g>
+      
+      <g transform="translate(250,200)">
+        <rect width="150" height="80" rx="8" fill="#ed8936" class="interactive"/>
+        <text x="75" y="45" text-anchor="middle" fill="white">Prompts</text>
+      </g>
+      
+      <g transform="translate(450,200)">
+        <rect width="150" height="80" rx="8" fill="#ed8936" class="interactive"/>
+        <text x="75" y="45" text-anchor="middle" fill="white">Tools</text>
+      </g>
+      
+      <g transform="translate(650,200)">
+        <rect width="150" height="80" rx="8" fill="#ed8936" class="interactive"/>
+        <text x="75" y="45" text-anchor="middle" fill="white">Sampling</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="interactive-demo">
+    <h2>Interactive MCP Demo</h2>
+    <div class="code-block">
+      <pre id="demo-code">
+const mcpClient = {
+  resources: {},
+  prompts: {},
+  tools: {},
+  
+  async connect() {
+    console.log("Connecting to MCP server...");
+    // Simulated connection logic
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log("Connected!");
+  },
+  
+  async discoverResources() {
+    console.log("Discovering available resources...");
+    this.resources = {
+      "file://project/docs": "Project Documentation",
+      "db://users/active": "Active Users",
+      "api://weather": "Weather Data"
+    };
+    return this.resources;
+  }
+};
+      </pre>
+    </div>
+    
+    <button onclick="simulateConnection()" style="margin-top: 20px; padding: 10px 20px; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      Simulate Connection
+    </button>
+  </div>
+</div>
+
+<script>
+function simulateConnection() {
+  const demoCode = document.getElementById('demo-code');
+  demoCode.innerHTML = "Connecting to MCP server...\n";
+  
+  setTimeout(() => {
+    demoCode.innerHTML += "Discovering resources...\n";
+  }, 1000);
+  
+  setTimeout(() => {
+    demoCode.innerHTML += `Found resources:
+- file://project/docs
+- db://users/active
+- api://weather\n`;
+  }, 2000);
+  
+  setTimeout(() => {
+    demoCode.innerHTML += "Connection established successfully!";
+  }, 3000);
+}
+
+// Add hover effects to interactive elements
+document.querySelectorAll('.interactive').forEach(el => {
+  el.addEventListener('mouseenter', e => {
+    e.target.style.transform = 'scale(1.05)';
+  });
+  
+  el.addEventListener('mouseleave', e => {
+    e.target.style.transform = 'scale(1)';
+  });
+});
+</script>
+
+</body></html>

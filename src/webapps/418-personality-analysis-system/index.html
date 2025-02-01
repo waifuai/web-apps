@@ -1,0 +1,71 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personality Analysis System</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" type="module"></script>
+</head>
+<body>
+  <header>
+    <h1>Personality Analysis System</h1>
+    <p>Find the perfect personality fit for your company.</p>
+  </header>
+
+  <main>
+    <section id="trait-management">
+      <h2>Trait Management</h2>
+      <div class="input-group">
+        <label for="trait-name">Trait Name:</label>
+        <input type="text" id="trait-name" placeholder="e.g., 'Team Player'">
+        <label for="friendliness-score">Friendliness Score:</label>
+        <input type="number" id="friendliness-score" min="-1" max="1" step="0.1" value="0">
+        <label for="dominance-score">Dominance Score:</label>
+        <input type="number" id="dominance-score" min="-1" max="1" step="0.1" value="0">
+        <button id="add-trait-btn">Add Trait</button>
+      </div>
+      <div id="trait-list">
+        <h3>Traits:</h3>
+        <ul id="traits">
+          <!-- Traits will be listed here -->
+        </ul>
+      </div>
+    </section>
+
+    <section id="personality-profiling">
+      <h2>Personality Profiling</h2>
+      <div class="input-group">
+        <label for="personality-description">Personality Description:</label>
+        <textarea id="personality-description" placeholder="Describe the personality..."></textarea>
+        <button id="update-personality-btn">Update Personality</button>
+      </div>
+      <div id="personality-profile">
+        <h3>Personality Profile:</h3>
+        <div id="personality-scores">
+          <p>Friendliness: <span id="friendliness-display">0</span></p>
+          <p>Dominance: <span id="dominance-display">0</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="company-matching">
+      <h2>Company Matching</h2>
+      <div class="input-group">
+        <label for="job-description">Job Description:</label>
+        <textarea id="job-description" placeholder="Describe the ideal candidate personality in the job description..."></textarea>
+        <button id="analyze-job-btn">Analyze Job</button>
+      </div>
+      <div id="candidate-ranking">
+        <h3>Candidate Ranking:</h3>
+        <ul id="candidate-list">
+          <!-- Ranked candidates will be listed here -->
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Personality Analysis System</p>
+  </footer>
+</body>
+</html>

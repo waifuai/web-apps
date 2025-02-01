@@ -1,0 +1,164 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Economy Simulator</title>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --background: #ecf0f1;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      padding: 2rem;
+      background: var(--background);
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .token-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .input-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: 2px solid #bdc3c7;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .results {
+      grid-column: 1 / -1;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-top: 1rem;
+    }
+
+    .exchange-rate {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--secondary);
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .calculation {
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="token-card">
+      <h2>Token A Parameters</h2>
+      <div class="input-group">
+        <label for="ma">Slope (m<sub>A</sub>)</label>
+        <input type="number" id="ma" step="0.01" value="0.05">
+      </div>
+      <div class="input-group">
+        <label for="ba">Initial Price (b<sub>A</sub>)</label>
+        <input type="number" id="ba" step="0.01" value="0.10">
+      </div>
+      <div class="input-group">
+        <label for="sa">Circulating Supply (S<sub>A</sub>)</label>
+        <input type="number" id="sa" step="1" value="1000">
+      </div>
+    </div>
+
+    <div class="token-card">
+      <h2>Token B Parameters</h2>
+      <div class="input-group">
+        <label for="mb">Slope (m<sub>B</sub>)</label>
+        <input type="number" id="mb" step="0.01" value="0.02">
+      </div>
+      <div class="input-group">
+        <label for="bb">Initial Price (b<sub>B</sub>)</label>
+        <input type="number" id="bb" step="0.01" value="0.20">
+      </div>
+      <div class="input-group">
+        <label for="sb">Circulating Supply (S<sub>B</sub>)</label>
+        <input type="number" id="sb" step="1" value="1500">
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="input-group">
+        <label for="x">Token A to Exchange (x)</label>
+        <input type="number" id="x" step="1" value="100">
+      </div>
+
+      <div class="exchange-rate">
+        1 Token A = <span id="exchangeRate">0.00</span> Token B
+      </div>
+
+      <div class="calculation">
+        Exchanging <span id="xValue">100</span> Token A will mint ≈
+        <span id="yValue" style="color: var(--secondary); font-weight: bold">0.00</span>
+        Token B
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculateValues() {
+      // Get all input values
+      const ma = parseFloat(document.getElementById('ma').value)
+      const ba = parseFloat(document.getElementById('ba').value)
+      const sa = parseFloat(document.getElementById('sa').value)
+      const mb = parseFloat(document.getElementById('mb').value)
+      const bb = parseFloat(document.getElementById('bb').value)
+      const sb = parseFloat(document.getElementById('sb').value)
+      const x = parseFloat(document.getElementById('x').value)
+
+      // Calculate prices
+      const pa = ma * sa + ba
+      const pb = mb * sb + bb
+
+      // Calculate exchange rate and y
+      const exchangeRate = pa / pb
+      const y = x * exchangeRate
+
+      // Update display
+      document.getElementById('exchangeRate').textContent = exchangeRate.toFixed(4)
+      document.getElementById('xValue').textContent = x
+      document.getElementById('yValue').textContent = y.toFixed(4)
+    }
+
+    // Add event listeners to all inputs
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', calculateValues)
+    })
+
+    // Initial calculation
+    calculateValues()
+  </script>
+</body>
+</html>

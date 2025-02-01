@@ -1,0 +1,237 @@
+:root {
+  --primary: #2a9d8f;
+  --secondary: #e76f51;
+  --background: #264653;
+  --text: #f4f1de;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.paper-editor {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.paper-content {
+  background: #fff;
+  color: #000;
+  min-height: 400px;
+  border-radius: 8px;
+  padding: 20px;
+  font-family: 'Times New Roman', serif;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.equation-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: 'Times New Roman', serif;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+
+button {
+  background: var(--primary);
+  color: var(--text);
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: var(--secondary);
+}
+
+.shared-papers {
+  display: grid;
+  gap: 20px;
+}
+
+.paper-preview {
+  background: #fff;
+  color: #000;
+  padding: 15px;
+  border-radius: 8px;
+  min-height: 200px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.paper-preview:hover {
+  transform: scale(1.02);
+}
+
+.paper-actions {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+</style></head><body>
+<div class="container">
+  <h1>Math Paper Remix Studio</h1>
+  
+  <div class="paper-editor">
+    <div class="paper-content" id="currentPaper">
+      <h2 contenteditable="true">Untitled Math Paper</h2>
+      <div contenteditable="true" id="paperContent">
+        Start typing your mathematical masterpiece here...
+      </div>
+    </div>
+    
+    <div class="toolbar">
+      <button onclick="insertEquation()">Insert Equation</button>
+      <button onclick="addTheorem()">Add Theorem</button>
+      <button onclick="addProof()">Add Proof</button>
+      <button onclick="sharePaper()">Share Paper</button>
+      <button onclick="clearPaper()">Clear</button>
+    </div>
+  </div>
+
+  <h2>Shared Papers</h2>
+  <div class="shared-papers" id="sharedPapers">
+    <!-- Papers will be added here dynamically -->
+  </div>
+</div>
+
+<script>
+let paperCount = 0;
+
+function insertEquation() {
+  const equation = prompt('Enter your equation (LaTeX format supported):', 'E = mc^2');
+  if (equation) {
+    const eqDiv = document.createElement('div');
+    eqDiv.className = 'equation';
+    eqDiv.textContent = equation;
+    document.getElementById('paperContent').appendChild(eqDiv);
+  }
+}
+
+function addTheorem() {
+  const theoremDiv = document.createElement('div');
+  theoremDiv.innerHTML = `
+    <h3 contenteditable="true">Theorem ${++paperCount}</h3>
+    <div contenteditable="true">State your theorem here...</div>
+  `;
+  document.getElementById('paperContent').appendChild(theoremDiv);
+}
+
+function addProof() {
+  const proofDiv = document.createElement('div');
+  proofDiv.innerHTML = `
+    <h4 contenteditable="true">Proof</h4>
+    <div contenteditable="true">Write your proof here...</div>
+  `;
+  document.getElementById('paperContent').appendChild(proofDiv);
+}
+
+function clearPaper() {
+  document.getElementById('paperContent').innerHTML = 'Start typing your mathematical masterpiece here...';
+  document.querySelector('.paper-content h2').textContent = 'Untitled Math Paper';
+}
+
+function sharePaper() {
+  const sharedPapersContainer = document.getElementById('sharedPapers');
+  const paperClone = document.querySelector('.paper-content').cloneNode(true);
+  
+  const paperPreview = document.createElement('div');
+  paperPreview.className = 'paper-preview';
+  
+  const actions = document.createElement('div');
+  actions.className = 'paper-actions';
+  
+  const remixButton = document.createElement('button');
+  remixButton.textContent = 'Remix';
+  remixButton.onclick = (e) => {
+    e.stopPropagation();
+    document.getElementById('currentPaper').innerHTML = paperClone.innerHTML;
+  };
+  
+  const likeButton = document.createElement('button');
+  likeButton.textContent = '♥';
+  likeButton.onclick = (e) => {
+    e.stopPropagation();
+    likeButton.classList.add('floating');
+    setTimeout(() => likeButton.classList.remove('floating'), 3000);
+  };
+  
+  actions.appendChild(remixButton);
+  actions.appendChild(likeButton);
+  
+  paperPreview.appendChild(paperClone);
+  paperPreview.appendChild(actions);
+  
+  sharedPapersContainer.insertBefore(paperPreview, sharedPapersContainer.firstChild);
+}
+
+// Add example papers
+window.onload = () => {
+  const examples = [
+    {
+      title: "Pythagorean Theorem Proof",
+      content: `
+        <h3>Theorem 1</h3>
+        <div>In a right triangle, the square of the hypotenuse is equal to the sum of squares of the other two sides.</div>
+        <div class="equation">a² + b² = c²</div>
+        <h4>Proof</h4>
+        <div>Consider a right triangle with sides a, b, and c...</div>
+      `
+    },
+    {
+      title: "Euler's Identity",
+      content: `
+        <h3>Theorem 2</h3>
+        <div>One of the most beautiful equations in mathematics:</div>
+        <div class="equation">e^{iπ} + 1 = 0</div>
+        <h4>Proof</h4>
+        <div>Using Euler's formula and mathematical induction...</div>
+      `
+    }
+  ];
+  
+  examples.forEach(example => {
+    document.querySelector('.paper-content h2').textContent = example.title;
+    document.getElementById('paperContent').innerHTML = example.content;
+    sharePaper();
+  });
+  
+  clearPaper();
+};
+</script></body></html>

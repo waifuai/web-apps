@@ -1,0 +1,152 @@
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #060612;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.timeline {
+    position: relative;
+    height: 400px;
+    margin: 40px 0;
+}
+
+.clock-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 40px 0;
+}
+
+.clock {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 2px solid #4a90e2;
+    margin: 20px;
+}
+
+.hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom;
+    background: #4a90e2;
+}
+
+.explanation {
+    padding: 20px;
+    background: rgba(74, 144, 226, 0.1);
+    border-radius: 10px;
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+.waveform {
+    position: relative;
+    height: 200px;
+    margin: 40px 0;
+}
+
+@keyframes rotateHand {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes imaginaryRotate {
+    from { transform: rotate(0deg) scaleY(1); }
+    50% { transform: rotate(180deg) scaleY(-1); }
+    to { transform: rotate(360deg) scaleY(1); }
+}
+
+.real-hand {
+    width: 2px;
+    height: 45%;
+    animation: rotateHand 5s linear infinite;
+}
+
+.imaginary-hand {
+    width: 2px;
+    height: 45%;
+    animation: imaginaryRotate 5s linear infinite;
+}
+
+</style></head><body>
+<div class="container">
+    <h1>Understanding Real vs Imaginary Time</h1>
+    
+    <div class="explanation">
+        <h2>Real Time</h2>
+        <p>Real time is what we experience in our everyday lives. It flows in one direction, from past to future, and is measured by physical processes like the ticking of a clock or the decay of radioactive particles.</p>
+    </div>
+
+    <div class="clock-container">
+        <div>
+            <h3>Real Time Clock</h3>
+            <div class="clock">
+                <div class="hand real-hand"></div>
+            </div>
+        </div>
+        <div>
+            <h3>Imaginary Time Clock</h3>
+            <div class="clock">
+                <div class="hand imaginary-hand"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h2>Imaginary Time</h2>
+        <p>Imaginary time is a mathematical concept used in quantum mechanics and cosmology. It's represented by multiplying regular time by i (the square root of -1). In imaginary time, the distinction between time and space becomes blurred, and time behaves more like a spatial dimension.</p>
+    </div>
+
+    <svg class="waveform" viewBox="0 0 1000 200">
+        <path id="realPath" stroke="#4a90e2" fill="none" stroke-width="2"></path>
+        <path id="imaginaryPath" stroke="#e24a4a" fill="none" stroke-width="2" stroke-dasharray="5,5"></path>
+    </svg>
+</div>
+
+<script>
+// Generate wave paths
+function generateWavePaths() {
+    const width = 1000;
+    const height = 200;
+    const midY = height / 2;
+    
+    let realPathD = `M 0 ${midY}`;
+    let imaginaryPathD = `M 0 ${midY}`;
+    
+    for(let x = 0; x <= width; x++) {
+        const realY = midY + Math.sin(x * 0.02) * 50;
+        const imaginaryY = midY + Math.cos(x * 0.02) * 50;
+        
+        realPathD += ` L ${x} ${realY}`;
+        imaginaryPathD += ` L ${x} ${imaginaryY}`;
+    }
+    
+    document.getElementById('realPath').setAttribute('d', realPathD);
+    document.getElementById('imaginaryPath').setAttribute('d', imaginaryPathD);
+}
+
+generateWavePaths();
+
+// Add interactive hover effects
+document.querySelectorAll('.explanation').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+        el.style.transform = 'scale(1.02)';
+        el.style.transition = 'transform 0.3s ease';
+    });
+    
+    el.addEventListener('mouseleave', () => {
+        el.style.transform = 'scale(1)';
+    });
+});
+</script></body></html>

@@ -1,0 +1,245 @@
+<title>Interactive MCP Architecture Diagram Generator</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f0f0f0;
+    }
+    
+    #input-container {
+        margin-bottom: 20px;
+    }
+    
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    
+    button {
+        padding: 10px 20px;
+        background: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    
+    button:hover {
+        background: #1976D2;
+    }
+    
+    #diagram {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .node {
+        fill: #fff;
+        stroke: #333;
+        stroke-width: 2px;
+    }
+    
+    .link {
+        stroke: #666;
+        stroke-width: 2px;
+    }
+    
+    .label {
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+    }
+    
+    .node-group:hover {
+        cursor: pointer;
+    }
+    
+    .node-group:hover .node {
+        fill: #f0f0f0;
+    }
+</style>
+</head>
+<body>
+    <div id="input-container">
+        <h2>MCP Architecture Diagram Generator</h2>
+        <textarea id="architecture-input" placeholder="Enter architecture description here..."></textarea>
+        <button onclick="generateDiagram()">Generate Diagram</button>
+    </div>
+    <svg id="diagram" width="1000" height="600"></svg>
+
+<script>
+async function generateDiagram() {
+    const inputText = document.getElementById('architecture-input').value;
+    
+    try {
+        const response = await fetch('/api/ai_completion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt: `Analyze the provided architecture description and generate a graph structure representing the architecture components and their relationships.
+
+                <typescript-interface>
+                interface Node {
+                    id: string;
+                    label: string;
+                    type: string;
+                    description: string;
+                }
+
+                interface Link {
+                    source: string;
+                    target: string;
+                    label: string;
+                }
+
+                interface Response {
+                    nodes: Node[];
+                    links: Link[];
+                }
+                </typescript-interface>
+
+                <example>
+                {
+                    "nodes": [
+                        {"id": "llm", "label": "LLM Client", "type": "client", "description": "Language Model acting as client"},
+                        {"id": "server", "label": "MCP Server", "type": "server", "description": "Server providing resources"}
+                    ],
+                    "links": [
+                        {"source": "llm", "target": "server", "label": "JSON-RPC/SSE"}
+                    ]
+                }
+                </example>`,
+                data: inputText
+            }),
+        });
+
+        const graphData = await response.json();
+        renderDiagram(graphData);
+    } catch (error) {
+        console.error('Error generating diagram:', error);
+    }
+}
+
+function renderDiagram(data) {
+    const svg = d3.select('#diagram');
+    svg.selectAll("*").remove();
+    
+    const width = +svg.attr('width');
+    const height = +svg.attr('height');
+    
+    const simulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.links).id(d => d.id).distance(150))
+        .force('charge', d3.forceManyBody().strength(-1000))
+        .force('center', d3.forceCenter(width / 2, height / 2));
+
+    const g = svg.append('g');
+
+    // Add zoom behavior
+    svg.call(d3.zoom()
+        .extent([[0, 0], [width, height]])
+        .scaleExtent([0.1, 4])
+        .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+        }));
+
+    const link = g.append('g')
+        .selectAll('g')
+        .data(data.links)
+        .join('g');
+
+    link.append('path')
+        .attr('class', 'link')
+        .attr('marker-end', 'url(#arrow)');
+
+    link.append('text')
+        .attr('class', 'label')
+        .attr('dy', -5)
+        .text(d => d.label);
+
+    const node = g.append('g')
+        .selectAll('.node-group')
+        .data(data.nodes)
+        .join('g')
+        .attr('class', 'node-group');
+
+    node.append('circle')
+        .attr('class', 'node')
+        .attr('r', 30);
+
+    node.append('text')
+        .attr('class', 'label')
+        .attr('text-anchor', 'middle')
+        .attr('dy', 5)
+        .text(d => d.label);
+
+    // Add tooltips
+    node.append('title')
+        .text(d => d.description);
+
+    // Define arrow marker
+    svg.append('defs').append('marker')
+        .attr('id', 'arrow')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 38)
+        .attr('refY', 0)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', '#666');
+
+    simulation.on('tick', () => {
+        link.selectAll('path')
+            .attr('d', d => {
+                const dx = d.target.x - d.source.x;
+                const dy = d.target.y - d.source.y;
+                const dr = Math.sqrt(dx * dx + dy * dy);
+                return `M${d.source.x},${d.source.y}A${dr},${dr} 0 0,1 ${d.target.x},${d.target.y}`;
+            });
+
+        link.selectAll('text')
+            .attr('x', d => (d.source.x + d.target.x) / 2)
+            .attr('y', d => (d.source.y + d.target.y) / 2);
+
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+
+    // Add drag behavior
+    node.call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended));
+
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+}
+
+// Initialize with example text
+document.getElementById('architecture-input').value = `The Model Context Protocol (MCP) facilitates secure integration between Large Language Models (LLMs) and external resources. It uses a client-server architecture with JSON-RPC communication.`;
+generateDiagram();
+</script>
+</body></html>

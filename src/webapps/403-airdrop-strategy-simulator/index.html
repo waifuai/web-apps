@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airdrop Strategy Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="simulation.js" type="module"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Token Economics Simulator</h1>
+    <div class="controls">
+      <div class="strategy-select">
+        <label for="strategy">Airdrop Strategy:</label>
+        <select id="strategy">
+          <option value="immediate">Immediate Distribution</option>
+          <option value="linear">Linear Vesting</option>
+          <option value="cliff">Cliff Vesting</option>
+        </select>
+      </div>
+      
+      <div class="param-sliders">
+        <div class="slider-container">
+          <label for="tMax">Time Horizon (months):</label>
+          <input type="range" id="tMax" min="6" max="36" value="24">
+          <span id="tMaxValue">24</span>
+        </div>
+        
+        <div class="slider-container">
+          <label for="sellProb">Sell Probability (%):</label>
+          <input type="range" id="sellProb" min="0" max="100" value="30">
+          <span id="sellProbValue">30</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <canvas id="priceChart"></canvas>
+    </div>
+    
+    <div class="model-details">
+      <div class="equation">
+        <h3>Economic Model Equations</h3>
+        <p>Supply: S<sub>t+1</sub> = S<sub>t</sub> + A<sub>t</sub></p>
+        <p>Price: P<sub>t+1</sub> = P<sub>t</sub> × (1 - α(S<sub>t</sub>/S<sub>0</sub>) × ΔS)</p>
+      </div>
+      <div class="params">
+        <h3>Current Parameters</h3>
+        <p>Initial Supply: <span id="initSupply">1,000,000</span></p>
+        <p>Initial Price: $<span id="initPrice">1.00</span></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

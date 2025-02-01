@@ -1,0 +1,148 @@
+body { font-family: Arial, sans-serif; margin: 20px; background: #f0f4f8; }
+.container { max-width: 1200px; margin: 0 auto; }
+.graph-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+.control-group { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+input[type="range"] { width: 100%; }
+.results { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 20px; }
+.result-card { background: #fff; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+</style>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script></head>
+<body>
+<div class="container">
+    <h1>Solana ICO Bonding Curve Simulator</h1>
+    
+    <div class="graph-container">
+        <div id="bondingCurve"></div>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <h3>Curve Parameters</h3>
+            <label>Scaling Factor (k):
+                <input type="range" id="k" min="0.1" max="2" step="0.1" value="1">
+                <span id="kValue">1</span>
+            </label>
+            <br>
+            <label>Exponent (m):
+                <input type="range" id="m" min="0.1" max="2" step="0.1" value="1">
+                <span id="mValue">1</span>
+            </label>
+        </div>
+
+        <div class="control-group">
+            <h3>Demand Parameters</h3>
+            <label>Demand Intercept (a):
+                <input type="range" id="a" min="100" max="1000" step="50" value="500">
+                <span id="aValue">500</span>
+            </label>
+            <br>
+            <label>Demand Slope (b):
+                <input type="range" id="b" min="0.1" max="2" step="0.1" value="1">
+                <span id="bValue">1</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="results">
+        <div class="result-card">
+            <h3>Equilibrium Price</h3>
+            <div id="eqPrice">-</div>
+        </div>
+        <div class="result-card">
+            <h3>Equilibrium Quantity</h3>
+            <div id="eqQuantity">-</div>
+        </div>
+        <div class="result-card">
+            <h3>Total Funds Raised</h3>
+            <div id="totalFunds">-</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const updateGraph = () => {
+    const k = parseFloat(document.getElementById('k').value);
+    const m = parseFloat(document.getElementById('m').value);
+    const a = parseFloat(document.getElementById('a').value);
+    const b = parseFloat(document.getElementById('b').value);
+
+    // Update displayed values
+    document.getElementById('kValue').textContent = k.toFixed(2);
+    document.getElementById('mValue').textContent = m.toFixed(2);
+    document.getElementById('aValue').textContent = a.toFixed(0);
+    document.getElementById('bValue').textContent = b.toFixed(2);
+
+    // Generate points for bonding curve
+    const Q = Array.from({length: 100}, (_, i) => i * (a/100));
+    const P_supply = Q.map(q => k * Math.pow(q, m));
+    const P_demand = Q.map(q => (a - q) / b);
+
+    // Find equilibrium (approximate)
+    let eqIndex = 0;
+    let minDiff = Infinity;
+    for(let i = 0; i < Q.length; i++) {
+        const diff = Math.abs(P_supply[i] - P_demand[i]);
+        if(diff < minDiff) {
+            minDiff = diff;
+            eqIndex = i;
+        }
+    }
+
+    const eqQ = Q[eqIndex];
+    const eqP = P_supply[eqIndex];
+    const totalFunds = (k / (m + 1)) * Math.pow(eqQ, m + 1);
+
+    // Update results
+    document.getElementById('eqPrice').textContent = eqP.toFixed(2) + " SOL";
+    document.getElementById('eqQuantity').textContent = eqQ.toFixed(0) + " tokens";
+    document.getElementById('totalFunds').textContent = totalFunds.toFixed(2) + " SOL";
+
+    // Plot curves
+    const trace1 = {
+        x: Q,
+        y: P_supply,
+        name: 'Supply (Bonding Curve)',
+        type: 'scatter',
+        line: {color: '#2E86C1'}
+    };
+
+    const trace2 = {
+        x: Q,
+        y: P_demand,
+        name: 'Demand Curve',
+        type: 'scatter',
+        line: {color: '#E74C3C'}
+    };
+
+    const trace3 = {
+        x: [eqQ],
+        y: [eqP],
+        name: 'Equilibrium',
+        mode: 'markers',
+        marker: {
+            size: 12,
+            color: '#27AE60'
+        }
+    };
+
+    const layout = {
+        title: 'ICO Bonding Curve Analysis',
+        xaxis: {title: 'Quantity of Tokens'},
+        yaxis: {title: 'Price (SOL)'},
+        showlegend: true
+    };
+
+    Plotly.newPlot('bondingCurve', [trace1, trace2, trace3], layout);
+};
+
+// Add event listeners
+document.getElementById('k').addEventListener('input', updateGraph);
+document.getElementById('m').addEventListener('input', updateGraph);
+document.getElementById('a').addEventListener('input', updateGraph);
+document.getElementById('b').addEventListener('input', updateGraph);
+
+// Initial plot
+updateGraph();
+</script>
+</body></html>

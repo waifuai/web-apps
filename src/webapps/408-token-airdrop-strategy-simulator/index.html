@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Airdrop Strategy Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="controls">
+      <h1>Token Economy Simulator</h1>
+      <div class="param-group">
+        <label>Strategy:
+          <select id="strategy">
+            <option value="lottery">Lottery</option>
+            <option value="uniform">Uniform</option>
+            <option value="tiered">Tiered</option>
+            <option value="vesting">Vesting</option>
+          </select>
+        </label>
+        <label>Users: <input id="userCount" type="number" value="500"></label>
+        <label>Days: <input id="days" type="number" value="90"></label>
+        <label>Burn Rate: <input id="burnRate" type="number" step="0.01" value="0.02"></label>
+      </div>
+      <button id="runSimulation">Run Simulation</button>
+    </div>
+    <div id="chart"></div>
+    <div class="legend">
+      <div class="legend-item" data-strategy="lottery"><span class="color-dot"></span> Lottery</div>
+      <div class="legend-item" data-strategy="uniform"><span class="color-dot"></span> Uniform</div>
+      <div class="legend-item" data-strategy="tiered"><span class="color-dot"></span> Tiered</div>
+      <div class="legend-item" data-strategy="vesting"><span class="color-dot"></span> Vesting</div>
+    </div>
+  </div>
+</body>
+</html>

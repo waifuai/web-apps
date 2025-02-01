@@ -1,0 +1,25 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Ecosystem Simulation</title>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="controls">
+      <button id="runSimulation">Run Simulation</button>
+      <div id="params"></div>
+    </div>
+    <div class="charts">
+      <canvas id="tokenChart"></canvas>
+      <canvas id="affiliateChart"></canvas>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script src="sim.js"></script>
+</body>
+</html>

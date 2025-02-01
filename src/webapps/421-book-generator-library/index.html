@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>AI Book Generator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <h1>AI Book Generator</h1>
+
+      <div class="input-section">
+        <input type="text" id="bookTitle" placeholder="Enter book title/topic">
+        <button id="generateTitles">Generate Title Suggestions</button>
+        <div id="titleSuggestions"></div>
+      </div>
+
+      <div class="toc-section">
+        <h2>Table of Contents</h2>
+        <div id="tocEditor"></div>
+        <button id="generateToc">Generate Table of Contents</button>
+        <button id="startGeneration">Start Generating Content</button>
+      </div>
+
+      <div class="generation-controls">
+        <button id="pauseGeneration">Pause Generation</button>
+        <button id="saveToLibrary">Save to Library</button>
+        <button id="clearBook">Clear Book</button>
+      </div>
+
+      <div class="status-section">
+        <div id="generationStatus"></div>
+        <div id="apiStatus"></div>
+      </div>
+
+      <div class="library-section">
+        <h2>Book Library</h2>
+        <div class="library-sort-controls">
+          <button id="sortByAlpha">Sort by Alphabet</button>
+          <button id="sortByDate">Sort by Date</button>
+        </div>
+        <div id="bookLibrary"></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="preview-controls">
+        <button id="copyMarkdown">Copy Markdown</button>
+      </div>
+      <div class="markdown-preview" id="markdownPreview"></div>
+    </div>
+  </div>
+</body>
+</html>

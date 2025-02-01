@@ -1,0 +1,57 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f0f8ff;
+  color: #333;
+}
+
+header {
+  background: #4a90e2;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+main {
+  padding: 1rem 2rem;
+}
+
+#controls {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+#controls button {
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  font-size: 1rem;
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+#controls button:hover {
+  background: #357abd;
+}
+
+#output {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+#circuitDiagram {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+svg {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}

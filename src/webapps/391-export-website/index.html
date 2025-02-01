@@ -1,0 +1,65 @@
+  <title>Export Website</title>
+  <style>
+    /* add some basic styling to our button */
+    #export-button {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #export-button:hover {
+      background-color: #3e8e41;
+    }
+
+    /* animate the button a bit */
+    #export-button {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- our export button -->
+  <button id="export-button" onclick="exportWebsite()">Export Website</button>
+
+  <script>
+    // function to export the website
+    function exportWebsite() {
+      // get the current HTML
+      const html = document.documentElement.outerHTML;
+
+      // create a blob with the HTML
+      const blob = new Blob([html], { type: 'text/html' });
+
+      // create a link to download the blob
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'website.html';
+
+      // simulate a click on the link
+      link.click();
+
+      // remove the link
+      link.remove();
+    }
+  </script>
+</body>
+</html>

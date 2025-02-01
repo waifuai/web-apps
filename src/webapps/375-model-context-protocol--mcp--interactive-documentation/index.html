@@ -1,0 +1,223 @@
+<title>Model Context Protocol (MCP) Interactive Documentation</title>
+<style>
+:root {
+  --primary: #2a4b8d;
+  --secondary: #34495e;
+  --accent: #3498db;
+  --background: #f5f6fa;
+  --text: #2c3e50;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--background);
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.protocol-diagram {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin: 20px 0;
+}
+
+.interactive-demo {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.component {
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 6px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.component:hover {
+  transform: translateY(-2px);
+}
+
+.tab-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tab {
+  padding: 8px 16px;
+  background: #eee;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tab.active {
+  background: var(--accent);
+  color: white;
+}
+
+.code-block {
+  background: #1e1e1e;
+  color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize components
+    const components = document.querySelectorAll('.component');
+    const codeDisplay = document.getElementById('code-display');
+    
+    const examples = {
+        resources: `{
+    "jsonrpc": "2.0",
+    "method": "resources/list",
+    "params": {},
+    "id": 1
+}`,
+        prompts: `{
+    "jsonrpc": "2.0",
+    "method": "prompts/get",
+    "params": {
+        "name": "analyze_code",
+        "args": {
+            "language": "python",
+            "file_path": "/src/main.py"
+        }
+    },
+    "id": 2
+}`,
+        tools: `{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+        "name": "git_commit",
+        "args": {
+            "message": "Update documentation",
+            "files": ["README.md"]
+        }
+    },
+    "id": 3
+}`
+    };
+
+    let currentTab = 'resources';
+    
+    function updateCodeDisplay(type) {
+        codeDisplay.textContent = examples[type];
+        highlightSyntax();
+    }
+
+    function highlightSyntax() {
+        // Basic syntax highlighting
+        codeDisplay.innerHTML = codeDisplay.textContent
+            .replace(/"([^"]+)":/g, '<span style="color: #9cdcfe">\"$1\":</span>')
+            .replace(/: ("[^"]+")/g, ': <span style="color: #ce9178">$1</span>')
+            .replace(/\{|\}/g, match => `<span style="color: #d4d4d4">${match}</span>`);
+    }
+
+    // Add click handlers for tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const type = tab.getAttribute('data-type');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentTab = type;
+            updateCodeDisplay(type);
+        });
+    });
+
+    // Initial display
+    updateCodeDisplay('resources');
+});
+</script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Model Context Protocol (MCP) Interactive Guide</h1>
+    
+    <div class="protocol-diagram">
+        <svg width="100%" height="300" viewBox="0 0 800 300">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#2a4b8d"/>
+                </marker>
+            </defs>
+            
+            <!-- LLM Client -->
+            <rect x="50" y="100" width="150" height="80" rx="5" fill="#2a4b8d"/>
+            <text x="125" y="145" text-anchor="middle" fill="white">LLM Client</text>
+            
+            <!-- MCP Server -->
+            <rect x="325" y="100" width="150" height="80" rx="5" fill="#34495e"/>
+            <text x="400" y="145" text-anchor="middle" fill="white">MCP Server</text>
+            
+            <!-- External Resources -->
+            <rect x="600" y="50" width="150" height="60" rx="5" fill="#3498db"/>
+            <text x="675" y="85" text-anchor="middle" fill="white">Database</text>
+            
+            <rect x="600" y="130" width="150" height="60" rx="5" fill="#3498db"/>
+            <text x="675" y="165" text-anchor="middle" fill="white">Filesystem</text>
+            
+            <rect x="600" y="210" width="150" height="60" rx="5" fill="#3498db"/>
+            <text x="675" y="245" text-anchor="middle" fill="white">APIs</text>
+            
+            <!-- Connections -->
+            <line x1="200" y1="140" x2="325" y2="140" stroke="#2a4b8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="475" y1="140" x2="600" y2="80" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="475" y1="140" x2="600" y2="160" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="475" y1="140" x2="600" y2="240" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+        </svg>
+    </div>
+
+    <div class="interactive-demo">
+        <h2>Protocol Components</h2>
+        
+        <div class="tab-container">
+            <button class="tab active" data-type="resources">Resources</button>
+            <button class="tab" data-type="prompts">Prompts</button>
+            <button class="tab" data-type="tools">Tools</button>
+        </div>
+
+        <pre class="code-block"><code id="code-display"></code></pre>
+    </div>
+
+    <div class="components">
+        <div class="component">
+            <h3>Security Considerations</h3>
+            <p>✓ Input validation<br>
+               ✓ Access control<br>
+               ✓ Error handling<br>
+               ✓ Transport encryption</p>
+        </div>
+
+        <div class="component">
+            <h3>Development Tools</h3>
+            <p>• MCP Inspector<br>
+               • Claude Desktop Developer Tools<br>
+               • GitHub SDKs and Examples</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

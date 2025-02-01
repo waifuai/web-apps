@@ -1,0 +1,64 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Overview - websim.ai</title>
+  <style>
+    body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    section {
+      margin: 2em 0;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1em;
+    }
+    .sort-buttons {
+      margin: 1em 0;
+    }
+    button {
+      margin-right: 0.5em;
+    }
+    time {
+      color: #666;
+      font-size: 0.9em;
+    }
+    article {
+      margin-bottom: 1.5em;
+    }
+    article p {
+      color: #666;
+      font-size: 0.9em;
+      margin-top: 0.25em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Profile Overview</h1>
+    <div id="profile-header"></div>
+  </header>
+
+  <section id="stats" class="stats"></section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="sort-buttons">
+      <button onclick="sortProjects('recent')">Recent</button>
+      <button onclick="sortProjects('views')">Most Viewed</button>
+      <button onclick="sortProjects('likes')">Most Liked</button>
+      <button onclick="refreshProjects()">Refresh Data</button>
+    </div>
+    <div id="projects-list"></div>
+  </section>
+
+  <script src="js/api.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airdrop Strategy Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="controls">
+      <div class="param-group">
+        <label>Initial Supply: <input type="number" id="initialSupply" value="1000000"></label>
+        <label>Initial Price: $<input type="number" id="initialPrice" value="1.00" step="0.01"></label>
+        <label>Time Steps: <input type="number" id="timeSteps" value="100"></label>
+        <label>Users: <input type="number" id="numUsers" value="500"></label>
+      </div>
+      
+      <div class="strategy-select">
+        <select id="strategyType">
+          <option value="uniform">Uniform Airdrop</option>
+          <option value="lottery">Lottery Airdrop</option>
+          <option value="tiered">Tiered Airdrop</option>
+          <option value="none">No Airdrop</option>
+        </select>
+        <button id="runSimulation">Run Simulation</button>
+      </div>
+    </div>
+
+    <div id="chart"></div>
+    
+    <div class="metrics">
+      <div class="metric-box">
+        <span class="metric-label">Final Price</span>
+        <span class="metric-value" id="finalPrice">$0.00</span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-label">Final Supply</span>
+        <span class="metric-value" id="finalSupply">0</span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-label">Max Drawdown</span>
+        <span class="metric-value" id="maxDrawdown">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <svg style="display: none;">
+    <filter id="neon-glow">
+      <feGaussianBlur stdDeviation="3" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </svg>
+</body>
+</html>

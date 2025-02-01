@@ -1,0 +1,201 @@
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f0f2f5;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .model-viz {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 20px 0;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .control-group {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+  }
+
+  .control-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  input[type="range"] {
+    width: 100%;
+  }
+
+  .output-display {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e9ecef;
+    border-radius: 4px;
+  }
+</style></head><body>
+<div class="container">
+  <h1>Economic Entropy Model Simulator</h1>
+  
+  <div class="controls">
+    <div class="control-group">
+      <label>Tax Rate (T):</label>
+      <input type="range" id="taxRate" min="0" max="1" step="0.01" value="0.3">
+      <span id="taxValue">0.3</span>
+    </div>
+    
+    <div class="control-group">
+      <label>Regulation Level (R):</label>
+      <input type="range" id="regLevel" min="0" max="1" step="0.01" value="0.2">
+      <span id="regValue">0.2</span>
+    </div>
+    
+    <div class="control-group">
+      <label>Initial Producers (N₀):</label>
+      <input type="range" id="producers" min="100" max="1000" step="10" value="500">
+      <span id="producersValue">500</span>
+    </div>
+  </div>
+
+  <div class="model-viz">
+    <canvas id="modelCanvas"></canvas>
+  </div>
+
+  <div class="output-display">
+    <h3>System State:</h3>
+    <div id="outputMetrics"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const canvas = document.getElementById('modelCanvas');
+const ctx = canvas.getContext('2d');
+let chart;
+
+// Model parameters
+const k = 0.5;  // entropy increase rate
+const l = 0.3;  // entropy reduction rate
+const a = 0.8;  // tax impact on motivation
+const b = 0.6;  // regulation impact on motivation
+const c = 0.9;  // tax impact on strike probability
+const d = 0.7;  // regulation impact on strike probability
+const m = 100;  // entropy impact on output
+const Y0 = 1000; // base output
+
+function calculateSystemState(T, R, N0) {
+  // Calculate producer participation and motivation
+  const S = c*T + d*R;  // strike probability
+  const N = N0 * (1 - S);  // active producers
+  const M = 1 - a*T - b*R;  // motivation
+  
+  // Calculate equilibrium entropy
+  const Se = (k*(T + R))/(l*N*M);
+  
+  // Calculate economic output
+  const Y = Y0 - m*Se;
+  
+  return {
+    entropy: Se,
+    output: Y,
+    activeProducers: N,
+    motivation: M
+  };
+}
+
+function updateChart() {
+  const T = parseFloat(document.getElementById('taxRate').value);
+  const R = parseFloat(document.getElementById('regLevel').value);
+  const N0 = parseFloat(document.getElementById('producers').value);
+  
+  const state = calculateSystemState(T, R, N0);
+  
+  if (chart) {
+    chart.destroy();
+  }
+  
+  // Create time series data
+  const timePoints = 50;
+  const labels = Array.from({length: timePoints}, (_, i) => i);
+  const entropyData = [];
+  const outputData = [];
+  
+  for (let i = 0; i < timePoints; i++) {
+    const noise = Math.random() * 0.1 - 0.05;
+    entropyData.push(state.entropy * (1 + noise));
+    outputData.push(state.output * (1 + noise));
+  }
+  
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Economic Entropy',
+        data: entropyData,
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1
+      }, {
+        label: 'Economic Output',
+        data: outputData,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+  
+  // Update metrics display
+  document.getElementById('outputMetrics').innerHTML = `
+    <p>Economic Entropy: ${state.entropy.toFixed(2)}</p>
+    <p>Economic Output: ${state.output.toFixed(2)}</p>
+    <p>Active Producers: ${state.activeProducers.toFixed(2)}</p>
+    <p>Producer Motivation: ${state.motivation.toFixed(2)}</p>
+  `;
+}
+
+// Add event listeners
+document.getElementById('taxRate').addEventListener('input', (e) => {
+  document.getElementById('taxValue').textContent = e.target.value;
+  updateChart();
+});
+
+document.getElementById('regLevel').addEventListener('input', (e) => {
+  document.getElementById('regValue').textContent = e.target.value;
+  updateChart();
+});
+
+document.getElementById('producers').addEventListener('input', (e) => {
+  document.getElementById('producersValue').textContent = e.target.value;
+  updateChart();
+});
+
+// Initial chart
+updateChart();
+</script></body></html>

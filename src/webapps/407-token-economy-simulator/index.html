@@ -1,0 +1,75 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Economy Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="token-params">
+      <div class="token-card" id="tokenA">
+        <h2>Token A Parameters</h2>
+        <div class="input-group">
+          <label>Slope (m<sub>A</sub>)</label>
+          <input type="number" id="mA" value="0.02" step="0.01">
+        </div>
+        <div class="input-group">
+          <label>Intercept (b<sub>A</sub>)</label>
+          <input type="number" id="bA" value="1.0" step="0.1">
+        </div>
+        <div class="input-group">
+          <label>Supply (S<sub>A</sub>)</label>
+          <input type="number" id="SA" value="100" step="1">
+        </div>
+      </div>
+
+      <div class="token-card" id="tokenB">
+        <h2>Token B Parameters</h2>
+        <div class="input-group">
+          <label>Slope (m<sub>B</sub>)</label>
+          <input type="number" id="mB" value="0.01" step="0.01">
+        </div>
+        <div class="input-group">
+          <label>Intercept (b<sub>B</sub>)</label>
+          <input type="number" id="bB" value="0.5" step="0.1">
+        </div>
+        <div class="input-group">
+          <label>Supply (S<sub>B</sub>)</label>
+          <input type="number" id="SB" value="200" step="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="exchange-results">
+      <div class="result-card">
+        <h3>Current Prices</h3>
+        <div class="price-display">
+          <div>P<sub>A</sub> = <span id="priceA">...</span></div>
+          <div>P<sub>B</sub> = <span id="priceB">...</span></div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>Exchange Rate (A→B)</h3>
+        <div class="rate-display">
+          1 A = <span id="exchangeRate">...</span> B
+        </div>
+      </div>
+
+      <div class="conversion-card">
+        <h3>Instant Exchange</h3>
+        <div class="input-group">
+          <label>Amount of A to exchange:</label>
+          <input type="number" id="exchangeAmount" value="1" step="0.1">
+        </div>
+        <div class="result-display">
+          You receive: <span id="receivedB">...</span> B
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

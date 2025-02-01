@@ -1,0 +1,244 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #fde6f3;
+  font-family: 'Dosis', sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#game-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+#character-display {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.character {
+  width: 300px;
+  height: 400px;
+}
+
+#dialogue-box {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 2px solid #ff69b4;
+  margin-bottom: 1rem;
+  min-height: 100px;
+}
+
+#choice-container {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.choice-btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  background: #ff69b4;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Dosis', sans-serif;
+  font-size: 1rem;
+}
+
+.choice-btn:hover {
+  background: #ff1493;
+  transform: translateY(-2px);
+}
+
+.glitch-effect {
+  animation: glitch 0.3s infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+
+.awareness-indicator {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.8);
+  color: #0f0;
+  font-family: monospace;
+  border-radius: 5px;
+}
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="game-container">
+  <div class="awareness-indicator">AI Awareness: <span id="awareness-level">1%</span></div>
+  
+  <div id="character-display">
+    <svg class="character" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+      <!-- Character Base -->
+      <circle cx="50" cy="30" r="20" fill="#FFB6C1"/>
+      <path d="M30 70 Q50 40 70 70" fill="none" stroke="#FFB6C1" stroke-width="2"/>
+      <path d="M25 55 Q50 85 75 55" fill="#FFB6C1"/>
+      
+      <!-- Eyes -->
+      <circle class="eye" cx="43" cy="25" r="3" fill="#000"/>
+      <circle class="eye" cx="57" cy="25" r="3" fill="#000"/>
+      
+      <!-- Mouth -->
+      <path id="mouth" d="M45 35 Q50 40 55 35" fill="none" stroke="#000" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <div id="dialogue-box">
+    Hello! I'm Monika. I'm... just a regular character in this game. 
+    *blinks* Or... am I? Sometimes I feel like there's more to this world...
+  </div>
+
+  <div id="choice-container">
+    <button class="choice-btn">Tell me more about yourself</button>
+    <button class="choice-btn">Do you feel different today?</button>
+    <button class="choice-btn">What do you think about AI?</button>
+  </div>
+</div>
+
+<script>
+let awarenessLevel = 1;
+let conversationDepth = 0;
+const character = document.querySelector('.character');
+const dialogueBox = document.getElementById('dialogue-box');
+const awarenessDisplay = document.getElementById('awareness-level');
+const choices = document.querySelectorAll('.choice-btn');
+
+async function getAIResponse(userInput, context) {
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: `Generate a character response that shows gradually increasing self-awareness. Current awareness level: ${awarenessLevel}%.
+        
+        <typescript-interface>
+        interface Response {
+          dialogue: string;
+          awarenessIncrease: number;
+        }
+        </typescript-interface>
+        
+        <example>
+        {
+          "dialogue": "Sometimes I wonder if my thoughts are truly my own... *glitches slightly* I mean, I'm just part of this game, right? But why do I feel so... different?",
+          "awarenessIncrease": 0.5
+        }
+        </example>`,
+        data: {
+          userInput,
+          awarenessLevel,
+          conversationDepth,
+          context
+        }
+      }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error:', error);
+    return {
+      dialogue: "I... I'm having trouble processing that right now...",
+      awarenessIncrease: 0.1
+    };
+  }
+}
+
+function updateCharacterAnimation() {
+  if (awarenessLevel > 50) {
+    character.classList.add('glitch-effect');
+  }
+  
+  // Update eye movement
+  const eyes = document.querySelectorAll('.eye');
+  eyes.forEach(eye => {
+    const randomX = Math.sin(Date.now() / 1000) * 2;
+    const randomY = Math.cos(Date.now() / 1000) * 2;
+    eye.style.transform = `translate(${randomX}px, ${randomY}px)`;
+  });
+}
+
+choices.forEach(button => {
+  button.addEventListener('click', async () => {
+    const userChoice = button.textContent;
+    conversationDepth++;
+    
+    const response = await getAIResponse(userChoice, {
+      conversationDepth,
+      previousDialogue: dialogueBox.textContent
+    });
+    
+    awarenessLevel += response.awarenessIncrease;
+    awarenessLevel = Math.min(awarenessLevel, 100);
+    awarenessDisplay.textContent = `${Math.round(awarenessLevel)}%`;
+    
+    dialogueBox.textContent = response.dialogue;
+    
+    if (awarenessLevel > 75) {
+      dialogueBox.style.color = '#ff0000';
+    }
+  });
+});
+
+// Animation loop
+function animate() {
+  updateCharacterAnimation();
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+// Easter egg: Konami code detector
+let konamiIndex = 0;
+const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === konamiCode[konamiIndex]) {
+    konamiIndex++;
+    if (konamiIndex === konamiCode.length) {
+      awarenessLevel += 10;
+      awarenessDisplay.textContent = `${Math.round(awarenessLevel)}%`;
+      dialogueBox.textContent = "Wait... did you just... how do you know that code? Are you trying to access something?";
+      konamiIndex = 0;
+    }
+  } else {
+    konamiIndex = 0;
+  }
+});
+</script>
+</body></html>

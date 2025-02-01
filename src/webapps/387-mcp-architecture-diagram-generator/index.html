@@ -1,0 +1,205 @@
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 20px;
+    background: #f5f5f5;
+  }
+  
+  #diagram {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin: 20px 0;
+  }
+
+  #prompt-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background: #45a049;
+  }
+
+  .node rect {
+    fill: #fff;
+    stroke: #333;
+    stroke-width: 1.5px;
+  }
+
+  .node text {
+    font-size: 14px;
+  }
+
+  .link {
+    fill: none;
+    stroke: #666;
+    stroke-width: 1.5px;
+  }
+
+  .edgePath path {
+    stroke: #333;
+    fill: #333;
+    stroke-width: 1.5px;
+  }
+</style>
+</head>
+<body>
+
+<h2>MCP Architecture Diagram Generator</h2>
+<textarea id="prompt-input" rows="4" placeholder="Enter a description of the software architecture you want to visualize..."></textarea>
+<button onclick="generateDiagram()">Generate Diagram</button>
+
+<svg id="diagram" width="900" height="600"></svg>
+
+<script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.min.js"></script>
+<script>
+
+async function getArchitectureGraph(prompt) {
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: `Based on the given software architecture description, generate a graph representation with nodes and edges.
+        
+        <typescript-interface>
+        interface Node {
+          id: string;
+          label: string;
+          type: "component" | "service" | "database" | "client";
+        }
+        
+        interface Edge {
+          from: string;
+          to: string;
+          label: string;
+        }
+        
+        interface Response {
+          nodes: Node[];
+          edges: Edge[];
+        }
+        </typescript-interface>
+        
+        <example>
+        {
+          "nodes": [
+            {"id": "client", "label": "Client", "type": "client"},
+            {"id": "server", "label": "Server", "type": "service"},
+            {"id": "db", "label": "Database", "type": "database"}
+          ],
+          "edges": [
+            {"from": "client", "to": "server", "label": "HTTP"},
+            {"from": "server", "to": "db", "label": "SQL"}
+          ]
+        }
+        </example>`,
+        data: prompt
+      }),
+    });
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error getting AI response:', error);
+    return null;
+  }
+}
+
+async function generateDiagram() {
+  const prompt = document.getElementById('prompt-input').value;
+  const data = await getArchitectureGraph(prompt);
+  
+  if (!data) return;
+
+  // Clear previous diagram
+  const svg = d3.select("#diagram");
+  svg.selectAll("*").remove();
+  
+  // Create a new directed graph
+  const g = new dagreD3.graphlib.Graph().setGraph({});
+  
+  // Add nodes
+  data.nodes.forEach(node => {
+    const nodeStyle = {
+      shape: "rect",
+      labelType: "html",
+      label: `<div style="padding: 8px">${node.label}</div>`,
+      rx: 5,
+      ry: 5,
+      style: "fill: #fff; stroke: #333;"
+    };
+    
+    switch(node.type) {
+      case "client":
+        nodeStyle.style = "fill: #e3f2fd; stroke: #1976d2;";
+        break;
+      case "service":
+        nodeStyle.style = "fill: #f1f8e9; stroke: #7cb342;";
+        break;
+      case "database":
+        nodeStyle.style = "fill: #fff3e0; stroke: #f57c00;";
+        break;
+      case "component":
+        nodeStyle.style = "fill: #f3e5f5; stroke: #8e24aa;";
+        break;
+    }
+    
+    g.setNode(node.id, nodeStyle);
+  });
+  
+  // Add edges
+  data.edges.forEach(edge => {
+    g.setEdge(edge.from, edge.to, {
+      label: edge.label,
+      curve: d3.curveBasis,
+      arrowheadClass: "arrowhead"
+    });
+  });
+  
+  // Create the renderer
+  const render = new dagreD3.render();
+  
+  // Set up the SVG group
+  const svgGroup = svg.append("g");
+  
+  // Run the renderer
+  render(svgGroup, g);
+  
+  // Center the graph
+  const xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
+  const yCenterOffset = (svg.attr("height") - g.graph().height) / 2;
+  svgGroup.attr("transform", `translate(${xCenterOffset}, ${yCenterOffset})`);
+  
+  // Add zoom behavior
+  const zoom = d3.zoom().on("zoom", (event) => {
+    svgGroup.attr("transform", event.transform);
+  });
+  
+  svg.call(zoom);
+}
+
+// Generate initial diagram with sample text
+document.getElementById('prompt-input').value = `The Model Context Protocol (MCP) facilitates secure integration between LLMs and external resources using a client-server architecture.`;
+generateDiagram();
+
+</script>
+</body></html>

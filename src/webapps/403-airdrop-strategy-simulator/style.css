@@ -1,0 +1,87 @@
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #f0f2f5;
+  color: #1a1a1a;
+  margin: 0;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.strategy-select {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+select {
+  padding: 0.5rem;
+  border: 2px solid #3498db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.param-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+input[type="range"] {
+  flex-grow: 1;
+  accent-color: #3498db;
+}
+
+.chart-container {
+  height: 500px;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.model-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.equation {
+  font-family: monospace;
+  color: #2c3e50;
+}
+
+.params {
+  color: #7f8c8d;
+}
+
+.params span {
+  color: #3498db;
+  font-weight: bold;
+}

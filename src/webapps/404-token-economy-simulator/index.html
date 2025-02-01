@@ -1,0 +1,35 @@
+<html>
+<head>
+  <title>Token Economy Simulator</title>
+  <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="sim-container">
+    <div class="controls">
+      <div class="param-group">
+        <label>Initial Price ($): <input type="number" id="p0" value="1.0" step="0.1"></label>
+        <label>Initial Supply: <input type="number" id="s0" value="1000000"></label>
+        <label>Time Steps: <input type="number" id="tmax" value="50"></label>
+      </div>
+      <div class="strategy-select">
+        <label>Airdrop Strategy:
+          <select id="strategy">
+            <option value="constant">Constant Amount</option>
+            <option value="decaying">Decaying Airdrop</option>
+            <option value="supply_based">Supply-Based</option>
+          </select>
+        </label>
+      </div>
+      <div class="archetype-params">
+        <h3>User Archetype Distribution</h3>
+        <label>Holders (%): <input type="number" id="holder_pct" value="40" min="0" max="100"></label>
+        <label>Traders (%): <input type="number" id="trader_pct" value="30" min="0" max="100"></label>
+        <label>Farmers (%): <input type="number" id="farmer_pct" value="30" min="0" max="100"></label>
+      </div>
+    </div>
+    <div id="chart"></div>
+  </div>
+  <script src="simulation.js"></script>
+</body>
+</html>

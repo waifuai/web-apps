@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Standard Model Lagrangian</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    .equation {
+        font-size: 1.2em; /* Adjust as needed */
+        margin-bottom: 20px; /*Spacing between equations*/
+    }
+
+    .equation-container {
+        overflow-x: auto;  /* Add scrollbar if necessary */
+        max-width: 100%; /*ensure div doesn't overflow container*/
+    }
+  </style>
+</head>
+<body>
+  <div class="equation-container">
+    <div class="equation">
+      \[
+\begin{aligned}
+\mathcal{L}_{SM} =& -\frac{1}{2} \partial_\mu g \partial^\mu g - g f^{abc} \partial_\mu g^a g^b g^c -\frac{1}{4} g^2 f^{abc} f^{ade} \partial_\mu g^b g^c \partial^\mu g^e - \frac{1}{2} M^2 W_\mu W^\mu -\frac{1}{2} \partial_\mu Z_\nu \partial^\mu Z^\nu - \frac{1}{2} M^2 Z^\mu Z_\mu \\
+ &-\frac{1}{2} \partial_\mu A_\nu \partial^\mu A^\nu  - ig c_w  \left( \partial_\mu Z^\nu \left( W_\mu^+ W_\nu^- - W_\mu^- W_\nu^+ \right)  - Z_\nu \left(  \partial_\mu W_\nu^+ W_\mu^- - \partial_\mu W_\nu^- W_\mu^+  \right) \right)  \\
+ & -ig s_w \left( \partial_\mu A^\nu \left( W_\mu^+ W_\nu^- - W_\mu^- W_\nu^+ \right) - A_\nu \left( \partial_\mu W_\nu^+ W_\mu^- - \partial_\mu W_\nu^- W_\mu^+ \right) \right) \\
+ &  -\frac{1}{2} g^2 W_\mu^+ W_\nu^- W^{\mu+} W^{\nu-} + \frac{1}{2} g^2 W_\mu^+ W_\mu^- W_\nu^+ W^{\nu-} + g^2 c_w^2 ( Z_\mu^+ W_\nu^- Z^{\mu+} W^{\nu-}) \\
+ &+ g^2 s_w^2 ( A_\mu A_\nu W^{\mu+} W^{\nu-} ) + g^2 s_w c_w (A_\mu Z_\nu (W^{\mu+} W^{\nu-}))  - 2A_\mu Z_\nu W^{\mu+} W^{\nu-} - \frac{1}{2} \partial_\mu H \partial^\mu H -2M^2 \alpha_h H^2 - \partial_\mu \phi \partial^\mu \phi -  \\
+ & \beta_h \left( \frac{2M^2}{g^2} + \frac{2M}{g}H + \frac{1}{2}(H^2 + \phi^0 \phi^0 + 2 \phi^+ \phi^- ) \right) + 2 M^2 \alpha_h - \frac{g}{2} \alpha_h M \left(H^3 + H \phi^0 \phi^0 + 2 H \phi^+ \phi^- \right) \\
+ &- \frac{1}{8} g^2 \alpha_h \left(H^4 + (\phi^0)^4 + 4(\phi^+ \phi^-)^2 + 4(\phi^0)^2 \phi^+ \phi^- + 4H^2 \phi^+ \phi^- + 2(\phi^0)^2 H^2 \right) \\
+ & -\frac{g}{2} M W_\mu^+ W^{-\mu} H - \frac{1}{2} \frac{g M}{c_w^2} Z_\mu Z^\mu H -  \frac{1}{2} i g (W_\mu^+ (\phi^0 \partial^\mu \phi^- - \phi^- \partial^\mu \phi^0 ) - W_\mu^- (\phi^0 \partial^\mu \phi^+ - \phi^+ \partial^\mu \phi^0 )) \\
+ &+ \frac{1}{2} g (W_\mu^+ (H \partial^\mu \phi^- - \phi^- \partial^\mu H) + W_\mu^- (H \partial^\mu \phi^+ - \phi^+ \partial^\mu H) ) + \frac{1}{2} \frac{g}{c_w} \left( Z_\mu^0 (H \partial^\mu \phi^0 - \phi^0 \partial^\mu H) \right) \\
+ &- \frac{1}{2} M ( \frac{1}{c_w^2} Z_\mu^0 \partial^\mu \phi^0 + W_\mu^+ \partial^\mu \phi^- + W_\mu^- \partial^\mu \phi^+ ) - ig M Z_\mu^0 ( W_\mu^+ \phi^- - W_\mu^- \phi^+ ) + ig s_w M A_\mu (W_\mu^+ \phi^- - W_\mu^- \phi^+)  \\
+  &-\frac{1}{4} g^2 W_\mu^+ W^{-\mu} \left( H^2 + (\phi^0)^2 + 2 \phi^+ \phi^- \right) - \frac{1}{4} \frac{g^2}{c_w^2} Z_\mu^0 Z^{\mu 0} \left( H^2 + (\phi^0)^2 + 2(2 s_w^2 -1) \phi^+ \phi^- \right) \\
+  &  - \frac{1}{2} ig \frac{g}{c_w^2} Z_\mu^0 H ( W^{\mu+} \phi^- - W^{\mu-} \phi^+ ) + \frac{1}{2} g^2 s_w A_\mu H ( W^{\mu+} \phi^- - W^{\mu-} \phi^+ ) - \frac{1}{2} g^2 \frac{2c_w^2-1}{c_w^2} Z_\mu^0 A^\mu \phi^+ \phi^- \\
+  &+ g^2 s_w^2 A_\mu A^\mu \phi^+ \phi^- + i g s_w  \lambda_{ij} (\bar{q}_i \gamma^\mu q_j ) A_\mu - \bar{e} (\gamma^\mu \partial_\mu + m_e)e - \bar{\nu}  (\gamma^\mu \partial_\mu ) \nu - \bar{u} (\gamma^\mu \partial_\mu + m_u ) u \\
+  &- \bar{d} (\gamma^\mu \partial_\mu + m_d ) d + i g s_w A_\mu \left( - (\bar{e} \gamma^\mu e) + \frac{2}{3} (\bar{u} \gamma^\mu u) - \frac{1}{3} (\bar{d} \gamma^\mu d) \right) \\
+   &+ \frac{i g}{4 c_w} Z_\mu^0  \left( \bar{\nu} \gamma^\mu (1+\gamma^5) \nu + (\bar{e} \gamma^\mu (4s_w^2 -1-\gamma^5)e) + (\bar{u} \gamma^\mu (\frac{4}{3} s_w^2 - 1 - \gamma^5 ) u) + (\bar{d} \gamma^\mu (\frac{2}{3} s_w^2 -1 - \gamma^5) d)\right)  \\
+   & + \frac{ig}{2\sqrt{2}} W_\mu^+ \left(  (\bar{\nu} \gamma^\mu(1+\gamma^5) U^l_{lep} e^k ) +  (\bar{u} \gamma^\mu (1+\gamma^5) C_{\lambda k} d^k) \right) + \frac{ig}{2\sqrt{2}} W_\mu^-  \left(  (\bar{e} \gamma^\mu(1+\gamma^5) U^l_{lep} \nu^k ) +  (\bar{d} \gamma^\mu (1+\gamma^5) C_{\lambda k}^\dagger u^k) \right) \\
+   & +\frac{ig}{2 M \sqrt{2}} \phi^+ \left( - m_e (\bar{\nu} U_{lep}^\dagger (1-\gamma^5) e)  + m_\nu (\bar{e} U_{lep} (1+\gamma^5) \nu ) \right)  + \frac{ig}{2 M \sqrt{2}} \phi^-  \left( m_e (\bar{e} U_{lep}^\dagger (1+\gamma^5) \nu)  - m_\nu (\bar{\nu} U_{lep} (1-\gamma^5) e ) \right)  \\
+   &- \frac{g}{2} \frac{m_e}{M} H (\bar{e}e ) + \frac{ig}{2} \frac{m_\nu}{M} \phi^0  (\bar{\nu} \gamma^5 \nu)  - \frac{ig}{2} \frac{m_e}{M} \phi^0  (\bar{e} \gamma^5 e) - \frac{1}{4} \frac{g}{M} \bar{d} M_R (1- \gamma^5) d\\
+   & - \frac{1}{4} \bar{\nu} \frac{g}{M} M_R(1-\gamma^5) \nu  - \frac{ig}{2M\sqrt{2}}\phi^+ (-m_d^i (\bar{u}^i C_{ik} (1-\gamma^5) d^k )  + m_u^i (\bar{d}^i C^\dagger_{ki} (1+\gamma^5) u^k)) \\
+     &- \frac{ig}{2M\sqrt{2}}\phi^- (-m_u^i (\bar{d}^i C_{ik} (1+\gamma^5) u^k )  + m_d^i (\bar{u}^i C^\dagger_{ki} (1-\gamma^5) d^k)) -  \frac{g}{2} \frac{m_u}{M} H (\bar{u} u) \\
+    &- \frac{g}{2} \frac{m_d}{M} H (\bar{d} d) + \frac{g}{2} \frac{m_\nu}{M} \phi^0  (\bar{\nu} \gamma^5 \nu) + G^a \partial_\mu G^a \partial^\mu G^a + g_s f^{abc} \partial_\mu G^a G^b G^{c \mu} \\
+    &  + \bar{X}^+(\partial^2 -M^2) X^+ + \bar{X}^-(\partial^2 -M^2) X^- + \bar{X}^0(\partial^2 -M^2) X^0 + Y \partial^2 \bar{Y} + igc_w W_\mu^+ ( \partial^\mu \bar{Y} X^- - \partial^\mu \bar{X}^- Y ) \\
+    &  +igc_w W_\mu^- ( \partial^\mu \bar{Y} X^+ - \partial^\mu \bar{X}^+ Y ) + igc_w Z_\mu^0 (\partial^\mu \bar{X}^+ X^+ - \partial^\mu \bar{X}^- X^-) + ig s_w A_\mu ( \partial^\mu \bar{X}^+ X^+ - \partial^\mu \bar{X}^- X^- ) \\
+    & -  \frac{1}{2} g M (\bar{X}^+ X^+ H + \bar{X}^- X^- H + \frac{1-2 c_w^2}{2 c_w^2} \bar{X}^0 X^0 H ) -  \frac{1}{2} i g M (\bar{X}^+ X^0 \phi^- - \bar{X}^- X^0 \phi^+) \\
+    &  + i g M s_w (\bar{X}^0 X^+ \phi^- - \bar{X}^0 X^- \phi^+) + \frac{1}{2}  i g M (\bar{X}^+ X^+ \phi^0 - \bar{X}^- X^- \phi^0 ).
+    \end{aligned}
+      \]
+    </div>
+    
+     <!-- Add additional equations here inside equation-container-->
+
+  </div>
+</body>
+</html>

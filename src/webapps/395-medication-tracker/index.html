@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Medication Tracker</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --danger: #f44336;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .pill-form {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .pill-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .pill-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .pill-info {
+            display: grid;
+            gap: 5px;
+        }
+
+        .pill-name {
+            font-weight: bold;
+        }
+
+        .pill-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .pill-status {
+            font-size: 0.9em;
+        }
+
+        .take-button {
+            background: var(--success);
+        }
+
+        .taken {
+            border-left-color: var(--success);
+            opacity: 0.7;
+        }
+
+        @keyframes addPill {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .pill-item {
+            animation: addPill 0.3s ease-out;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .history-table th,
+        .history-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .history-table th {
+            background-color: #f0f0f0;
+        }
+
+        .edit-time-form {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .edit-time-form input[type='datetime-local'] {
+            width: 100%;
+        }
+
+        .edit-time-form button {
+            width: fit-content;
+        }
+
+        .add-multi-pill-form {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .add-multi-pill-form textarea {
+            font-size: 14px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+          .delete-button {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s;
+            margin-left: 5px
+        }
+        .delete-button:hover {
+             opacity: 0.9;
+         }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            <svg width="24" height="24" style="vertical-align: middle; margin-right: 10px">
+                <path fill="currentColor"
+                    d="M4.22 11.29l7.07-7.07a6 6 0 018.48 8.48l-7.07 7.07a6 6 0 11-8.48-8.48zm1.41 1.41a4 4 0 105.66 5.66l7.07-7.07a4 4 0 00-5.66-5.66l-7.07 7.07z"></path>
+            </svg>
+            Medication Tracker
+        </h1>
+
+        <form class="pill-form" id="pillForm">
+            <input type="text" id="pillName" placeholder="Medication Name" required>
+            <input type="number" id="pillDosage" placeholder="Dosage" required min="1">
+            <select id="pillFrequency" required>
+                <option value="">Select frequency</option>
+                <option value="Once daily">Once daily</option>
+                <option value="Twice daily">Twice daily</option>
+                <option value="Three times daily">Three times daily</option>
+                <option value="Four times daily">Four times daily</option>
+            </select>
+            <button type="submit">Add Medication</button>
+        </form>
+
+        <div class="pill-list" id="pillList">
+            <!-- Pills will be added here dynamically -->
+        </div>
+
+        <h2>Past Medication Times</h2>
+        <table class="history-table" id="historyTable">
+            <thead>
+                <tr>
+                    <th>Medication</th>
+                    <th>Time Taken</th>
+                     <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Past times will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        class PillTracker {
+            constructor() {
+                this.pills = JSON.parse(localStorage.getItem('pills')) || [];
+                this.form = document.getElementById('pillForm');
+                this.list = document.getElementById('pillList');
+                this.historyTableBody = document.querySelector('#historyTable tbody');
+                this.history = JSON.parse(localStorage.getItem('history')) || [];
+
+                this.form.addEventListener('submit', this.handleSubmit.bind(this));
+                this.renderPills();
+                this.renderHistory();
+            }
+
+            handleSubmit(e) {
+                e.preventDefault();
+
+                const pill = {
+                    id: Date.now(),
+                    name: document.getElementById('pillName').value,
+                    dosage: document.getElementById('pillDosage').value,
+                    frequency: document.getElementById('pillFrequency').value,
+                    taken: false,
+                    lastTaken: null,
+                    history: []
+                };
+
+                this.pills.push(pill);
+                this.savePills();
+                this.renderPills();
+                this.form.reset();
+            }
+
+            takePill(id) {
+                const pill = this.pills.find(p => p.id === id);
+                if (pill) {
+                    const now = new Date();
+                     pill.taken = true;
+                     pill.lastTaken = now.toISOString();
+
+                     this.history.push({
+                            name: pill.name,
+                            time: now.toISOString()
+                        })
+                        this.saveHistory()
+
+                    this.savePills();
+                    this.renderPills();
+                    this.renderHistory();
+                }
+            }
+
+             deletePill(id) {
+                this.pills = this.pills.filter(pill => pill.id !== id);
+                this.savePills();
+                 this.renderPills();
+              }
+
+              deleteHistoryEntry(index) {
+                 this.history.splice(index, 1);
+                  this.saveHistory();
+                 this.renderHistory();
+              }
+
+            editLastTakenTime(pillName, newTime) {
+                 const historyItem = this.history.find(item => item.name === pillName && new Date(item.time).toDateString() === new Date(newTime).toDateString());
+                 if (historyItem) {
+                     historyItem.time = newTime;
+                    this.saveHistory();
+                    this.renderHistory();
+                }
+            }
+            saveHistory() {
+                localStorage.setItem('history', JSON.stringify(this.history));
+            }
+
+            savePills() {
+                localStorage.setItem('pills', JSON.stringify(this.pills));
+            }
+
+            renderPills() {
+                this.list.innerHTML = '';
+
+                this.pills.forEach(pill => {
+                    const element = document.createElement('div');
+                    element.className = `pill-item ${pill.taken ? 'taken' : ''}`;
+
+                    const lastTakenTime = pill.lastTaken ? new Date(pill.lastTaken).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : null;
+
+                    element.innerHTML = `
+                <div class="pill-info">
+                    <div class="pill-name">${pill.name} - ${pill.dosage}</div>
+                    <div class="pill-time">${pill.frequency}</div>
+                     ${pill.taken ?
+                            `Last taken: ${lastTakenTime}` :
+                            ''}
+                </div>
+                    <button class="take-button" onclick="pillTracker.takePill(${pill.id})">
+                        Take
+                    </button>
+
+                   <button class="delete-button" onclick="pillTracker.deletePill(${pill.id})">Delete</button>
+                `;
+
+                    this.list.appendChild(element);
+                });
+            }
+
+            renderHistory() {
+                 this.historyTableBody.innerHTML = '';
+                this.history.sort((a, b) => new Date(b.time) - new Date(a.time));
+                this.history.forEach((item, index) => {
+                   const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${new Date(item.time).toLocaleString()}</td>
+                        <td>
+                            ${this.renderEditTimeButton(item, index)}
+                            <button class="delete-button" onclick="pillTracker.deleteHistoryEntry(${index})">Delete</button>
+                        </td>
+                   `;
+                  this.historyTableBody.appendChild(row);
+                });
+            }
+              renderEditTimeButton(item, index) {
+                return `
+                <button onclick="pillTracker.showEditTimeForm(${index}, '${item.name}', '${item.time}')">Edit Time</button>
+            `;
+            }
+              showEditTimeForm(index, pillName, currentTime) {
+                const existingForm = document.querySelector(`#editTimeForm-${index}`);
+                  if(existingForm){
+                     existingForm.remove()
+                      return;
+                  }
+                const row = this.historyTableBody.children[index]
+                  const cell = row.cells[2]
+                 const form = document.createElement('form');
+                form.className = 'edit-time-form';
+                form.id = `editTimeForm-${index}`;
+                 form.innerHTML = `
+                    <input type="datetime-local" value="${new Date(currentTime).toISOString().slice(0, 16)}" required />
+                     <button type="submit">Update Time</button>
+                 `;
+                 form.onsubmit = (e) => {
+                   this.handleEditTimeSubmit(e, pillName);
+                     form.remove();
+                   };
+                  cell.appendChild(form)
+              }
+              handleEditTimeSubmit(e, pillName) {
+                 e.preventDefault();
+                  const form = e.target;
+                  const newTime = form.querySelector('input[type="datetime-local"]').value;
+                  this.editLastTakenTime(pillName, new Date(newTime).toISOString());
+                }
+
+        }
+
+        const pillTracker = new PillTracker();
+
+        // Reset pills taken status at midnight
+        function resetPillStatus() {
+            let hasReset = false;
+            pillTracker.pills.forEach(pill => {
+                const now = new Date();
+                if (pill.taken) {
+                    const lastTakenDate = new Date(pill.lastTaken);
+
+                    if (now.toDateString() !== lastTakenDate.toDateString()) {
+                        pill.taken = false;
+                        pill.lastTaken = null;
+                        hasReset = true;
+                    }
+
+                }
+            });
+
+            if (hasReset) {
+                pillTracker.savePills();
+                pillTracker.renderPills();
+            }
+
+        }
+
+        setInterval(resetPillStatus, 60000); // Check every minute
+    </script>
+</body>
+
+</html>

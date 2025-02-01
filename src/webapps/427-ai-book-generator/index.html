@@ -1,0 +1,80 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Book Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Marked CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>AI Book Generator with Built-in AI</h1>
+  </header>
+  <div class="container">
+    <div class="generator-panel">
+      <section class="input-section">
+        <h2>Book Setup</h2>
+        <label for="bookTitle">Enter Book Title/Topic:</label>
+        <input type="text" id="bookTitle" placeholder="e.g. The Mystery of the Lost City" />
+        <button id="btnGenerateTOC">Generate TOC & Title Suggestions</button>
+        <div id="suggestions" class="suggestions"></div>
+      </section>
+      <section class="toc-section">
+        <h2>Table of Contents (Editable)</h2>
+        <p>Edit the table of contents in markdown. Format example:<br>
+          <code>
+            # Chapter 1: Introduction<br>
+            - Subchapter 1.1: Background<br>
+            - Subchapter 1.2: Motivation<br>
+            ...<br>
+            # Chapter 2: Main Concepts<br>
+            - Subchapter 2.1: Concept A<br>
+            - Subchapter 2.2: Concept B<br>
+            ...
+          </code>
+        </p>
+        <textarea id="tocInput" rows="15" placeholder="Generated TOC will appear here..."></textarea>
+      </section>
+      <section class="generation-section">
+        <h2>Subchapter Generation</h2>
+        <div class="generation-controls">
+          <button id="btnGenerateSubchapter">Generate Next Subchapter</button>
+          <button id="btnPause" disabled>Pause Generation</button>
+          <button id="btnSaveBook">Save/Update to Library</button>
+          <button id="btnClearBook">Clear Current Book</button>
+        </div>
+        <div id="status" class="status"></div>
+      </section>
+      <section class="output-section">
+        <h2>Generated Markdown</h2>
+        <button id="btnCopyMarkdown" title="Copy Markdown to Clipboard">
+          <!-- Inline SVG for copy icon -->
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path d="M19,21H8c-1.103,0-2-0.897-2-2V7h2v12h11V21z M16,3H5C3.897,3,3,3.897,3,5v12h2V5h11V3z"/>
+          </svg>
+          Copy Markdown
+        </button>
+        <textarea id="markdownOutput" rows="15" readonly placeholder="Markdown output will appear here..."></textarea>
+      </section>
+    </div>
+    <div class="preview-panel">
+      <h2>Preview</h2>
+      <div id="markdownPreview" class="markdown-preview"></div>
+    </div>
+  </div>
+  <section class="library-section">
+    <h2>Book Library</h2>
+    <div class="library-controls">
+      <label for="sortLibrary">Sort By:</label>
+      <select id="sortLibrary">
+        <option value="date">Last Updated</option>
+        <option value="alpha">Alphabetical</option>
+      </select>
+    </div>
+    <div id="libraryList" class="library-list">
+      <!-- Saved books will be listed here -->
+    </div>
+  </section>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

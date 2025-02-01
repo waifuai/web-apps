@@ -1,0 +1,310 @@
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f0f4f8;
+  }
+  
+  .tutorial-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .section {
+    margin-bottom: 30px;
+  }
+
+  .interactive-diagram {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .component {
+    position: absolute;
+    padding: 10px;
+    background: white;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .component:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .connection {
+    stroke: #3498db;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #eee;
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+
+  .progress {
+    width: 0%;
+    height: 100%;
+    background: #3498db;
+    transition: width 0.3s ease;
+  }
+
+  .quiz-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+    margin: 20px 0;
+  }
+
+  button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background: #2980b9;
+  }
+</style>
+</head>
+<body>
+<div class="tutorial-container">
+  <h1>Model Context Protocol (MCP) Architecture Tutorial</h1>
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <div class="interactive-diagram">
+    <svg width="100%" height="100%" id="architecture-svg"></svg>
+  </div>
+
+  <div id="content-container"></div>
+</div>
+
+<script>
+// Initialize tutorial state
+let currentSection = 0;
+let sections = [];
+
+// Fetch tutorial content using AI
+async function fetchTutorialContent() {
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: `Generate a structured tutorial for the Model Context Protocol (MCP) with sections covering architecture, components, and implementation. Include practical examples and knowledge check questions.
+
+        <typescript-interface>
+        interface TutorialSection {
+          title: string;
+          content: string;
+          diagram?: {
+            components: Array<{
+              id: string;
+              name: string;
+              x: number;
+              y: number;
+            }>;
+            connections: Array<{
+              from: string;
+              to: string;
+              label: string;
+            }>;
+          };
+          quiz?: {
+            question: string;
+            options: string[];
+            correctIndex: number;
+          };
+        }
+        
+        interface Response {
+          sections: TutorialSection[];
+        }
+        </typescript-interface>
+        
+        <example>
+        {
+          "sections": [
+            {
+              "title": "Introduction to MCP",
+              "content": "The Model Context Protocol (MCP) is a powerful architecture...",
+              "diagram": {
+                "components": [
+                  {"id": "llm", "name": "LLM Client", "x": 100, "y": 100},
+                  {"id": "server", "name": "MCP Server", "x": 300, "y": 100}
+                ],
+                "connections": [
+                  {"from": "llm", "to": "server", "label": "JSON-RPC"}
+                ]
+              },
+              "quiz": {
+                "question": "What is the primary purpose of MCP?",
+                "options": [
+                  "To manage database connections",
+                  "To facilitate secure integration between LLMs and external resources",
+                  "To generate code",
+                  "To train AI models"
+                ],
+                "correctIndex": 1
+              }
+            }
+          ]
+        }
+        </example>`,
+        data: "Model Context Protocol Architecture Tutorial"
+      })
+    });
+    
+    const data = await response.json();
+    sections = data.sections;
+    renderSection(0);
+  } catch (error) {
+    console.error('Error fetching tutorial content:', error);
+  }
+}
+
+// Render current section
+function renderSection(index) {
+  const section = sections[index];
+  const container = document.getElementById('content-container');
+  const progress = document.getElementById('progress');
+  
+  // Update progress bar
+  progress.style.width = `${((index + 1) / sections.length) * 100}%`;
+  
+  // Render content
+  container.innerHTML = `
+    <div class="section">
+      <h2>${section.title}</h2>
+      <div>${section.content}</div>
+      ${renderQuiz(section.quiz)}
+    </div>
+    <div class="navigation">
+      ${index > 0 ? '<button onclick="previousSection()">Previous</button>' : ''}
+      ${index < sections.length - 1 ? '<button onclick="nextSection()">Next</button>' : ''}
+    </div>
+  `;
+
+  // Render diagram if present
+  if (section.diagram) {
+    renderDiagram(section.diagram);
+  }
+}
+
+// Render interactive diagram
+function renderDiagram(diagram) {
+  const svg = document.getElementById('architecture-svg');
+  svg.innerHTML = '';
+  
+  // Add components
+  diagram.components.forEach(component => {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.innerHTML = `
+      <rect x="${component.x}" y="${component.y}" width="120" height="60" 
+            fill="white" stroke="#3498db" stroke-width="2" rx="4"/>
+      <text x="${component.x + 60}" y="${component.y + 35}" 
+            text-anchor="middle">${component.name}</text>
+    `;
+    svg.appendChild(g);
+  });
+  
+  // Add connections
+  diagram.connections.forEach(conn => {
+    const from = diagram.components.find(c => c.id === conn.from);
+    const to = diagram.components.find(c => c.id === conn.to);
+    
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", `M${from.x + 120} ${from.y + 30} L${to.x} ${to.y + 30}`);
+    path.setAttribute("class", "connection");
+    
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", (from.x + to.x + 120) / 2);
+    text.setAttribute("y", (from.y + to.y) / 2 - 10);
+    text.setAttribute("text-anchor", "middle");
+    text.textContent = conn.label;
+    
+    svg.appendChild(path);
+    svg.appendChild(text);
+  });
+}
+
+// Render quiz section
+function renderQuiz(quiz) {
+  if (!quiz) return '';
+  
+  return `
+    <div class="quiz-container">
+      <h3>Knowledge Check</h3>
+      <p>${quiz.question}</p>
+      ${quiz.options.map((option, index) => `
+        <div>
+          <input type="radio" name="quiz" value="${index}" id="option${index}">
+          <label for="option${index}">${option}</label>
+        </div>
+      `).join('')}
+      <button onclick="checkAnswer(${quiz.correctIndex})">Submit Answer</button>
+      <div id="quiz-feedback"></div>
+    </div>
+  `;
+}
+
+// Check quiz answer
+function checkAnswer(correctIndex) {
+  const selected = document.querySelector('input[name="quiz"]:checked');
+  const feedback = document.getElementById('quiz-feedback');
+  
+  if (!selected) {
+    feedback.innerHTML = '<p style="color: red;">Please select an answer!</p>';
+    return;
+  }
+  
+  if (parseInt(selected.value) === correctIndex) {
+    feedback.innerHTML = '<p style="color: green;">Correct! Well done!</p>';
+  } else {
+    feedback.innerHTML = '<p style="color: red;">Incorrect. Try again!</p>';
+  }
+}
+
+// Navigation functions
+function nextSection() {
+  if (currentSection < sections.length - 1) {
+    currentSection++;
+    renderSection(currentSection);
+  }
+}
+
+function previousSection() {
+  if (currentSection > 0) {
+    currentSection--;
+    renderSection(currentSection);
+  }
+}
+
+// Initialize tutorial
+fetchTutorialContent();
+</script>
+</body></html>

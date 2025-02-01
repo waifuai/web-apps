@@ -1,0 +1,321 @@
+<style>
+:root {
+  --bg: #0f1319;
+  --text: #e5e7eb;
+  --accent: #3b82f6;
+  --surface: #1f2937;
+  --surface-hover: #374151;
+  --border: #374151;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.avatar {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.username {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.sort-controls {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.sort-button {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sort-button:hover {
+  background: var(--surface-hover);
+}
+
+.sort-button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.projects {
+  display: grid;
+  gap: 20px;
+}
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  display: grid;
+  gap: 15px;
+  transition: all 0.2s;
+}
+
+.project-card:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+}
+
+.project-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.project-stats {
+  display: flex;
+  gap: 20px;
+  color: #9ca3af;
+}
+
+.stats-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.project-date {
+  color: #9ca3af;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #9ca3af;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #9ca3af;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination-info {
+  text-align: center;
+  color: #9ca3af;
+  margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div id="profile"></div>
+  <div class="sort-controls">
+    <button class="sort-button active" data-sort="date">Sort by Date</button>
+    <button class="sort-button" data-sort="views">Sort by Views</button>
+    <button class="sort-button" data-sort="likes">Sort by Likes</button>
+    <button class="sort-button" data-sort="title">Sort by Title</button>
+  </div>
+  <div id="projects" class="projects">
+    <div class="loading">Loading projects...</div>
+  </div>
+  <div class="pagination-info" id="pagination-info"></div>
+</div>
+
+<script>
+const room = new WebsimSocket();
+let currentSortMethod = 'date';
+let allProjectsData = [];
+
+async function loadCachedProjects() {
+  const cachedProjects = await room.collection('cached_projects').getList();
+  if (cachedProjects.length > 0) {
+    allProjectsData = cachedProjects.map(p => p.project_data);
+    const user = await window.websim.getCreatedBy();
+    renderProjects(user, allProjectsData);
+    return true;
+  }
+  return false;
+}
+
+async function fetchAllProjects() {
+  // First try to load from cache
+  const hasCachedData = await loadCachedProjects();
+  if (hasCachedData) {
+    return allProjectsData;
+  }
+
+  // If no cache, fetch from API
+  const user = await window.websim.getCreatedBy();
+  let hasMore = true;
+  let after = null;
+
+  while (hasMore) {
+    const url = after 
+      ? `/api/v1/users/${user.username}/projects?posted=true&first=100&after=${after}`
+      : `/api/v1/users/${user.username}/projects?posted=true&first=100`;
+      
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    allProjectsData = [...allProjectsData, ...data.projects.data];
+    
+    hasMore = data.projects.meta.has_next_page;
+    after = data.projects.meta.end_cursor;
+
+    sortAndRenderProjects(user);
+  }
+
+  // Cache the fetched projects
+  if (allProjectsData.length > 0) {
+    // Clear existing cache
+    const existingCache = await room.collection('cached_projects').getList();
+    for (const cached of existingCache) {
+      await room.collection('cached_projects').delete(cached.id);
+    }
+
+    // Store new cache
+    await room.collection('cached_projects').create({
+      project_data: allProjectsData
+    });
+  }
+
+  return allProjectsData;
+}
+
+function sortProjects(projects, sortMethod) {
+  const sortedProjects = [...projects];
+  switch (sortMethod) {
+    case 'date':
+      sortedProjects.sort((a, b) => new Date(b.project.created_at) - new Date(a.project.created_at));
+      break;
+    case 'views':
+      sortedProjects.sort((a, b) => b.project.stats.views - a.project.stats.views);
+      break;
+    case 'likes':
+      sortedProjects.sort((a, b) => b.project.stats.likes - a.project.stats.likes);
+      break;
+    case 'title':
+      sortedProjects.sort((a, b) => {
+        const titleA = a.project.title || 'Untitled Project';
+        const titleB = b.project.title || 'Untitled Project';
+        return titleA.localeCompare(titleB);
+      });
+      break;
+  }
+  return sortedProjects;
+}
+
+function sortAndRenderProjects(user) {
+  const sortedProjects = sortProjects(allProjectsData, currentSortMethod);
+  renderProjects(user, sortedProjects);
+}
+
+function renderProjects(user, projects) {
+  // Render profile header
+  const profileHtml = `
+    <div class="header">
+      <img src="https://images.websim.ai/avatar/${user.username}" class="avatar" alt="${user.username}'s avatar">
+      <div>
+        <div class="username">@${user.username}</div>
+        ${user.description ? `<div class="description">${user.description}</div>` : ''}
+      </div>
+    </div>
+  `;
+  document.getElementById('profile').innerHTML = profileHtml;
+
+  if (projects.length === 0) {
+    document.getElementById('projects').innerHTML = `
+      <div class="empty-state">
+        No projects found
+      </div>
+    `;
+    return;
+  }
+
+  // Render projects
+  const projectsHtml = projects.map((data) => {
+    const {project, project_revision, site} = data;
+    
+    return `
+      <div class="project-card">
+        <a href="/p/${project.id}" class="project-title">${project.title || 'Untitled Project'}</a>
+        ${project.description ? `<div class="description">${project.description}</div>` : ''}
+        <div class="project-stats">
+          <div class="stats-item">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+            ${project.stats.views}
+          </div>
+          <div class="stats-item">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+            ${project.stats.likes}
+          </div>
+          <div class="project-date">
+            Created ${new Date(project.created_at).toLocaleDateString()}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('projects').innerHTML = projectsHtml;
+  
+  document.getElementById('pagination-info').innerHTML = `
+    Showing ${projects.length} projects
+  `;
+}
+
+// Add sort button listeners
+document.querySelectorAll('.sort-button').forEach(button => {
+  button.addEventListener('click', () => {
+    // Update active button
+    document.querySelectorAll('.sort-button').forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    
+    // Update sort and render
+    currentSortMethod = button.dataset.sort;
+    window.websim.getCreatedBy().then(user => {
+      sortAndRenderProjects(user);
+    });
+  });
+});
+
+// Initialize by loading cached data or fetching new data
+fetchAllProjects().catch(console.error);
+</script>
+
+</body></html>

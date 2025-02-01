@@ -1,0 +1,296 @@
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #1a1a1a;
+    color: #fff;
+  }
+
+  .protocol-diagram {
+    width: 100%;
+    height: 600px;
+    background: #252525;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .node {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+  }
+
+  .node:hover {
+    transform: scale(1.1);
+    z-index: 10;
+  }
+
+  .connection {
+    position: absolute;
+    height: 2px;
+    background: #666;
+    transform-origin: left center;
+    pointer-events: none;
+  }
+
+  .tooltip {
+    position: absolute;
+    background: rgba(0,0,0,0.9);
+    padding: 1rem;
+    border-radius: 4px;
+    display: none;
+    z-index: 100;
+    max-width: 300px;
+    border: 1px solid #444;
+  }
+
+  .info-panel {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #252525;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .active {
+    border-color: #50fa7b;
+    box-shadow: 0 0 20px rgba(80,250,123,0.3);
+  }
+</style>
+</head>
+<body>
+
+<h1>Interactive Model Context Protocol Visualization</h1>
+
+<div class="protocol-diagram" id="diagram">
+  <!-- Nodes will be added dynamically -->
+</div>
+
+<div class="info-panel" id="infoPanel">
+  <h2 id="infoPanelTitle"></h2>
+  <p id="infoPanelContent"></p>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const components = [
+  {
+    id: 'llm',
+    name: 'LLM Client',
+    x: 50,
+    y: 50,
+    color: '#ff79c6',
+    description: 'Large Language Models like Claude Desktop that act as clients in the protocol.'
+  },
+  {
+    id: 'resources',
+    name: 'Resources',
+    x: 75,
+    y: 25,
+    color: '#50fa7b',
+    description: 'Data exposed by the server, identified by URIs. Can be text or binary content.'
+  },
+  {
+    id: 'prompts',
+    name: 'Prompts',
+    x: 25,
+    y: 75,
+    color: '#bd93f9',
+    description: 'Reusable templates that can include dynamic arguments and resource context.'
+  },
+  {
+    id: 'tools',
+    name: 'Tools',
+    x: 75,
+    y: 75,
+    color: '#ffb86c',
+    description: 'Executable functions that enable LLMs to interact with external systems.'
+  },
+  {
+    id: 'sampling',
+    name: 'Sampling',
+    x: 25,
+    y: 25,
+    color: '#8be9fd',
+    description: 'Allows servers to request LLM completions via the client.'
+  }
+];
+
+const connections = [
+  ['llm', 'resources'],
+  ['llm', 'prompts'],
+  ['llm', 'tools'],
+  ['llm', 'sampling'],
+  ['resources', 'prompts'],
+  ['tools', 'prompts'],
+  ['sampling', 'tools']
+];
+
+function createNode(component) {
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.id = component.id;
+  node.style.backgroundColor = component.color;
+  node.style.left = `${component.x}%`;
+  node.style.top = `${component.y}%`;
+  node.innerHTML = component.name;
+  
+  node.addEventListener('mouseover', () => {
+    showTooltip(component);
+  });
+  
+  node.addEventListener('mouseout', () => {
+    hideTooltip();
+  });
+  
+  node.addEventListener('click', () => {
+    showInfoPanel(component);
+  });
+  
+  return node;
+}
+
+function createConnection(start, end) {
+  const connection = document.createElement('div');
+  connection.className = 'connection';
+  
+  const startNode = document.getElementById(start);
+  const endNode = document.getElementById(end);
+  
+  const startRect = startNode.getBoundingClientRect();
+  const endRect = endNode.getBoundingClientRect();
+  const diagramRect = diagram.getBoundingClientRect();
+  
+  const startX = startRect.left + startRect.width/2 - diagramRect.left;
+  const startY = startRect.top + startRect.height/2 - diagramRect.top;
+  const endX = endRect.left + endRect.width/2 - diagramRect.left;
+  const endY = endRect.top + endRect.height/2 - diagramRect.top;
+  
+  const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+  const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+  
+  connection.style.width = `${length}px`;
+  connection.style.left = `${startX}px`;
+  connection.style.top = `${startY}px`;
+  connection.style.transform = `rotate(${angle}deg)`;
+  
+  return connection;
+}
+
+function showTooltip(component) {
+  const tooltip = document.getElementById('tooltip');
+  tooltip.innerHTML = component.description;
+  tooltip.style.display = 'block';
+  
+  document.addEventListener('mousemove', (e) => {
+    tooltip.style.left = `${e.pageX + 10}px`;
+    tooltip.style.top = `${e.pageY + 10}px`;
+  });
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').style.display = 'none';
+}
+
+function showInfoPanel(component) {
+  const infoPanel = document.getElementById('infoPanel');
+  const title = document.getElementById('infoPanelTitle');
+  const content = document.getElementById('infoPanelContent');
+  
+  // Remove active class from all nodes
+  document.querySelectorAll('.node').forEach(node => node.classList.remove('active'));
+  
+  // Add active class to clicked node
+  document.getElementById(component.id).classList.add('active');
+  
+  title.textContent = component.name;
+  content.textContent = component.description;
+  infoPanel.style.display = 'block';
+  
+  // Fetch additional details using AI
+  getComponentDetails(component.name);
+}
+
+async function getComponentDetails(componentName) {
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: `Provide detailed technical information about the ${componentName} component of the Model Context Protocol.
+        
+        <typescript-interface>
+        interface Response {
+          details: string;
+          examples: string[];
+        }
+        </typescript-interface>
+        
+        <example>
+        {
+          "details": "Technical description of the component...",
+          "examples": ["Example usage 1", "Example usage 2"]
+        }
+        </example>`,
+        data: componentName
+      })
+    });
+    
+    const data = await response.json();
+    
+    // Update info panel with AI-generated content
+    const content = document.getElementById('infoPanelContent');
+    content.innerHTML = `
+      <p>${data.details}</p>
+      <h3>Examples:</h3>
+      <ul>
+        ${data.examples.map(example => `<li>${example}</li>`).join('')}
+      </ul>
+    `;
+  } catch (error) {
+    console.error('Error fetching component details:', error);
+  }
+}
+
+const diagram = document.getElementById('diagram');
+
+// Create nodes
+components.forEach(component => {
+  diagram.appendChild(createNode(component));
+});
+
+// Create connections after a short delay to ensure nodes are positioned
+setTimeout(() => {
+  connections.forEach(([start, end]) => {
+    diagram.appendChild(createConnection(start, end));
+  });
+}, 100);
+
+// Add window resize handler to update connections
+window.addEventListener('resize', () => {
+  // Remove existing connections
+  document.querySelectorAll('.connection').forEach(conn => conn.remove());
+  
+  // Recreate connections
+  connections.forEach(([start, end]) => {
+    diagram.appendChild(createConnection(start, end));
+  });
+});
+</script>
+
+</body>
+</html>

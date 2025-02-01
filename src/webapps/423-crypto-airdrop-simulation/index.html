@@ -1,0 +1,52 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crypto Airdrop Simulation</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- D3 Library from CDN for charting -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Crypto Airdrop Simulation</h1>
+    <p>
+      Simulate a token economy and compare different airdrop strategies: Lottery, Uniform, Tiered, and Vesting.
+    </p>
+  </header>
+
+  <section class="controls">
+    <label for="strategySelect">Choose Airdrop Strategy:</label>
+    <select id="strategySelect">
+      <option value="lottery">Lottery</option>
+      <option value="uniform">Uniform</option>
+      <option value="tiered">Tiered</option>
+      <option value="vesting">Vesting</option>
+    </select>
+    <button id="startSimulation">Run Simulation</button>
+    <button id="runOptimization">Run Optimization</button>
+  </section>
+
+  <section class="results">
+    <h2>Results</h2>
+    <div id="simulationStats">
+      <!-- Final token price and total supply will be shown here -->
+    </div>
+    <div id="chartArea">
+      <h3>Token Price Over Time</h3>
+      <svg id="priceChart" width="800" height="400"></svg>
+    </div>
+    <div id="optimizationResults" style="margin-top: 2rem;">
+      <!-- Optimization process and final results will be displayed here -->
+      <div id="optimizationProgressContainer">
+        <div id="progressContainer">
+          <div id="progressBar"></div>
+        </div>
+        <p id="progressText">Optimization Progress: 0%</p>
+      </div>
+      <div id="optimizationResultsLog"></div>
+    </div>
+  </section>
+
+  <script type="module" src="simulation.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Airdrop Strategy Simulator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Token Economy Simulator</h1>
+    
+    <div class="controls">
+      <div class="param-group">
+        <label>Users: <input type="number" id="numUsers" value="1000"></label>
+        <label>Simulation Steps: <input type="number" id="numSteps" value="100"></label>
+      </div>
+      
+      <div class="strategy-grid" id="strategies">
+        <!-- Strategies will be injected here by JS -->
+      </div>
+      
+      <button onclick="runSimulation()">Run Simulation</button>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="priceChart"></canvas>
+    </div>
+  </div>
+
+  <script src="simulation.js"></script>
+</body>
+</html>

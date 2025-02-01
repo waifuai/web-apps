@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Waifu Chat Simulator</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="/styles.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="waifu-container">
+      <svg class="waifu-character" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body base -->
+        <path class="body" d="M100 250 Q90 200 100 150 L100 150 Q110 200 100 250" fill="#ff99cc"/>
+        <!-- Face -->
+        <circle class="face" cx="100" cy="100" r="40" fill="#ffe6f2"/>
+        <!-- Eyes -->
+        <circle class="eye left-eye" cx="80" cy="90" r="8" fill="#333"/>
+        <circle class="eye right-eye" cx="120" cy="90" r="8" fill="#333"/>
+        <!-- Mouth -->
+        <path class="mouth" d="M80 120 Q100 130 120 120" fill="none" stroke="#333" stroke-width="3"/>
+        <!-- Optional effects -->
+        <g class="effects" display="none">
+          <circle class="blush" cx="60" cy="110" r="12" fill="#ff6699" opacity="0"/>
+          <circle class="blush" cx="140" cy="110" r="12" fill="#ff6699" opacity="0"/>
+        </g>
+      </svg>
+    </div>
+    
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

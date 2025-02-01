@@ -1,0 +1,308 @@
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<style>
+.container {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    min-height: 100vh;
+}
+
+.controls {
+    flex: 1;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.preview {
+    flex: 1;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:disabled {
+    background: #cccccc;
+}
+
+.chapter-edit {
+    margin: 10px 0;
+}
+
+.subchapter {
+    margin-left: 20px;
+}
+
+.toc-editor {
+    width: 100%;
+    height: 300px;
+    margin: 10px 0;
+    font-family: monospace;
+}
+
+#status {
+    color: #666;
+    font-style: italic;
+}
+
+.copy-button {
+    position: sticky;
+    top: 10px;
+    float: right;
+    background: #2196F3;
+}
+
+.generation-controls {
+    position: sticky;
+    top: 10px;
+    background: #f5f5f5;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    z-index: 100;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="controls">
+        <h2>Book Generator</h2>
+        <input type="text" id="bookTitle" placeholder="Enter book title/topic" style="width: 100%; padding: 8px;">
+        <button onclick="suggestTitles()">Suggest Alternative Titles</button>
+        <div id="titleSuggestions"></div>
+        
+        <button onclick="generateTOC()">Generate Table of Contents</button>
+        <textarea id="tocEditor" class="toc-editor" style="display: none;"></textarea>
+        <button onclick="startGeneration()" id="startButton" style="display: none;">Start Writing Book</button>
+        
+        <div id="status"></div>
+        <div id="generationControls" class="generation-controls" style="display: none;">
+            <button onclick="pauseGeneration()" id="pauseButton">Pause</button>
+            <button onclick="resumeGeneration()" id="resumeButton" style="display: none;">Resume</button>
+            <button onclick="copyToClipboard()" class="copy-button">Copy Markdown</button>
+        </div>
+    </div>
+    <div class="preview" id="preview"></div>
+</div>
+
+<script>
+let bookStructure = null;
+let currentChapter = 0;
+let currentSubchapter = 0;
+let isPaused = false;
+let fullMarkdown = "";
+let converter = new showdown.Converter();
+
+async function suggestTitles() {
+    const title = document.getElementById('bookTitle').value;
+    if (!title) return;
+    
+    const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            prompt: `Given the book title/topic "${title}", suggest 5 alternative titles that might work well.
+            
+            <typescript-interface>
+            interface Response {
+                titles: string[];
+            }
+            </typescript-interface>
+            
+            <example>
+            {
+                "titles": [
+                    "The Complete Guide to Garden Design",
+                    "Masterful Garden Planning",
+                    "Your Perfect Garden Blueprint",
+                    "The Garden Designer's Handbook",
+                    "Creating Dream Gardens"
+                ]
+            }
+            </example>`,
+            data: title
+        })
+    });
+    
+    const data = await response.json();
+    const suggestionsDiv = document.getElementById('titleSuggestions');
+    suggestionsDiv.innerHTML = data.titles.map(t => 
+        `<button onclick="selectTitle('${t}')">${t}</button>`
+    ).join('');
+}
+
+function selectTitle(title) {
+    document.getElementById('bookTitle').value = title;
+}
+
+async function generateTOC() {
+    const title = document.getElementById('bookTitle').value;
+    if (!title) return;
+    
+    const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            prompt: `Generate a detailed table of contents for a book titled "${title}" with 10 chapters and 5 subchapters each.
+            
+            <typescript-interface>
+            interface Response {
+                chapters: {
+                    title: string;
+                    subchapters: string[];
+                }[];
+            }
+            </typescript-interface>
+            
+            <example>
+            {
+                "chapters": [
+                    {
+                        "title": "Introduction to Gardens",
+                        "subchapters": [
+                            "Understanding Basic Garden Elements",
+                            "Planning Your Space",
+                            "Climate Considerations",
+                            "Basic Tools and Equipment",
+                            "Getting Started Checklist"
+                        ]
+                    }
+                ]
+            }
+            </example>`,
+            data: title
+        })
+    });
+    
+    const data = await response.json();
+    bookStructure = data.chapters;
+    
+    const tocEditor = document.getElementById('tocEditor');
+    tocEditor.value = JSON.stringify(bookStructure, null, 2);
+    tocEditor.style.display = 'block';
+    
+    document.getElementById('startButton').style.display = 'block';
+}
+
+async function generateSubchapter(chapterIndex, subchapterIndex) {
+    const title = document.getElementById('bookTitle').value;
+    const chapter = bookStructure[chapterIndex];
+    const subchapter = chapter.subchapters[subchapterIndex];
+    
+    const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            prompt: `Write the content for subchapter "${subchapter}" from chapter "${chapter.title}" of the book "${title}". 
+            The content should be in markdown format with appropriate headings, paragraphs, and any necessary formatting.
+            
+            <typescript-interface>
+            interface Response {
+                content: string;
+            }
+            </typescript-interface>
+            
+            <example>
+            {
+                "content": "### Understanding Basic Garden Elements\n\nA well-designed garden starts with understanding its fundamental elements. In this section, we'll explore the building blocks that make up any successful garden design.\n\n#### Space and Layout\n\nThe first consideration in any garden design is the effective use of space..."
+            }
+            </example>`,
+            data: {
+                title,
+                chapter: chapter.title,
+                subchapter,
+                fullStructure: bookStructure
+            }
+        })
+    });
+    
+    const data = await response.json();
+    return data.content;
+}
+
+async function startGeneration() {
+    try {
+        bookStructure = JSON.parse(document.getElementById('tocEditor').value);
+    } catch (e) {
+        alert('Invalid table of contents format');
+        return;
+    }
+    
+    document.getElementById('generationControls').style.display = 'block';
+    currentChapter = 0;
+    currentSubchapter = 0;
+    fullMarkdown = `# ${document.getElementById('bookTitle').value}\n\n`;
+    
+    await continueGeneration();
+}
+
+async function continueGeneration() {
+    if (isPaused) return;
+    
+    if (currentChapter >= bookStructure.length) {
+        document.getElementById('status').textContent = 'Book generation complete!';
+        return;
+    }
+    
+    const chapter = bookStructure[currentChapter];
+    
+    if (currentSubchapter === 0) {
+        fullMarkdown += `\n## ${chapter.title}\n\n`;
+    }
+    
+    document.getElementById('status').textContent = 
+        `Generating: Chapter ${currentChapter + 1} - ${chapter.title} - ${chapter.subchapters[currentSubchapter]}`;
+    
+    const content = await generateSubchapter(currentChapter, currentSubchapter);
+    fullMarkdown += content + '\n\n';
+    
+    updatePreview();
+    
+    currentSubchapter++;
+    if (currentSubchapter >= chapter.subchapters.length) {
+        currentSubchapter = 0;
+        currentChapter++;
+    }
+    
+    if (!isPaused) {
+        setTimeout(continueGeneration, 1000);
+    }
+}
+
+function updatePreview() {
+    document.getElementById('preview').innerHTML = converter.makeHtml(fullMarkdown);
+}
+
+function pauseGeneration() {
+    isPaused = true;
+    document.getElementById('pauseButton').style.display = 'none';
+    document.getElementById('resumeButton').style.display = 'inline';
+}
+
+function resumeGeneration() {
+    isPaused = false;
+    document.getElementById('pauseButton').style.display = 'inline';
+    document.getElementById('resumeButton').style.display = 'none';
+    continueGeneration();
+}
+
+function copyToClipboard() {
+    navigator.clipboard.writeText(fullMarkdown)
+        .then(() => alert('Markdown copied to clipboard!'))
+        .catch(err => alert('Failed to copy to clipboard'));
+}
+</script>
+</body></html>

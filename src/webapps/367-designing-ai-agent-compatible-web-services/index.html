@@ -1,0 +1,246 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Designing AI-Agent Compatible Web Services</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f9fafb;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid #3498db;
+    position: relative;
+  }
+
+  .header svg {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .meta {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+
+  .content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  h2 {
+    color: #2980b9;
+    margin: 2rem 0 1rem;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+  }
+
+  .code-block {
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1rem 0;
+    font-family: 'Fira Code', monospace;
+  }
+
+  .highlight {
+    background: #edf2f7;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .interactive {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .interactive:hover {
+    animation: pulse 1s infinite;
+  }
+</style>
+</head>
+<body>
+
+<article class="post">
+  <header class="header">
+    <svg class="interactive" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#3498db" stroke-width="2"/>
+      <path d="M30 50 L70 50 M50 30 L50 70" stroke="#3498db" stroke-width="2"/>
+      <circle cx="50" cy="50" r="20" fill="#3498db" opacity="0.2"/>
+    </svg>
+    <h1>Designing AI-Agent Compatible Web Services</h1>
+    <div class="meta">Posted on <time>May 15, 2023</time> · 8 min read</div>
+  </header>
+
+  <div class="content">
+    <p>As AI agents become increasingly sophisticated in their ability to interact with web services, designing APIs and interfaces that are "AI-friendly" is becoming a crucial consideration for modern web development. This post explores best practices and design patterns for creating web services that work seamlessly with AI agents.</p>
+
+    <h2>1. Consistent and Semantic API Design</h2>
+    <div class="highlight">
+      <p>AI agents thrive on consistency and predictability. Design your APIs with clear, semantic naming conventions and consistent patterns.</p>
+    </div>
+
+    <div class="code-block">
+      <pre>
+// Good API Design Example
+GET /api/v1/articles
+GET /api/v1/articles/{id}
+POST /api/v1/articles
+PUT /api/v1/articles/{id}
+DELETE /api/v1/articles/{id}</pre>
+    </div>
+
+    <h2>2. Rich Metadata and Documentation</h2>
+    <p>Include comprehensive metadata in your API responses. This helps AI agents understand the context and relationships between different resources:</p>
+
+    <div class="code-block">
+      <pre>
+{
+  "data": {
+    "id": "article-123",
+    "type": "article",
+    "attributes": {
+      "title": "AI-Compatible Web Services",
+      "content": "..."
+    },
+    "relationships": {
+      "author": {
+        "data": { "id": "author-456", "type": "author" }
+      }
+    },
+    "meta": {
+      "schema": "https://schema.org/Article",
+      "lastUpdated": "2023-05-15T10:30:00Z"
+    }
+  }
+}</pre>
+    </div>
+
+    <h2>3. Error Handling and Validation</h2>
+    <p>Provide detailed error messages that AI agents can parse and understand:</p>
+
+    <div class="code-block">
+      <pre>
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input parameters",
+    "details": [
+      {
+        "field": "email",
+        "error": "must be a valid email address",
+        "value": "invalid-email"
+      }
+    ]
+  }
+}</pre>
+    </div>
+
+    <h2>4. Rate Limiting and Throttling</h2>
+    <p>Implement clear rate limiting headers that AI agents can understand and respect:</p>
+
+    <div class="code-block">
+      <pre>
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 75
+X-RateLimit-Reset: 1683936000</pre>
+    </div>
+
+    <h2>5. Hypermedia Controls</h2>
+    <p>Include hypermedia controls to help AI agents navigate your API:</p>
+
+    <div class="code-block">
+      <pre>
+{
+  "data": [...],
+  "_links": {
+    "self": { "href": "/api/v1/articles?page=2" },
+    "next": { "href": "/api/v1/articles?page=3" },
+    "prev": { "href": "/api/v1/articles?page=1" }
+  }
+}</pre>
+    </div>
+
+    <h2>Best Practices Summary</h2>
+    <div class="highlight">
+      <ul>
+        <li>Use consistent, semantic naming conventions</li>
+        <li>Provide rich metadata and documentation</li>
+        <li>Implement clear error handling</li>
+        <li>Include rate limiting information</li>
+        <li>Add hypermedia controls</li>
+        <li>Use standard data formats (JSON, XML)</li>
+        <li>Implement versioning</li>
+        <li>Provide OpenAPI/Swagger documentation</li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Add interactive elements
+  const codeBlocks = document.querySelectorAll('.code-block');
+  
+  codeBlocks.forEach(block => {
+    block.addEventListener('click', function() {
+      // Create selection range
+      const range = document.createRange();
+      range.selectNodeContents(block);
+      
+      // Select the text
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      // Copy to clipboard
+      try {
+        document.execCommand('copy');
+        
+        // Visual feedback
+        block.style.opacity = '0.8';
+        setTimeout(() => {
+          block.style.opacity = '1';
+        }, 200);
+      } catch(err) {
+        console.error('Failed to copy text: ', err);
+      }
+    });
+  });
+});
+</script>
+
+</body></html>

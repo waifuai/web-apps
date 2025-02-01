@@ -1,0 +1,199 @@
+<style>
+  body {
+    font-family: system-ui;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f0f0f0;
+  }
+  
+  .architecture-diagram {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
+  .node {
+    fill: #4a90e2;
+    stroke: #2171c7;
+    stroke-width: 2px;
+  }
+  
+  .link {
+    stroke: #999;
+    stroke-opacity: 0.6;
+    stroke-width: 2px;
+  }
+  
+  .equation {
+    font-family: "Times New Roman", serif;
+    font-size: 1.2em;
+    padding: 15px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+  
+  .model-section {
+    margin: 20px 0;
+  }
+  
+  .annotation {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+  }
+</style>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+<h1>Internet of Protocols: Thermodynamic Model of AI Agent Networks</h1>
+
+<div class="architecture-diagram">
+  <svg id="systemDiagram" width="800" height="600"></svg>
+</div>
+
+<div class="model-section">
+  <h2>Thermodynamic State Variables</h2>
+  <div class="equation">
+    dS = δQ/T  // Information Entropy Change<br>
+    E = mc² // Computational Resource Energy<br>
+    ΔG = ΔH - TΔS // System Free Energy<br>
+    P(task) = e^(-E/kT) // Task Probability Distribution
+  </div>
+</div>
+
+<script>
+// Create force-directed graph
+const svg = d3.select("#systemDiagram");
+const width = +svg.attr("width");
+const height = +svg.attr("height");
+
+// Define nodes (AI agents and humans)
+const nodes = [
+  {id: "Human1", type: "human"},
+  {id: "Human2", type: "human"},
+  {id: "Agent1", type: "agent"},
+  {id: "Agent2", type: "agent"},
+  {id: "Agent3", type: "agent"},
+];
+
+// Define links (protocols)
+const links = [
+  {source: "Human1", target: "Agent1"},
+  {source: "Human2", target: "Agent2"},
+  {source: "Agent1", target: "Agent2"},
+  {source: "Agent2", target: "Agent3"},
+  {source: "Agent3", target: "Agent1"},
+];
+
+// Create force simulation
+const simulation = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d => d.id))
+  .force("charge", d3.forceManyBody().strength(-100))
+  .force("center", d3.forceCenter(width / 2, height / 2));
+
+// Draw links
+const link = svg.append("g")
+  .selectAll("line")
+  .data(links)
+  .enter().append("line")
+  .attr("class", "link");
+
+// Draw nodes
+const node = svg.append("g")
+  .selectAll("circle")
+  .data(nodes)
+  .enter().append("circle")
+  .attr("class", "node")
+  .attr("r", d => d.type === "human" ? 15 : 10)
+  .call(d3.drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended));
+
+// Add labels
+const labels = svg.append("g")
+  .selectAll("text")
+  .data(nodes)
+  .enter().append("text")
+  .text(d => d.id)
+  .attr("font-size", "12px")
+  .attr("dx", 15)
+  .attr("dy", 4);
+
+// Update positions
+simulation.on("tick", () => {
+  link
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
+
+  node
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y);
+    
+  labels
+    .attr("x", d => d.x)
+    .attr("y", d => d.y);
+});
+
+// Drag functions
+function dragstarted(event, d) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(event, d) {
+  d.fx = event.x;
+  d.fy = event.y;
+}
+
+function dragended(event, d) {
+  if (!event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+// Simulate thermodynamic processes
+function calculateSystemEnergy() {
+  const k = 1.380649e-23; // Boltzmann constant
+  const T = 300; // System temperature
+  
+  return nodes.reduce((energy, node) => {
+    const connections = links.filter(link => 
+      link.source.id === node.id || link.target.id === node.id
+    ).length;
+    return energy + k * T * Math.log(connections);
+  }, 0);
+}
+
+setInterval(() => {
+  const systemEnergy = calculateSystemEnergy();
+  console.log("System Energy:", systemEnergy);
+}, 1000);
+</script>
+
+<div class="model-section">
+  <h2>System Architecture Notes</h2>
+  <ul>
+    <li>Nodes represent AI agents and humans in the network</li>
+    <li>Links represent communication protocols and information channels</li>
+    <li>System energy is calculated using Boltzmann statistics</li>
+    <li>Information entropy follows classical thermodynamic relations</li>
+    <li>Task complexity scales with computational resources</li>
+  </ul>
+</div>
+
+<div class="annotation">
+  This model demonstrates the thermodynamic principles governing AI agent networks,
+  showing how information flows and energy states evolve in a protocol-based system.
+  The force-directed graph visualization helps understand the dynamic relationships
+  between agents, humans, and protocols.
+</div>
+
+</body></html>

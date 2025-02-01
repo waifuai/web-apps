@@ -1,0 +1,165 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI API Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <h1>AI API Documentation</h1>
+      <div class="theme-toggle">
+        <button id="themeToggle">🌙</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <aside>
+      <div class="sidebar-content">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#introduction">Introduction</a></li>
+          <li><a href="#endpoint">Endpoint Details</a></li>
+          <li><a href="#request-format">Request Format</a></li>
+          <li><a href="#response-format">Response Format</a></li>
+          <li><a href="#examples">Examples</a></li>
+          <li><a href="#best-practices">Best Practices</a></li>
+          <li><a href="#error-handling">Error Handling</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="content">
+      <section id="introduction">
+        <h2>Introduction</h2>
+        <p>The AI API provides a powerful interface for accessing language model capabilities. This documentation covers everything you need to know to effectively use the AI in your applications.</p>
+      </section>
+
+      <section id="endpoint">
+        <h2>Endpoint Details</h2>
+        <div class="endpoint-box">
+          <h3>POST /api/ai_completion</h3>
+          <p>The main endpoint for AI completions and interactions.</p>
+        </div>
+      </section>
+
+      <section id="request-format">
+        <h2>Request Format</h2>
+        <p>The API expects a POST request with the following JSON structure:</p>
+        <pre><code class="language-javascript">{
+  prompt: string,    // Instructions for the AI
+  data?: any        // Optional context data
+}</code></pre>
+        
+        <h3>Prompt Structure</h3>
+        <p>The prompt should include:</p>
+        <ul>
+          <li>Clear instructions for the AI</li>
+          <li>Expected response format using TypeScript interface</li>
+          <li>Example response</li>
+        </ul>
+
+        <div class="example-box">
+          <h4>Example Prompt Structure:</h4>
+          <pre><code class="language-typescript">Generate 3 creative names for a pet store.
+
+interface Response {
+  names: string[];
+  descriptions: string[];
+}
+
+{
+  "names": [
+    "Pawsome Pals",
+    "Whisker Wonderland",
+    "Tail Tales"
+  ],
+  "descriptions": [
+    "A friendly neighborhood pet store",
+    "Magical pet supply emporium",
+    "Your pet's favorite story"
+  ]
+}
+</code></pre>
+        </div>
+      </section>
+
+      <section id="response-format">
+        <h2>Response Format</h2>
+        <p>The API returns JSON matching the specified TypeScript interface in your prompt.</p>
+        <div class="warning-box">
+          <h4>⚠️ Important</h4>
+          <p>Always validate the response against your expected interface to ensure type safety.</p>
+        </div>
+      </section>
+
+      <section id="examples">
+        <h2>Examples</h2>
+        <div id="examples-container">
+          <!-- Examples will be dynamically loaded here -->
+        </div>
+      </section>
+
+      <section id="best-practices">
+        <h2>Best Practices</h2>
+        <div class="best-practices-grid">
+          <div class="practice-card">
+            <h3>1. Clear Instructions</h3>
+            <p>Provide specific, unambiguous instructions in your prompt</p>
+          </div>
+          <div class="practice-card">
+            <h3>2. Type Safety</h3>
+            <p>Always include a TypeScript interface for expected responses</p>
+          </div>
+          <div class="practice-card">
+            <h3>3. Error Handling</h3>
+            <p>Implement proper error handling for API calls</p>
+          </div>
+          <div class="practice-card">
+            <h3>4. Context</h3>
+            <p>Provide relevant context data when needed</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="error-handling">
+        <h2>Error Handling</h2>
+        <pre><code class="language-javascript">async function callAI() {
+  try {
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: '...',
+        data: '...'
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error calling AI:', error);
+    throw error;
+  }
+}</code></pre>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>AI API Documentation • Updated <span id="lastUpdated">loading...</span></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

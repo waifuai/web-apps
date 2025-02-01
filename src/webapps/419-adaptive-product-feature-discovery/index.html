@@ -1,0 +1,54 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive Discovery Demo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" type="module"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Adaptive Product Feature Discovery</h1>
+    </header>
+    <main>
+      <section id="input-area">
+        <input type="text" id="emotion-input" placeholder="Type an emotion (e.g., happy, sad)">
+        <button id="submit-button">Submit</button>
+      </section>
+
+      <section id="display-area">
+        <div id="emoji-display">😊</div>
+        <div id="progress-container">
+          <div class="label">Discovery Progress:</div>
+          <div id="progress-bar">
+            <div id="progress"></div>
+          </div>
+          <div id="progress-percentage">0%</div>
+        </div>
+      </section>
+
+      <section id="timeline-area">
+        <h2>Interaction Log</h2>
+        <ul id="timeline">
+          </ul>
+      </section>
+    </main>
+
+    <aside id="sidebar">
+      <h2>Algorithm Explanation</h2>
+      <p>This demo showcases an algorithm designed to prevent feature underutilization. By dynamically adjusting responses based on your interactions, the system ensures you progressively discover a wider range of capabilities, not just the most obvious ones.</p>
+      <p>Initially, the system responds with the most direct match to your input. However, as you repeat similar inputs, it intelligently shifts to suggest less frequent but equally valuable features, encouraging exploration and comprehensive understanding.</p>
+      <button id="reset-button">Reset Discovery</button>
+    </aside>
+
+    <footer id="visualization-area">
+      <h2>Algorithm Weights Visualization (Placeholder)</h2>
+      <p>This section will eventually visualize how the algorithm's internal priorities change over time. Stay tuned!</p>
+      <div id="weights-visualization">
+        <!-- Visualization will be rendered here -->
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

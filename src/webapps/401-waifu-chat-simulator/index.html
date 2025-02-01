@@ -1,0 +1,44 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waifu Chat Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="chat-header">
+      <h1>🌸 Waifu Chat Simulator</h1>
+      <div class="dere-controls">
+        <select id="dereType">
+          <option value="tsundere">Tsundere</option>
+          <option value="yandere">Yandere</option>
+          <option value="dandere">Dandere</option>
+          <option value="kuudere">Kuudere</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type your message...">
+        <button id="sendButton">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <svg style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;">
+    <defs>
+      <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color: #ffb3c1; stop-opacity: 0.2" />
+        <stop offset="100%" style="stop-color: #c77dff; stop-opacity: 0.2" />
+      </linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#bgGradient)" />
+  </svg>
+
+  <script src="bot.js" type="module"></script>
+  <script src="index.js" type="module"></script>
+</body>
+</html>

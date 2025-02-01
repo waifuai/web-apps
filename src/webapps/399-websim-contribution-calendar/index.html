@@ -1,0 +1,235 @@
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websim Contribution Calendar</title>
+    <style>
+        .contribution-calendar {
+            display: grid;
+            grid-template-columns: repeat(53, 10px); 
+            gap: 2px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            position: relative; 
+        }
+
+        .contribution-week {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contribution-day {
+            width: 10px;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .contribution-day:hover::after {
+            content: attr(data-date);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .contribution-level-1 {
+            background-color: #9be9a8;
+        }
+
+        .contribution-level-2 {
+            background-color: #3ac569;
+        }
+
+        .contribution-level-3 {
+            background-color: #239a3b;
+        }
+
+        .contribution-level-4 {
+            background-color: #196127;
+        }
+
+        .contributions-list-container {
+            padding: 20px;
+        }
+
+        .contributions-list-container h3 {
+            margin-top: 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .contributions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .contributions-list li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="contributionCalendar" class="contribution-calendar">
+        <!-- Contribution days will be generated here -->
+    </div>
+
+    <div id="contributionsListContainer" class="contributions-list-container">
+        <!-- Contributions list will be generated here -->
+    </div>
+
+    <script>
+        let contributionsByDateData = {}; 
+
+        async function fetchUserContributions() {
+            const user = await window.websim.getUser();
+            if (!user) {
+                console.error("Could not fetch user information.");
+                return [];
+            }
+
+            const contributions = [];
+            let after = null;
+            let hasNextPage = true;
+
+            while (hasNextPage) {
+                const response = await fetch(`/api/v1/users/${user.username}/projects?sort_by=created_at&posted=false${after ? `&after=${after}` : ''}`);
+                if (!response.ok) {
+                    console.error("Failed to fetch user projects:", response.status, response.statusText);
+                    break;
+                }
+                const data = await response.json();
+                if (data.projects && data.projects.data) {
+                    contributions.push(...data.projects.data);
+                }
+                hasNextPage = data.projects.meta.has_next_page;
+                after = data.projects.meta.end_cursor;
+            }
+
+            return contributions;
+        }
+
+        function generateContributionCalendar(contributions) {
+            const calendarContainer = document.getElementById('contributionCalendar');
+            calendarContainer.innerHTML = ''; 
+            contributionsByDateData = {}; 
+
+            contributions.forEach(contribution => {
+                const date = contribution.project.created_at.split('T')[0];
+                if (!contributionsByDateData[date]) {
+                    contributionsByDateData[date] = [];
+                }
+                contributionsByDateData[date].push(contribution);
+            });
+
+            const today = new Date();
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+            let currentDate = new Date(oneYearAgo);
+            const endDate = new Date();
+
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayLabelsRow = document.createElement('div');
+            dayLabelsRow.style.gridColumn = '1';
+            dayLabelsRow.style.display = 'flex';
+            dayLabelsRow.style.flexDirection = 'column';
+            dayLabelsRow.style.alignItems = 'flex-end';
+            dayLabelsRow.style.marginRight = '5px';
+
+            for (let i = 0; i < 7; i++) {
+                const dayLabel = document.createElement('div');
+                dayLabel.textContent = daysOfWeek[i];
+                dayLabel.style.fontSize = '8px';
+                dayLabel.style.marginBottom = '10px';
+                dayLabelsRow.appendChild(dayLabel);
+            }
+            calendarContainer.appendChild(dayLabelsRow);
+
+            while (currentDate <= endDate) {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('contribution-day');
+                const dateString = currentDate.toISOString().split('T')[0];
+                dayElement.setAttribute('data-date', dateString);
+
+                const contributionCount = contributionsByDateData[dateString] ? contributionsByDateData[dateString].length : 0;
+                if (contributionCount > 0) {
+                    if (contributionCount >= 4) {
+                        dayElement.classList.add('contribution-level-4');
+                    } else if (contributionCount === 3) {
+                        dayElement.classList.add('contribution-level-3');
+                    } else if (contributionCount === 2) {
+                        dayElement.classList.add('contribution-level-2');
+                    } else {
+                        dayElement.classList.add('contribution-level-1');
+                    }
+
+                    dayElement.addEventListener('click', () => showContributions(dateString));
+                }
+
+                const weekOfYear = getWeekOfYear(currentDate);
+                const dayOfWeek = currentDate.getDay();
+
+                dayElement.style.gridColumnStart = weekOfYear + 1; 
+                dayElement.style.gridRowStart = dayOfWeek + 1;
+
+                calendarContainer.appendChild(dayElement);
+
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        }
+
+        function showContributions(date) {
+            const contributionsListContainer = document.getElementById('contributionsListContainer');
+            const dateElement = document.getElementById(`contributions-${date}`);
+            if (dateElement) {
+                dateElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function generateContributionList(contributions) {
+            const contributionsListContainer = document.getElementById('contributionsListContainer');
+            contributionsListContainer.innerHTML = '';
+
+            const sortedDates = Object.keys(contributionsByDateData).sort((a, b) => new Date(b) - new Date(a));
+
+            sortedDates.forEach(date => {
+                const dateHeading = document.createElement('h3');
+                dateHeading.textContent = `Contributions on ${date}`;
+                dateHeading.id = `contributions-${date}`;
+                contributionsListContainer.appendChild(dateHeading);
+
+                const ul = document.createElement('ul');
+                ul.classList.add('contributions-list');
+                contributionsByDateData[date].forEach(contribution => {
+                    const listItem = document.createElement('li');
+                    const projectLink = `<a href="https://websim.ai/p/${contribution.project.id}">${contribution.project.title || 'Untitled Project'}</a>`;
+                    listItem.innerHTML = `Created project: ${projectLink}`;
+                    ul.appendChild(listItem);
+                });
+                contributionsListContainer.appendChild(ul);
+            });
+        }
+
+        function getWeekOfYear(date) {
+            const startDate = new Date(date.getFullYear(), 0, 1);
+            const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+            return Math.ceil((days + startDate.getDay() + 1) / 7);
+        }
+
+        (async () => {
+            const contributions = await fetchUserContributions();
+            generateContributionCalendar(contributions);
+            generateContributionList(contributions);
+        })();
+    </script>
+</body>
+</html>
