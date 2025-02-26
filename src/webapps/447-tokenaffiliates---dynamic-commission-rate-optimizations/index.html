@@ -1,0 +1,425 @@
+<html>
+<head>
+  <title>TokenAffiliates - Dynamic Commission Rate Optimization</title>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f8f9fa;
+      color: #2c3e50;
+    }
+    
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    h1, h2, h3 {
+      color: #1a237e;
+    }
+    
+    .algorithm-visualization {
+      margin: 2rem 0;
+      padding: 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+    }
+    
+    .math {
+      font-family: 'Computer Modern', serif;
+      font-style: italic;
+    }
+    
+    .interactive-graph {
+      width: 100%;
+      height: 400px;
+      margin: 2rem 0;
+    }
+    
+    .code-sample {
+      background: #f5f5f5;
+      padding: 1rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    .highlight {
+      background: #fff3e0;
+      padding: 0.2rem 0.4rem;
+      border-radius: 2px;
+    }
+    
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      border-bottom: 1px dotted #666;
+      cursor: help;
+    }
+    
+    .tooltip:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      z-index: 1;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>TokenAffiliates: Dynamic Commission Rate Optimization</h1>
+    
+    <section>
+      <h2>Interactive Algorithm Visualization</h2>
+      <div class="algorithm-visualization">
+        <canvas id="optimizationGraph"></canvas>
+      </div>
+      
+      <h2>Key Components Explained</h2>
+      
+      <h3>1. Demand Modeling</h3>
+      <div class="code-sample">
+        <pre>
+          // Simplified demand model
+          function estimateDemand(commissionRate, marketData) {
+              return baselineDemand * 
+                     (1 - elasticity * commissionRate) * 
+                     marketSentimentFactor;
+          }
+        </pre>
+      </div>
+      
+      <h3>2. Optimization Function</h3>
+      <div class="math">
+        E<sub>j</sub>(α<sub>j</sub>) = α<sub>j</sub> * I<sub>j</sub>(α<sub>j</sub>)
+      </div>
+      
+      <div class="interactive-graph" id="earningsGraph"></div>
+    </section>
+  </div>
+
+  <script>
+    // Sample data generation
+    function generateSampleData() {
+        const commissionRates = Array.from({length: 100}, (_, i) => i/100);
+        const earnings = commissionRates.map(rate => {
+            // Modified model with clearer demand impact
+            const demand = 1000 * (1 - 1.5 * rate) * (0.9 + 0.2 * Math.random());
+            return {
+                rate,
+                demand: demand,
+                earnings: rate * demand
+            };
+        });
+        return earnings;
+    }
+
+    // Find optimal rate
+    function findOptimalRate(data) {
+        return data.reduce((max, current) => 
+            current.earnings > max.earnings ? current : max, data[0]);
+    }
+
+    // Initialize optimization graph
+    const ctx = document.getElementById('optimizationGraph').getContext('2d');
+    const data = generateSampleData();
+    const optimalPoint = findOptimalRate(data);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => (d.rate * 100).toFixed(0) + '%'),
+            datasets: [{
+                label: 'Expected Earnings',
+                data: data.map(d => d.earnings),
+                borderColor: '#1a237e',
+                backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                tension: 0.4,
+                pointRadius: 0
+            }, {
+                label: 'Demand',
+                data: data.map(d => d.demand),
+                borderColor: '#4caf50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.4,
+                borderDash: [5, 5],
+                pointRadius: 0
+            }, {
+                label: 'Optimal Rate',
+                data: data.map(d => d.rate === optimalPoint.rate ? optimalPoint.earnings : null),
+                backgroundColor: 'red',
+                borderColor: 'red',
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Commission Rate vs Expected Earnings',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            if (context.dataset.label === 'Optimal Rate') {
+                                return `Optimal Rate: ${(optimalPoint.rate * 100).toFixed(2)}%, Earnings: ${optimalPoint.earnings.toFixed(2)}`;
+                            }
+                            const dataPoint = data[context.dataIndex];
+                            return `${context.dataset.label}: ${context.raw.toFixed(2)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Commission Rate (%)',
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
+                    ticks: {
+                        maxTicksLimit: 10
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Value',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Initialize D3.js visualization for earnings
+    const margin = {top: 40, right: 120, bottom: 60, left: 60};
+    const width = document.getElementById('earningsGraph').clientWidth - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+
+    const svg = d3.select("#earningsGraph")
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Generate optimization path data with more visible progress
+    const optimizationPath = [];
+    let currentRate = 0.5; // Starting point
+    const learningRate = 0.02;
+    const iterations = 20;
+
+    for(let i = 0; i < iterations; i++) {
+        // Calculate current earnings using our model
+        const demand = 1000 * (1 - 1.5 * currentRate);
+        const currentEarnings = currentRate * demand;
+        
+        // Estimate gradient using finite difference
+        const delta = 0.001;
+        const demandNext = 1000 * (1 - 1.5 * (currentRate + delta));
+        const nextEarnings = (currentRate + delta) * demandNext;
+        const gradient = (nextEarnings - currentEarnings) / delta;
+        
+        optimizationPath.push({
+            iteration: i,
+            rate: currentRate,
+            earnings: currentEarnings,
+            gradient: gradient
+        });
+        
+        // Update rate using gradient ascent
+        currentRate += learningRate * gradient;
+        currentRate = Math.max(0, Math.min(1, currentRate));
+    }
+
+    // Calculate true optimal for comparison
+    const trueOptimal = findOptimalRate(data);
+
+    // Draw optimization path
+    const x = d3.scaleLinear()
+        .domain([0, iterations-1])
+        .range([0, width]);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(optimizationPath, d => d.earnings) * 1.1])
+        .range([height, 0]);
+
+    // Add gradient color based on approaching optimal
+    const color = d3.scaleLinear()
+        .domain([0, iterations-1])
+        .range(["#f44336", "#4caf50"]);
+
+    // Add grid lines
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("opacity", 0.2)
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(5).tickSize(-height).tickFormat(""));
+
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("opacity", 0.2)
+        .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(""));
+
+    // Plot the path with gradient color and animated transition
+    const path = svg.append("path")
+        .datum(optimizationPath)
+        .attr("fill", "none")
+        .attr("stroke-width", 3)
+        .attr("d", d3.line()
+            .x(d => x(d.iteration))
+            .y(d => y(d.earnings))
+        );
+
+    // Animate the path
+    const pathLength = path.node().getTotalLength();
+    path.attr("stroke-dasharray", pathLength + " " + pathLength)
+        .attr("stroke-dashoffset", pathLength)
+        .attr("stroke", "#1a237e")
+        .transition()
+        .duration(3000)
+        .attr("stroke-dashoffset", 0);
+
+    // Add circles for each step with tooltips
+    svg.selectAll(".point")
+        .data(optimizationPath)
+        .enter()
+        .append("circle")
+        .attr("class", "point")
+        .attr("cx", d => x(d.iteration))
+        .attr("cy", d => y(d.earnings))
+        .attr("r", 5)
+        .attr("fill", d => color(d.iteration))
+        .attr("opacity", 0)
+        .transition()
+        .delay((d, i) => i * (3000 / iterations))
+        .duration(200)
+        .attr("opacity", 1);
+
+    // Add final optimal point
+    svg.append("circle")
+        .attr("cx", x(iterations-1))
+        .attr("cy", y(optimizationPath[iterations-1].earnings))
+        .attr("r", 8)
+        .attr("fill", "none")
+        .attr("stroke", "#4caf50")
+        .attr("stroke-width", 3)
+        .attr("opacity", 0)
+        .transition()
+        .delay(3000)
+        .duration(500)
+        .attr("opacity", 1);
+
+    // Add axes
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x)
+            .ticks(5)
+            .tickFormat(d => `Step ${d}`));
+
+    svg.append("g")
+        .call(d3.axisLeft(y));
+
+    // Add labels with better styling
+    svg.append("text")
+        .attr("x", width/2)
+        .attr("y", height + 40)
+        .style("text-anchor", "middle")
+        .style("font-weight", "bold")
+        .text("Optimization Steps");
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height/2)
+        .attr("y", -40)
+        .style("text-anchor", "middle")
+        .style("font-weight", "bold")
+        .text("Earnings");
+
+    // Add annotation for final result
+    svg.append("text")
+        .attr("x", x(iterations-1) + 10)
+        .attr("y", y(optimizationPath[iterations-1].earnings) - 15)
+        .style("font-size", "12px")
+        .style("fill", "#1a237e")
+        .style("opacity", 0)
+        .text(`Final Rate: ${(optimizationPath[iterations-1].rate * 100).toFixed(2)}%`)
+        .transition()
+        .delay(3100)
+        .duration(500)
+        .style("opacity", 1);
+
+    // Add legend
+    const legend = svg.append("g")
+        .attr("transform", `translate(${width + 20}, 0)`);
+
+    legend.append("text")
+        .attr("x", 0)
+        .attr("y", 10)
+        .style("font-weight", "bold")
+        .text("Legend");
+
+    legend.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 30)
+        .attr("r", 5)
+        .attr("fill", "#f44336");
+
+    legend.append("text")
+        .attr("x", 20)
+        .attr("y", 35)
+        .text("Starting Point");
+
+    legend.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 55)
+        .attr("r", 5)
+        .attr("fill", "#4caf50");
+
+    legend.append("text")
+        .attr("x", 20)
+        .attr("y", 60)
+        .text("Final Point");
+
+    legend.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 80)
+        .attr("r", 8)
+        .attr("fill", "none")
+        .attr("stroke", "#4caf50")
+        .attr("stroke-width", 2);
+
+    legend.append("text")
+        .attr("x", 20)
+        .attr("y", 85)
+        .text("Converged Solution");
+  </script>
+</body>
+</html>

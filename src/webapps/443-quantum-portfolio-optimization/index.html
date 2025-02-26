@@ -1,0 +1,94 @@
+<html>
+<head>
+    <title>Quantum Portfolio Optimization</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Quantum Portfolio Optimization</h1>
+    
+    <div class="portfolio-container">
+      <div class="token-input">
+        <label for="solAmount">SOL:</label>
+        <input type="number" id="solAmount" value="10" min="0" step="0.1">
+      </div>
+      <div class="token-input">
+        <label for="rayAmount">RAY:</label>
+        <input type="number" id="rayAmount" value="100" min="0" step="1">
+      </div>
+      <div class="token-input">
+        <label for="srmAmount">SRM:</label>
+        <input type="number" id="srmAmount" value="200" min="0" step="1">
+      </div>
+      <div class="token-input">
+        <label for="fidaAmount">FIDA:</label>
+        <input type="number" id="fidaAmount" value="50" min="0" step="1">
+      </div>
+      <div class="token-input">
+        <label for="msolAmount">MSOL:</label>
+        <input type="number" id="msolAmount" value="5" min="0" step="0.1">
+      </div>
+      <div class="token-input">
+        <label for="atlasAmount">ATLAS:</label>
+        <input type="number" id="atlasAmount" value="1000" min="0" step="1">
+      </div>
+    </div>
+    
+    <div class="quantum-options">
+      <h2>Quantum Optimization Settings</h2>
+      <div class="input-group">
+        <label for="riskTolerance">Risk Tolerance (0-1):</label>
+        <input type="number" id="riskTolerance" value="0.5" min="0" max="1" step="0.1">
+      </div>
+      <div class="input-group">
+        <label for="quantumComputer">Quantum Computer:</label>
+        <select id="quantumComputer" onchange="updateQuantumInfo()">
+          <option value="ibmq">IBM Quantum</option>
+          <option value="dwave">D-Wave Systems</option>
+          <option value="ionq">IonQ</option>
+          <option value="rigetti">Rigetti Computing</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="optimizationMethod">Optimization Method:</label>
+        <select id="optimizationMethod" onchange="updateQuantumInfo()">
+          <option value="qaoa">Quantum Approximate Optimization Algorithm (QAOA)</option>
+          <option value="vqe">Variational Quantum Eigensolver (VQE)</option>
+          <option value="qaa">Quantum Adiabatic Algorithm</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="qubits">Number of Qubits:</label>
+        <input type="number" id="qubits" value="20" min="5" max="100" step="1">
+      </div>
+      <div class="input-group">
+        <label for="shots">Number of Shots (Measurements):</label>
+        <input type="number" id="shots" value="1000" min="100" max="10000" step="100">
+      </div>
+      <button id="runOptimization">Run Quantum Optimization</button>
+    </div>
+    
+    <div class="quantum-details" id="quantumDetails">
+      <h2>Quantum Computing Details</h2>
+      <div id="quantumDescription"></div>
+      <div id="quantumFormulation"></div>
+      <div id="quantumCircuit"></div>
+    </div>
+    
+    <div class="results" id="results" style="display:none;">
+      <h2>Optimization Results</h2>
+      <div id="optimizedAllocation"></div>
+      <div class="chart-container">
+        <div id="chart"></div>
+        <div id="comparisonChart"></div>
+      </div>
+      <div id="quantumPerformance"></div>
+    </div>
+  </div>
+  
+  <script src="quantum.js"></script>
+</body>
+</html>

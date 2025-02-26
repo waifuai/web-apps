@@ -1,0 +1,93 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive Discovery Demo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Adaptive Product Feature Discovery</h1>
+    </header>
+    <main>
+      <section id="input-area">
+        <input type="text" id="emotion-input" placeholder="Type an emotion (e.g., happy, sad)">
+        <button id="submit-button">Submit</button>
+        <div id="quick-emotions">
+          <button class="emotion-btn" data-emotion="happy">😊 Happy</button>
+          <button class="emotion-btn" data-emotion="sad">😢 Sad</button>
+          <button class="emotion-btn" data-emotion="angry">😠 Angry</button>
+          <button class="emotion-btn" data-emotion="surprised">😲 Surprised</button>
+          <button class="emotion-btn" data-emotion="neutral">😐 Neutral</button>
+        </div>
+      </section>
+
+      <section id="display-area">
+        <div id="emoji-display">😊</div>
+        <div id="progress-container">
+          <div class="label">Discovery Progress:</div>
+          <div id="progress-bar">
+            <div id="progress"></div>
+          </div>
+          <div id="progress-percentage">0%</div>
+        </div>
+      </section>
+
+      <section id="timeline-area">
+        <h2>Interaction Log</h2>
+        <ul id="timeline">
+          <!-- Logs will appear here -->
+        </ul>
+      </section>
+    </main>
+
+    <aside id="sidebar">
+      <h2>Algorithm Explanation</h2>
+      <p>This demo showcases an algorithm designed to prevent feature underutilization. By dynamically adjusting responses based on your interactions, the system ensures you progressively discover a wider range of capabilities, not just the most obvious ones.</p>
+      <p>Initially, the system responds with the most direct match to your input. However, as you repeat similar inputs, it intelligently shifts to suggest less frequent but equally valuable features, encouraging exploration and comprehensive understanding.</p>
+      <button id="reset-button">Reset Discovery</button>
+    </aside>
+
+    <footer id="visualization-area">
+      <h2>Algorithm Weights Visualization</h2>
+      <p>This visualization shows how the system prioritizes different expressions as you interact:</p>
+      <div id="weights-visualization">
+        <div class="category-container">
+          <div class="category" data-category="happy">
+            <span class="label">Happy</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="category" data-category="sad">
+            <span class="label">Sad</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="category" data-category="angry">
+            <span class="label">Angry</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="category" data-category="surprised">
+            <span class="label">Surprised</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="category" data-category="neutral">
+            <span class="label">Neutral</span>
+            <div class="bar-container">
+              <div class="bar" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

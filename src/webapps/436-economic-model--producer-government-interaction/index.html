@@ -1,0 +1,252 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Economic Model: Producer-Government Interaction</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .graph-container {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .graph {
+      width: 100%;
+      height: 100%;
+    }
+
+    .controls-panel {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .slider {
+      width: 100%;
+    }
+
+    .stats-panel {
+      font-family: monospace;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 4px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .analysis-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .optimization {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .analysis-graphs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .param-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .param-control {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background-color: #2ecc71;
+      color: #ffffff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Economic Model: Producer-Government Interaction</h1>
+    
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="model">Model</button>
+      <button class="tab-btn" data-tab="analysis">Analysis</button>
+      <button class="tab-btn" data-tab="parameters">Parameters</button>
+    </div>
+    
+    <div class="tab-content active" id="model-tab">
+      <div class="model-grid">
+        <div class="graph-container">
+          <div class="graph" id="outputGraph"></div>
+        </div>
+        <div class="graph-container">
+          <div class="graph" id="motivationGraph"></div>
+        </div>
+        <div class="graph-container">
+          <div class="graph" id="producersGraph"></div>
+        </div>
+        <div class="graph-container">
+          <div class="graph" id="relationshipGraph"></div>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <h3>Government Controls</h3>
+        <div class="controls">
+          <div class="control-group">
+            <label>Tax Rate (T):</label>
+            <input type="range" min="0" max="1" step="0.01" value="0.3" class="slider" id="taxSlider">
+            <div class="slider-values">
+              <span>0</span>
+              <span id="taxValue">0.3</span>
+              <span>1.0</span>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label>Regulation Level (R):</label>
+            <input type="range" min="0" max="1" step="0.01" value="0.2" class="slider" id="regSlider">
+            <div class="slider-values">
+              <span>0</span>
+              <span id="regValue">0.2</span>
+              <span>1.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-panel">
+        <h3>Model Outcomes</h3>
+        <div class="stats-grid" id="results">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="analysis-tab">
+      <div class="analysis-container">
+        <h3>Model Analysis</h3>
+        <div class="optimization">
+          <button id="findOptimalBtn" class="action-btn">Find Optimal Policy</button>
+          <div id="optimalResults" class="optimal-results"></div>
+        </div>
+        
+        <div class="analysis-graphs">
+          <div class="graph-container wide">
+            <div class="graph" id="heatmapGraph"></div>
+          </div>
+          <div class="graph-container wide">
+            <div class="graph" id="taxEffectGraph"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="parameters-tab">
+      <h3>Model Parameters</h3>
+      <div class="param-grid">
+        <div class="param-group">
+          <h4>Base Parameters</h4>
+          <div class="param-control">
+            <label for="paramN0">Initial Producers (N₀):</label>
+            <input type="number" id="paramN0" min="10" max="10000" value="1000">
+          </div>
+          <div class="param-control">
+            <label for="paramP">Base Productivity (P):</label>
+            <input type="number" id="paramP" min="1" max="1000" value="100">
+          </div>
+        </div>
+        
+        <div class="param-group">
+          <h4>Sensitivity Parameters</h4>
+          <div class="param-control">
+            <label for="paramA">Tax Sensitivity for Motivation (a):</label>
+            <input type="range" id="paramA" min="0" max="2" step="0.1" value="0.5" class="slider">
+            <span id="paramAValue">0.5</span>
+          </div>
+          <div class="param-control">
+            <label for="paramB">Regulation Sensitivity for Motivation (b):</label>
+            <input type="range" id="paramB" min="0" max="2" step="0.1" value="0.3" class="slider">
+            <span id="paramBValue">0.3</span>
+          </div>
+          <div class="param-control">
+            <label for="paramC">Tax Sensitivity for Strike (c):</label>
+            <input type="range" id="paramC" min="0" max="2" step="0.1" value="0.4" class="slider">
+            <span id="paramCValue">0.4</span>
+          </div>
+          <div class="param-control">
+            <label for="paramD">Regulation Sensitivity for Strike (d):</label>
+            <input type="range" id="paramD" min="0" max="2" step="0.1" value="0.2" class="slider">
+            <span id="paramDValue">0.2</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="param-actions">
+        <button id="resetParams" class="action-btn">Reset to Defaults</button>
+        <button id="applyParams" class="action-btn primary">Apply Parameters</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="model.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>

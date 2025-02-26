@@ -1,0 +1,52 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Airdrop Strategy Simulator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🪂 Token Economy Simulator</h1>
+    <div class="description">
+      <p>This simulator helps visualize how different airdrop strategies affect token price and circulating supply.</p>
+    </div>
+    <div class="controls">
+      <button data-strategy="lottery">Run Lottery Airdrop</button>
+      <button data-strategy="uniform">Run Uniform Distribution</button>
+      <button data-strategy="tiered">Run Tiered Distribution</button>
+      <button data-strategy="vesting">Run Vesting Schedule</button>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <span class="label">Current Price:</span>
+        <span id="price" class="value">$1.00</span>
+      </div>
+      <div class="metric">
+        <span class="label">Circulating Supply:</span>
+        <span id="supply" class="value">1,000,000</span>
+      </div>
+      <div class="metric">
+        <span class="label">Simulation Step:</span>
+        <span id="step" class="value">0</span>
+      </div>
+      <div class="metric">
+        <span class="label">Strategy:</span>
+        <span id="current-strategy" class="value">None</span>
+      </div>
+    </div>
+    <canvas id="chart"></canvas>
+    <div class="strategy-info">
+      <h3>About the strategies:</h3>
+      <ul>
+        <li><strong>Lottery:</strong> 50 random users receive 500 tokens each.</li>
+        <li><strong>Uniform:</strong> All users receive 100 tokens each.</li>
+        <li><strong>Tiered:</strong> Users receive tokens based on their balance (200, 150, 100, or 50).</li>
+        <li><strong>Vesting:</strong> Users receive 100 tokens immediately and 500 vested tokens over time.</li>
+      </ul>
+    </div>
+  </div>
+  <script type="module" src="chart.js"></script>
+</body>
+</html>

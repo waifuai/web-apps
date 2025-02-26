@@ -1,0 +1,725 @@
+  body { background-color: #1f2937; color: #e5e7eb; font-family: system-ui; padding: 2rem; }
+  .canvas-container { position: relative; width: 800px; height: 500px; border: 2px solid #4b5563; margin: 2rem auto; }
+  canvas { background: #111827; }
+  .controls { text-align: center; margin: 1rem; }
+  button { background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; margin: 0 0.5rem; }
+  button:hover { background: #2563eb; }
+  button:disabled { background: #6b7280; cursor: not-allowed; }
+  .info { max-width: 800px; margin: 2rem auto; background: #374151; padding: 1rem; border-radius: 0.5rem; }
+  .stats { background: rgba(17, 24, 39, 0.7); position: absolute; top: 10px; right: 10px; padding: 8px; border-radius: 4px; font-size: 14px; }
+  .math-visualization { background: rgba(17, 24, 39, 0.7); position: absolute; bottom: 10px; left: 10px; padding: 12px; border-radius: 4px; font-size: 14px; width: 320px; }
+  .math-visualization h3 { margin-top: 0; color: #10b981; }
+  .math-visualization .equation { font-family: monospace; margin: 8px 0; }
+  .math-visualization .highlight { color: #10b981; font-weight: bold; }
+  .math-visualization .separator { border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0; }
+  .trajectory { stroke: rgba(16, 185, 129, 0.3); stroke-width: 1.5; stroke-dasharray: 4, 4; fill: none; }
+  .hit-animation { position: absolute; pointer-events: none; }
+  .settings { display: flex; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .setting-group { margin: 0 1rem; }
+  .setting-group label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; }
+  input[type="range"] { width: 120px; }
+  .vector-component { font-family: monospace; padding: 2px 5px; border-radius: 3px; }
+  .vector-x { background-color: rgba(239, 68, 68, 0.2); }
+  .vector-y { background-color: rgba(16, 185, 129, 0.2); }
+  .force-lines { stroke-width: 1.5; }
+  /* New styles for fullscreen */
+  .fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; margin: 0; border: none; }
+  .fullscreen canvas { width: 100%; height: 100%; }
+  .toggle-btn { display: flex; align-items: center; }
+  .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; margin-left: 10px; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4b5563; transition: .4s; border-radius: 24px; }
+  .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+  input:checked + .toggle-slider { background-color: #3b82f6; }
+  input:checked + .toggle-slider:before { transform: translateX(20px); }
+  .fullscreen-button { position: absolute; top: 10px; left: 10px; background: rgba(17, 24, 39, 0.7); border: none; color: white; border-radius: 4px; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .fullscreen-button:hover { background: rgba(17, 24, 39, 0.9); }
+</style></head><body>
+<div class="info">
+  <h2>Kinematic Intercept Visualization</h2>
+  <p>This demo visualizes the mathematics of intercepting a moving target. The blue circle represents a target moving in a straight line at constant velocity, and the red circle is your projectile launcher.</p>
+  <p>The green dotted line shows the calculated trajectory to intercept the target. The visualization panel shows the actual equations being used to determine the perfect velocity for interception.</p>
+</div>
+
+<div class="settings">
+  <div class="setting-group">
+    <label for="targetSpeedX">Target X Speed: <span id="targetSpeedXValue">100</span></label>
+    <input type="range" id="targetSpeedX" min="-200" max="200" value="100">
+  </div>
+  <div class="setting-group">
+    <label for="targetSpeedY">Target Y Speed: <span id="targetSpeedYValue">-50</span></label>
+    <input type="range" id="targetSpeedY" min="-200" max="200" value="-50">
+  </div>
+  <div class="setting-group">
+    <label for="projectileSpeed">Projectile Speed: <span id="projectileSpeedValue">300</span></label>
+    <input type="range" id="projectileSpeed" min="150" max="450" value="300">
+  </div>
+  <div class="setting-group toggle-btn">
+    <label for="showMath">Show Math:</label>
+    <label class="toggle-switch">
+      <input type="checkbox" id="showMath" checked>
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<div class="canvas-container" id="canvasContainer">
+  <canvas id="gameCanvas" width="800" height="500"></canvas>
+  <div class="stats" id="statsPanel">Status: Ready</div>
+  <div class="math-visualization" id="mathPanel">
+    <h3>Interception Mathematics</h3>
+    <div id="equationsDisplay">
+      Start the simulation to see the equations in action
+    </div>
+  </div>
+  <button class="fullscreen-button" id="fullscreenBtn" title="Toggle Fullscreen">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+    </svg>
+  </button>
+</div>
+
+<div class="controls">
+  <button id="startBtn">Start</button>
+  <button id="fireBtn" disabled>Fire</button>
+  <button id="resetBtn">Reset</button>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const statsPanel = document.getElementById('statsPanel');
+const mathPanel = document.getElementById('mathPanel');
+const equationsDisplay = document.getElementById('equationsDisplay');
+const startBtn = document.getElementById('startBtn');
+const fireBtn = document.getElementById('fireBtn');
+const resetBtn = document.getElementById('resetBtn');
+const canvasContainer = document.getElementById('canvasContainer');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const showMathToggle = document.getElementById('showMath');
+
+// Sliders
+const targetSpeedXSlider = document.getElementById('targetSpeedX');
+const targetSpeedYSlider = document.getElementById('targetSpeedY');
+const projectileSpeedSlider = document.getElementById('projectileSpeed');
+const targetSpeedXValue = document.getElementById('targetSpeedXValue');
+const targetSpeedYValue = document.getElementById('targetSpeedYValue');
+const projectileSpeedValue = document.getElementById('projectileSpeedValue');
+
+// Game configuration
+const config = {
+  projectileSpeed: 300,
+  targetSpeedX: 100,
+  targetSpeedY: -50, // Default non-zero Y velocity
+  showTrajectory: true,
+  hitEffectDuration: 500,
+  maxPredictionPoints: 100,
+  predictionTimeStep: 0.05,
+  showVelocityVectors: true,
+  showRelativeVelocity: true,
+  showDistanceVectors: true,
+  showMath: true
+};
+
+let gameState = {
+  running: false,
+  target: {
+    x: 50,
+    y: 250,
+    vx: config.targetSpeedX,
+    vy: config.targetSpeedY,
+    radius: 15
+  },
+  launcher: {
+    x: 700,
+    y: 250,
+    radius: 20
+  },
+  projectiles: [],
+  hits: [],
+  lastTime: 0,
+  prediction: {
+    points: [],
+    solution: null
+  },
+  isFullscreen: false
+};
+
+// Math toggle
+showMathToggle.addEventListener('change', function() {
+  config.showMath = this.checked;
+  mathPanel.style.display = config.showMath ? 'block' : 'none';
+});
+
+// Fullscreen toggle
+fullscreenBtn.addEventListener('click', function() {
+  toggleFullscreen();
+});
+
+function toggleFullscreen() {
+  gameState.isFullscreen = !gameState.isFullscreen;
+  
+  if (gameState.isFullscreen) {
+    canvasContainer.classList.add('fullscreen');
+    // Resize canvas to fit fullscreen
+    resizeCanvas();
+  } else {
+    canvasContainer.classList.remove('fullscreen');
+    // Reset canvas size
+    canvas.width = 800;
+    canvas.height = 500;
+  }
+}
+
+function resizeCanvas() {
+  if (gameState.isFullscreen) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+}
+
+// Handle window resize
+window.addEventListener('resize', function() {
+  if (gameState.isFullscreen) {
+    resizeCanvas();
+  }
+});
+
+// Update sliders
+targetSpeedXSlider.addEventListener('input', function() {
+  const value = parseInt(this.value);
+  config.targetSpeedX = value;
+  targetSpeedXValue.textContent = value;
+  
+  if (gameState.running) {
+    gameState.target.vx = value;
+  }
+});
+
+targetSpeedYSlider.addEventListener('input', function() {
+  const value = parseInt(this.value);
+  config.targetSpeedY = value;
+  targetSpeedYValue.textContent = value;
+  
+  if (gameState.running) {
+    gameState.target.vy = value;
+  }
+});
+
+projectileSpeedSlider.addEventListener('input', function() {
+  const value = parseInt(this.value);
+  config.projectileSpeed = value;
+  projectileSpeedValue.textContent = value;
+});
+
+function calculateInterception(launcher, target, projectileSpeed) {
+  const dx = target.x - launcher.x;
+  const dy = target.y - launcher.y;
+  
+  // Time to intercept calculation
+  const a = projectileSpeed * projectileSpeed - (target.vx * target.vx + target.vy * target.vy);
+  const b = -2 * (dx * target.vx + dy * target.vy);
+  const c = -(dx * dx + dy * dy);
+  
+  const discriminant = b * b - 4 * a * c;
+  
+  // Store the equation components for visualization
+  const equationData = {
+    a, b, c, discriminant, dx, dy,
+    targetVx: target.vx,
+    targetVy: target.vy,
+    projectileSpeed
+  };
+  
+  if (discriminant < 0) return { solution: null, equationData };
+  
+  // We prefer the solution with the shortest time
+  let t1 = (-b - Math.sqrt(discriminant)) / (2 * a);
+  let t2 = (-b + Math.sqrt(discriminant)) / (2 * a);
+  const t = (t1 > 0) ? t1 : t2;
+  
+  if (t <= 0) return { solution: null, equationData };
+  
+  const interceptX = target.x + target.vx * t;
+  const interceptY = target.y + target.vy * t;
+  
+  const velocityX = (interceptX - launcher.x) / t;
+  const velocityY = (interceptY - launcher.y) / t;
+  
+  const solution = {
+    vx: velocityX,
+    vy: velocityY,
+    timeToHit: t,
+    interceptX,
+    interceptY
+  };
+  
+  return { solution, equationData };
+}
+
+function calculateTrajectory(launcher, solution) {
+  if (!solution) return [];
+  
+  const points = [];
+  const timeStep = config.predictionTimeStep;
+  const maxSteps = config.maxPredictionPoints;
+  
+  let x = launcher.x;
+  let y = launcher.y;
+  
+  for (let i = 0; i < maxSteps; i++) {
+    points.push({ x, y });
+    x += solution.vx * timeStep;
+    y += solution.vy * timeStep;
+    
+    // Stop if we've gone past the interception point
+    const dx = x - solution.interceptX;
+    const dy = y - solution.interceptY;
+    if (Math.sqrt(dx*dx + dy*dy) < 10) break;
+    
+    // Or if we're off-screen
+    if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) break;
+  }
+  
+  return points;
+}
+
+function updateMathVisualization(equationData, solution) {
+  if (!equationData) {
+    equationsDisplay.innerHTML = "Start the simulation to see the equations in action";
+    return;
+  }
+  
+  const { a, b, c, discriminant, dx, dy, targetVx, targetVy, projectileSpeed } = equationData;
+  
+  let html = `
+    <div class="equation">Quadratic equation for time of intercept:</div>
+    <div class="equation">${a.toFixed(1)}t² + ${b.toFixed(1)}t + ${c.toFixed(1)} = 0</div>
+    
+    <div class="equation">Where:</div>
+    <div class="equation">a = v<sub>p</sub>² - v<sub>t</sub>² = ${projectileSpeed.toFixed(1)}² - (${targetVx.toFixed(1)}² + ${targetVy.toFixed(1)}²)</div>
+    <div class="equation">b = -2(Δx·v<sub>tx</sub> + Δy·v<sub>ty</sub>)</div>
+    <div class="equation">c = -(Δx² + Δy²)</div>
+    
+    <div class="equation">Distance vector: <span class="vector-component vector-x">Δx = ${dx.toFixed(1)}</span>, <span class="vector-component vector-y">Δy = ${dy.toFixed(1)}</span></div>
+    <div class="equation">Target velocity: <span class="vector-component vector-x">v<sub>tx</sub> = ${targetVx.toFixed(1)}</span>, <span class="vector-component vector-y">v<sub>ty</sub> = ${targetVy.toFixed(1)}</span></div>
+    
+    <div class="separator"></div>
+  `;
+  
+  if (discriminant < 0) {
+    html += `<div class="equation">Discriminant < 0: <span class="highlight">No solution exists</span></div>`;
+  } else if (solution) {
+    html += `
+      <div class="equation">Time to intercept: <span class="highlight">${solution.timeToHit.toFixed(2)}s</span></div>
+      <div class="equation">Projectile velocity: <span class="vector-component vector-x">v<sub>px</sub> = ${solution.vx.toFixed(1)}</span>, <span class="vector-component vector-y">v<sub>py</sub> = ${solution.vy.toFixed(1)}</span></div>
+      <div class="equation">Speed check: |v<sub>p</sub>| = ${Math.sqrt(solution.vx*solution.vx + solution.vy*solution.vy).toFixed(1)}</div>
+    `;
+  }
+  
+  equationsDisplay.innerHTML = html;
+}
+
+function addHitEffect(x, y) {
+  gameState.hits.push({
+    x,
+    y,
+    timeCreated: Date.now(),
+    radius: 5,
+    alpha: 1
+  });
+}
+
+function update(timestamp) {
+  if (!gameState.lastTime) gameState.lastTime = timestamp;
+  const deltaTime = (timestamp - gameState.lastTime) / 1000;
+  gameState.lastTime = timestamp;
+  
+  if (gameState.running) {
+    // Update target position
+    gameState.target.x += gameState.target.vx * deltaTime;
+    gameState.target.y += gameState.target.vy * deltaTime;
+    
+    // Bounce off walls
+    if (gameState.target.x > canvas.width - gameState.target.radius) {
+      gameState.target.x = canvas.width - gameState.target.radius;
+      gameState.target.vx *= -1;
+    } else if (gameState.target.x < gameState.target.radius) {
+      gameState.target.x = gameState.target.radius;
+      gameState.target.vx *= -1;
+    }
+    
+    // Bounce off top and bottom
+    if (gameState.target.y > canvas.height - gameState.target.radius) {
+      gameState.target.y = canvas.height - gameState.target.radius;
+      gameState.target.vy *= -1;
+    } else if (gameState.target.y < gameState.target.radius) {
+      gameState.target.y = gameState.target.radius;
+      gameState.target.vy *= -1;
+    }
+    
+    // Update hit effects
+    const now = Date.now();
+    gameState.hits = gameState.hits.filter(hit => {
+      const age = now - hit.timeCreated;
+      return age < config.hitEffectDuration;
+    });
+    
+    // Update projectiles
+    gameState.projectiles.forEach((p, index) => {
+      p.x += p.vx * deltaTime;
+      p.y += p.vy * deltaTime;
+      
+      // Check for collision with target
+      const dx = p.x - gameState.target.x;
+      const dy = p.y - gameState.target.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < gameState.target.radius + 5) {
+        gameState.projectiles.splice(index, 1);
+        addHitEffect(p.x, p.y);
+        updateStats("Hit! Nice shot!");
+      }
+      
+      // Remove projectiles that are off screen
+      if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+        gameState.projectiles.splice(index, 1);
+      }
+    });
+    
+    // Calculate the trajectory prediction
+    const interceptionResult = calculateInterception(
+      gameState.launcher, 
+      gameState.target, 
+      config.projectileSpeed
+    );
+    
+    gameState.prediction.solution = interceptionResult.solution;
+    
+    if (gameState.prediction.solution) {
+      gameState.prediction.points = calculateTrajectory(
+        gameState.launcher, 
+        gameState.prediction.solution
+      );
+      fireBtn.disabled = false;
+    } else {
+      gameState.prediction.points = [];
+      fireBtn.disabled = true;
+      updateStats("No solution found - target is unreachable");
+    }
+    
+    if (config.showMath) {
+      updateMathVisualization(interceptionResult.equationData, gameState.prediction.solution);
+    }
+  }
+  
+  render();
+  requestAnimationFrame(update);
+}
+
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw background grid
+  drawGrid();
+  
+  // Draw future target position at intercept time
+  if (gameState.running && gameState.prediction.solution) {
+    const futureX = gameState.target.x + gameState.target.vx * gameState.prediction.solution.timeToHit;
+    const futureY = gameState.target.y + gameState.target.vy * gameState.prediction.solution.timeToHit;
+    
+    // Draw line from current target to future position
+    ctx.beginPath();
+    ctx.moveTo(gameState.target.x, gameState.target.y);
+    ctx.lineTo(futureX, futureY);
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
+    ctx.setLineDash([5, 5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Draw future position
+    ctx.beginPath();
+    ctx.arc(futureX, futureY, gameState.target.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+    ctx.stroke();
+  }
+  
+  // Draw prediction trajectory
+  if (gameState.running && config.showTrajectory && gameState.prediction.points.length > 0) {
+    ctx.beginPath();
+    ctx.moveTo(gameState.launcher.x, gameState.launcher.y);
+    gameState.prediction.points.forEach(point => {
+      ctx.lineTo(point.x, point.y);
+    });
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)';
+    ctx.setLineDash([5, 5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Draw interception point
+    if (gameState.prediction.solution) {
+      ctx.beginPath();
+      ctx.arc(
+        gameState.prediction.solution.interceptX, 
+        gameState.prediction.solution.interceptY, 
+        5, 0, Math.PI * 2
+      );
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
+      ctx.fill();
+    }
+  }
+  
+  // Draw relative position vector (if we have a solution)
+  if (gameState.running && gameState.prediction.solution && config.showDistanceVectors) {
+    const relativeX = gameState.target.x - gameState.launcher.x;
+    const relativeY = gameState.target.y - gameState.launcher.y;
+    
+    // Draw the relative position vector
+    ctx.beginPath();
+    ctx.moveTo(gameState.launcher.x, gameState.launcher.y);
+    ctx.lineTo(gameState.launcher.x + relativeX, gameState.launcher.y + relativeY);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.setLineDash([2, 2]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // Draw vector components
+    // X component
+    ctx.beginPath();
+    ctx.moveTo(gameState.launcher.x, gameState.launcher.y);
+    ctx.lineTo(gameState.launcher.x + relativeX, gameState.launcher.y);
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    // Y component
+    ctx.beginPath();
+    ctx.moveTo(gameState.launcher.x + relativeX, gameState.launcher.y);
+    ctx.lineTo(gameState.launcher.x + relativeX, gameState.launcher.y + relativeY);
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  
+  // Draw target with a shadow effect
+  ctx.beginPath();
+  ctx.arc(gameState.target.x, gameState.target.y, gameState.target.radius, 0, Math.PI * 2);
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = '#3b82f6';
+  ctx.fillStyle = '#3b82f6';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  
+  // Draw target velocity vector
+  if (gameState.running && config.showVelocityVectors) {
+    const targetVectorScale = 1.0;
+    drawVector(
+      gameState.target.x, 
+      gameState.target.y, 
+      gameState.target.vx * targetVectorScale,
+      gameState.target.vy * targetVectorScale,
+      'rgba(59, 130, 246, 0.8)',
+      'Target v'
+    );
+  }
+  
+  // Draw launcher with a shadow effect
+  ctx.beginPath();
+  ctx.arc(gameState.launcher.x, gameState.launcher.y, gameState.launcher.radius, 0, Math.PI * 2);
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = '#ef4444';
+  ctx.fillStyle = '#ef4444';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  
+  // Draw projectile velocity vector if we have a solution
+  if (gameState.running && config.showVelocityVectors && gameState.prediction.solution) {
+    const projVectorScale = 0.5;
+    drawVector(
+      gameState.launcher.x,
+      gameState.launcher.y,
+      gameState.prediction.solution.vx * projVectorScale,
+      gameState.prediction.solution.vy * projVectorScale,
+      'rgba(16, 185, 129, 0.8)',
+      'Projectile v'
+    );
+  }
+  
+  // Draw projectiles
+  gameState.projectiles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#10b981';
+    ctx.fillStyle = '#10b981';
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    
+    // Draw trail
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x - p.vx * 0.05, p.y - p.vy * 0.05);
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+  
+  // Draw hit effects
+  const now = Date.now();
+  gameState.hits.forEach(hit => {
+    const age = now - hit.timeCreated;
+    const progress = age / config.hitEffectDuration;
+    const radius = hit.radius * (1 + progress * 5);
+    const alpha = 1 - progress;
+    
+    ctx.beginPath();
+    ctx.arc(hit.x, hit.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(16, 185, 129, ${alpha * 0.5})`;
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(hit.x, hit.y, radius * 0.6, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(16, 185, 129, ${alpha * 0.8})`;
+    ctx.fill();
+  });
+}
+
+function drawVector(x, y, vx, vy, color, label = null) {
+  const arrowLength = Math.sqrt(vx*vx + vy*vy);
+  if (arrowLength < 1) return; // Don't draw tiny vectors
+  
+  const angle = Math.atan2(vy, vx);
+  const tipX = x + vx;
+  const tipY = y + vy;
+  
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(tipX, tipY);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Arrow head
+  const headLength = Math.min(10, arrowLength * 0.3);
+  const headAngle = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(tipX, tipY);
+  ctx.lineTo(
+    tipX - headLength * Math.cos(angle - headAngle),
+    tipY - headLength * Math.sin(angle - headAngle)
+  );
+  ctx.lineTo(
+    tipX - headLength * Math.cos(angle + headAngle),
+    tipY - headLength * Math.sin(angle + headAngle)
+  );
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  
+  // Optional label
+  if (label) {
+    const labelX = x + vx / 2;
+    const labelY = y + vy / 2 - 10;
+    ctx.font = '12px system-ui';
+    ctx.fillStyle = color;
+    ctx.fillText(label, labelX, labelY);
+  }
+}
+
+function drawGrid() {
+  ctx.strokeStyle = 'rgba(75, 85, 99, 0.2)';
+  ctx.lineWidth = 1;
+  
+  // Draw vertical lines
+  for (let x = 0; x <= canvas.width; x += 50) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+  
+  // Draw horizontal lines
+  for (let y = 0; y <= canvas.height; y += 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+}
+
+function updateStats(message) {
+  let stats = `Status: ${message || (gameState.running ? 'Running' : 'Ready')}`;
+  
+  if (gameState.prediction.solution && gameState.running) {
+    stats += `<br>Time to intercept: ${gameState.prediction.solution.timeToHit.toFixed(2)}s`;
+    stats += `<br>Distance to target: ${Math.sqrt(
+      Math.pow(gameState.target.x - gameState.launcher.x, 2) +
+      Math.pow(gameState.target.y - gameState.launcher.y, 2)
+    ).toFixed(0)}px`;
+  }
+  
+  statsPanel.innerHTML = stats;
+}
+
+startBtn.addEventListener('click', () => {
+  gameState.running = true;
+  startBtn.disabled = true;
+  fireBtn.disabled = false;
+  updateStats("Simulation running");
+});
+
+fireBtn.addEventListener('click', () => {
+  if (!gameState.running) return;
+  
+  const solution = gameState.prediction.solution;
+  
+  if (solution) {
+    gameState.projectiles.push({
+      x: gameState.launcher.x,
+      y: gameState.launcher.y,
+      vx: solution.vx,
+      vy: solution.vy
+    });
+    updateStats("Projectile fired!");
+  } else {
+    updateStats("Cannot fire - no valid solution");
+  }
+});
+
+resetBtn.addEventListener('click', () => {
+  gameState = {
+    running: false,
+    target: {
+      x: 50,
+      y: 250,
+      vx: config.targetSpeedX,
+      vy: config.targetSpeedY,
+      radius: 15
+    },
+    launcher: {
+      x: 700,
+      y: 250,
+      radius: 20
+    },
+    projectiles: [],
+    hits: [],
+    lastTime: 0,
+    prediction: {
+      points: [],
+      solution: null
+    },
+    isFullscreen: gameState.isFullscreen // Keep fullscreen state on reset
+  };
+  startBtn.disabled = false;
+  fireBtn.disabled = true;
+  updateStats("Reset complete");
+  updateMathVisualization(null, null);
+});
+
+// Initial reset to apply the default non-zero Y velocity
+resetBtn.click();
+
+// Start the animation loop
+requestAnimationFrame(update);
+</script></body></html>

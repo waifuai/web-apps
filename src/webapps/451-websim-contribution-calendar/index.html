@@ -1,0 +1,63 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Websim Contribution Calendar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Your WebSim Activity</h1>
+      <p class="subtitle">Tracking your contributions over the last 6 months</p>
+    </header>
+    
+    <div class="calendar-wrapper">
+      <div class="calendar-header">
+        <div class="month-labels"></div>
+      </div>
+      <div class="day-labels">
+        <span>Mon</span>
+        <span>Wed</span>
+        <span>Fri</span>
+      </div>
+      <div id="calendar" class="calendar-grid"></div>
+      <div class="legend">
+        <span>Less</span>
+        <div class="legend-scale">
+          <span class="legend-item" style="background-color: var(--color-scale-0);"></span>
+          <span class="legend-item" style="background-color: var(--color-scale-1);"></span>
+          <span class="legend-item" style="background-color: var(--color-scale-2);"></span>
+          <span class="legend-item" style="background-color: var(--color-scale-3);"></span>
+          <span class="legend-item" style="background-color: var(--color-scale-4);"></span>
+        </div>
+        <span>More</span>
+      </div>
+    </div>
+    
+    <div class="stats-bar">
+      <div class="stat">
+        <span id="total-count">0</span>
+        <span class="stat-label">Total Contributions</span>
+      </div>
+      <div class="stat">
+        <span id="streak-count">0</span>
+        <span class="stat-label">Current Streak</span>
+      </div>
+      <div class="stat">
+        <span id="max-day-count">0</span>
+        <span class="stat-label">Most Active Day</span>
+      </div>
+    </div>
+    
+    <h2>Contribution Activity</h2>
+    <div id="contributions-list" class="contributions-container"></div>
+  </div>
+
+  <script type="module">
+    import { initCalendar } from './app.js';
+    window.addEventListener('DOMContentLoaded', initCalendar);
+  </script>
+</body>
+</html>

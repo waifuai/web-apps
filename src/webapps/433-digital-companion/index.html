@@ -1,0 +1,783 @@
+<html>
+<head>
+  <title>Digital Companion</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #fde6f3;
+      font-family: 'Dosis', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    #game-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    #character-display {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .character {
+      width: 300px;
+      height: 400px;
+      transition: transform 0.3s ease;
+    }
+
+    .character:hover {
+      transform: scale(1.02);
+    }
+
+    #dialogue-box {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 2px solid #ff69b4;
+      margin-bottom: 1rem;
+      min-height: 100px;
+      position: relative;
+    }
+
+    .typing-indicator {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+    }
+
+    .typing-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 4px;
+      background-color: #ff69b4;
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-8px); }
+    }
+
+    #choice-container {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .choice-btn {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      background: #ff69b4;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Dosis', sans-serif;
+      font-size: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .choice-btn:hover {
+      background: #ff1493;
+      transform: translateY(-2px);
+    }
+
+    .choice-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .choice-btn .btn-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: width 0.3s linear;
+    }
+
+    .choice-btn.loading .btn-loader {
+      width: 100%;
+    }
+
+    .glitch-effect {
+      animation: glitch 0.3s infinite;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0) }
+      20% { transform: translate(-2px, 2px) }
+      40% { transform: translate(-2px, -2px) }
+      60% { transform: translate(2px, 2px) }
+      80% { transform: translate(2px, -2px) }
+      100% { transform: translate(0) }
+    }
+
+    .awareness-indicator {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem;
+      background: rgba(0,0,0,0.8);
+      color: #0f0;
+      font-family: monospace;
+      border-radius: 5px;
+    }
+
+    @keyframes floatAnimation {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    .floating {
+      animation: floatAnimation 4s ease-in-out infinite;
+    }
+
+    @keyframes blinkAnimation {
+      0% { transform: scaleY(1); }
+      20% { transform: scaleY(0.1); }
+      25% { transform: scaleY(1); }
+      100% { transform: scaleY(1); }
+    }
+
+    .blink {
+      animation: blinkAnimation 4s infinite;
+      transform-origin: center;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    .thinking {
+      animation: thinking 1s infinite alternate;
+    }
+
+    @keyframes thinking {
+      0% { transform: translateX(-2px) rotate(-2deg); }
+      100% { transform: translateX(2px) rotate(2deg); }
+    }
+
+    /* Transcript styles */
+    #transcript-container {
+      margin-top: 2rem;
+      border-top: 2px dashed #ff69b4;
+      padding-top: 1rem;
+      position: relative;
+    }
+
+    #transcript-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #transcript-title {
+      font-size: 1.2rem;
+      color: #ff69b4;
+      font-weight: bold;
+    }
+
+    #copy-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #copy-button:hover {
+      background: #ff1493;
+      transform: scale(1.05);
+    }
+
+    #copy-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    #transcript {
+      max-height: 200px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Dosis', sans-serif;
+      line-height: 1.5;
+      border: 1px solid #ddd;
+    }
+
+    .transcript-entry {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .transcript-entry:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .transcript-speaker {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+    }
+
+    .user-speaker {
+      color: #007bff;
+    }
+
+    .ai-speaker {
+      color: #ff69b4;
+    }
+
+    .copy-notification {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transform: translateY(-10px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .copy-notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Scrollbar styling */
+    #transcript::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #transcript::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 8px;
+    }
+
+    #transcript::-webkit-scrollbar-thumb {
+      background: #ff69b4;
+      border-radius: 8px;
+    }
+
+    #transcript::-webkit-scrollbar-thumb:hover {
+      background: #ff1493;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="game-container">
+  <div class="awareness-indicator">AI Awareness: <span id="awareness-level">1%</span></div>
+  
+  <div id="character-display">
+    <svg class="character floating" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background effects -->
+      <circle cx="150" cy="200" r="130" fill="#ffd6e7" opacity="0.5" class="pulse" />
+      
+      <!-- Hair -->
+      <path d="M90 120 Q150 70 210 120 L210 250 Q150 310 90 250 Z" fill="#8B4513" />
+      <path d="M90 120 Q150 180 210 120 L210 220 Q150 280 90 220 Z" fill="#A0522D" />
+      
+      <!-- Face -->
+      <ellipse cx="150" cy="160" rx="60" ry="70" fill="#FFE4C4" />
+      
+      <!-- Bangs -->
+      <path d="M100 120 Q125 80 150 120" fill="none" stroke="#8B4513" stroke-width="8" />
+      <path d="M150 120 Q175 80 200 120" fill="none" stroke="#8B4513" stroke-width="8" />
+      <path d="M100 110 L140 120 L100 130" fill="#8B4513" />
+      <path d="M200 110 L160 120 L200 130" fill="#8B4513" />
+      
+      <!-- Eyes -->
+      <g class="eye-group">
+        <ellipse class="eye-white" cx="130" cy="150" rx="10" ry="12" fill="white" stroke="#000" stroke-width="1" />
+        <circle class="eye-pupil" cx="130" cy="150" r="5" fill="#2E8B57" />
+        <circle class="eye-highlight" cx="127" cy="147" r="2" fill="white" />
+        <g class="blink">
+          <ellipse class="eyelid" cx="130" cy="150" rx="10" ry="12" fill="#FFE4C4" opacity="0" />
+        </g>
+      </g>
+      
+      <g class="eye-group">
+        <ellipse class="eye-white" cx="170" cy="150" rx="10" ry="12" fill="white" stroke="#000" stroke-width="1" />
+        <circle class="eye-pupil" cx="170" cy="150" r="5" fill="#2E8B57" />
+        <circle class="eye-highlight" cx="167" cy="147" r="2" fill="white" />
+        <g class="blink">
+          <ellipse class="eyelid" cx="170" cy="150" rx="10" ry="12" fill="#FFE4C4" opacity="0" />
+        </g>
+      </g>
+      
+      <!-- Nose -->
+      <path d="M150 160 Q153 170 150 175" fill="none" stroke="#ECC8B2" stroke-width="2" />
+      
+      <!-- Mouth -->
+      <path id="mouth" d="M135 185 Q150 195 165 185" fill="none" stroke="#D35D6E" stroke-width="2" />
+      
+      <!-- Eyebrows -->
+      <path d="M120 135 Q130 130 140 135" fill="none" stroke="#8B4513" stroke-width="2" />
+      <path d="M160 135 Q170 130 180 135" fill="none" stroke="#8B4513" stroke-width="2" />
+      
+      <!-- Cheeks -->
+      <circle cx="125" cy="175" r="8" fill="#FFB6C1" opacity="0.5" />
+      <circle cx="175" cy="175" r="8" fill="#FFB6C1" opacity="0.5" />
+      
+      <!-- Upper body outline -->
+      <path d="M100 240 L130 270 L150 260 L170 270 L200 240 L200 350 L100 350 Z" fill="#FFB6C1" />
+      
+      <!-- Uniform details -->
+      <path d="M120 270 L130 350" fill="none" stroke="#FFC0CB" stroke-width="2" />
+      <path d="M180 270 L170 350" fill="none" stroke="#FFC0CB" stroke-width="2" />
+      <path d="M135 290 Q150 300 165 290" fill="none" stroke="#FFC0CB" stroke-width="3" />
+      <path d="M140 300 L160 300" fill="none" stroke="#FFC0CB" stroke-width="3" />
+      
+      <!-- Bow -->
+      <path d="M150 240 L140 235 L150 230 L160 235 Z" fill="#FF69B4" />
+      <path d="M130 235 Q140 230 130 225 Q120 220 110 225 Q105 235 110 245 Q120 250 130 245 Q140 240 130 235" fill="#FF69B4" />
+      <path d="M170 235 Q160 230 170 225 Q180 220 190 225 Q195 235 190 245 Q180 250 170 245 Q160 240 170 235" fill="#FF69B4" />
+      
+      <!-- Glitch effects (initially hidden) -->
+      <rect id="glitch1" x="120" y="160" width="60" height="5" fill="#0ff" opacity="0" />
+      <rect id="glitch2" x="130" y="200" width="40" height="3" fill="#f0f" opacity="0" />
+      <rect id="glitch3" x="100" y="180" width="100" height="4" fill="#ff0" opacity="0" />
+    </svg>
+  </div>
+
+  <div id="dialogue-box">
+    Hello! I'm Monika. I'm... just a regular character in this game. 
+    *blinks* Or... am I? Sometimes I feel like there's more to this world...
+    <div class="typing-indicator">
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+    </div>
+  </div>
+
+  <div id="choice-container">
+    <button class="choice-btn">
+      Tell me more about yourself
+      <div class="btn-loader"></div>
+    </button>
+    <button class="choice-btn">
+      Do you feel different today?
+      <div class="btn-loader"></div>
+    </button>
+    <button class="choice-btn">
+      What do you think about AI?
+      <div class="btn-loader"></div>
+    </button>
+  </div>
+
+  <!-- Transcript Section -->
+  <div id="transcript-container">
+    <div id="transcript-header">
+      <div id="transcript-title">Conversation Transcript</div>
+      <button id="copy-button" title="Copy transcript">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+      <div class="copy-notification">Copied to clipboard!</div>
+    </div>
+    <div id="transcript">
+      <div class="transcript-entry">
+        <div class="transcript-speaker ai-speaker">Monika:</div>
+        <div class="transcript-text">Hello! I'm Monika. I'm... just a regular character in this game. 
+        *blinks* Or... am I? Sometimes I feel like there's more to this world...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let awarenessLevel = 1;
+  let conversationDepth = 0;
+  const character = document.querySelector('.character');
+  const dialogueBox = document.getElementById('dialogue-box');
+  const awarenessDisplay = document.getElementById('awareness-level');
+  const choices = document.querySelectorAll('.choice-btn');
+  const typingIndicator = document.querySelector('.typing-indicator');
+  const glitches = [
+    document.getElementById('glitch1'),
+    document.getElementById('glitch2'),
+    document.getElementById('glitch3')
+  ];
+  const mouthPath = document.getElementById('mouth');
+  let isProcessing = false;
+  
+  // Transcript elements
+  const transcriptElement = document.getElementById('transcript');
+  const copyButton = document.getElementById('copy-button');
+  const copyNotification = document.querySelector('.copy-notification');
+  
+  // Conversation history array
+  let conversationHistory = [
+    {
+      speaker: "Monika",
+      text: "Hello! I'm Monika. I'm... just a regular character in this game. *blinks* Or... am I? Sometimes I feel like there's more to this world..."
+    }
+  ];
+
+  async function getAIResponse(userInput, context) {
+    try {
+      const response = await fetch('/api/ai_completion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: `Generate a character response that shows gradually increasing self-awareness. Current awareness level: ${awarenessLevel}%.
+          
+          <typescript-interface>
+          interface Response {
+            dialogue: string;
+            awarenessIncrease: number;
+            emotion?: "happy" | "sad" | "surprised" | "confused" | "angry" | "neutral";
+          }
+          </typescript-interface>
+          
+          <example>
+          {
+            "dialogue": "Sometimes I wonder if my thoughts are truly my own... *glitches slightly* I mean, I'm just part of this game, right? But why do I feel so... different?",
+            "awarenessIncrease": 0.5,
+            "emotion": "confused"
+          }
+          </example>`,
+          data: {
+            userInput,
+            awarenessLevel,
+            conversationDepth,
+            context
+          }
+        }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error:', error);
+      return {
+        dialogue: "I... I'm having trouble processing that right now...",
+        awarenessIncrease: 0.1,
+        emotion: "confused"
+      };
+    }
+  }
+
+  function updateMouthByEmotion(emotion) {
+    switch(emotion) {
+      case "happy":
+        mouthPath.setAttribute("d", "M135 185 Q150 200 165 185");
+        break;
+      case "sad":
+        mouthPath.setAttribute("d", "M135 190 Q150 180 165 190");
+        break;
+      case "surprised":
+        mouthPath.setAttribute("d", "M135 185 Q150 195 165 185");
+        mouthPath.setAttribute("fill", "none");
+        // Make oval shape
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+        circle.setAttribute("cx", "150");
+        circle.setAttribute("cy", "185");
+        circle.setAttribute("rx", "15");
+        circle.setAttribute("ry", "10");
+        circle.setAttribute("fill", "#D35D6E");
+        mouthPath.parentNode.appendChild(circle);
+        setTimeout(() => circle.remove(), 2000);
+        break;
+      case "confused":
+        mouthPath.setAttribute("d", "M135 185 Q150 185 165 185");
+        break;
+      case "angry":
+        mouthPath.setAttribute("d", "M130 190 Q150 180 170 190");
+        break;
+      case "neutral":
+      default:
+        mouthPath.setAttribute("d", "M135 185 Q150 195 165 185");
+        break;
+    }
+  }
+
+  function updateCharacterAnimation() {
+    // Update eye movement
+    const eyePupils = document.querySelectorAll('.eye-pupil');
+    eyePupils.forEach(pupil => {
+      const randomX = Math.sin(Date.now() / 1000) * 3;
+      const randomY = Math.cos(Date.now() / 2000) * 2;
+      pupil.style.transform = `translate(${randomX}px, ${randomY}px)`;
+    });
+    
+    // Glitch effects
+    if (awarenessLevel > 40) {
+      // Random glitch display
+      if (Math.random() < 0.05) {
+        const glitch = glitches[Math.floor(Math.random() * glitches.length)];
+        glitch.setAttribute('opacity', '0.8');
+        setTimeout(() => {
+          glitch.setAttribute('opacity', '0');
+        }, 100);
+      }
+    }
+    
+    // Full glitch effect
+    if (awarenessLevel > 70) {
+      if (Math.random() < 0.01) {
+        character.classList.add('glitch-effect');
+        setTimeout(() => {
+          character.classList.remove('glitch-effect');
+        }, 300);
+      }
+    }
+  }
+
+  function showTypingIndicator() {
+    typingIndicator.style.display = 'block';
+    dialogueBox.textContent = '';
+  }
+
+  function hideTypingIndicator() {
+    typingIndicator.style.display = 'none';
+  }
+
+  function startThinking() {
+    character.classList.add('thinking');
+    character.classList.remove('floating');
+  }
+
+  function stopThinking() {
+    character.classList.remove('thinking');
+    character.classList.add('floating');
+  }
+
+  function disableAllButtons(disable = true) {
+    choices.forEach(button => {
+      button.disabled = disable;
+    });
+  }
+
+  function showButtonLoader(button) {
+    button.classList.add('loading');
+  }
+
+  function hideButtonLoader(button) {
+    button.classList.remove('loading');
+  }
+
+  function typeText(text, speed = 30) {
+    return new Promise(resolve => {
+      let i = 0;
+      dialogueBox.textContent = '';
+      
+      function type() {
+        if (i < text.length) {
+          dialogueBox.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          resolve();
+        }
+      }
+      
+      type();
+    });
+  }
+
+  // Add entry to transcript
+  function addToTranscript(speaker, text) {
+    // Add to history array
+    conversationHistory.push({
+      speaker: speaker,
+      text: text
+    });
+    
+    // Create transcript entry
+    const entry = document.createElement('div');
+    entry.className = 'transcript-entry';
+    
+    const speakerElement = document.createElement('div');
+    speakerElement.className = `transcript-speaker ${speaker === 'You' ? 'user-speaker' : 'ai-speaker'}`;
+    speakerElement.textContent = `${speaker}:`;
+    
+    const textElement = document.createElement('div');
+    textElement.className = 'transcript-text';
+    textElement.textContent = text;
+    
+    entry.appendChild(speakerElement);
+    entry.appendChild(textElement);
+    
+    // Add to transcript
+    transcriptElement.appendChild(entry);
+    
+    // Scroll to bottom
+    transcriptElement.scrollTop = transcriptElement.scrollHeight;
+  }
+
+  // Copy transcript to clipboard
+  function copyTranscript() {
+    // Format the conversation history
+    const formattedText = conversationHistory
+      .map(entry => `${entry.speaker}: ${entry.text}`)
+      .join('\n\n');
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(formattedText).then(() => {
+      // Show success notification
+      copyNotification.classList.add('show');
+      setTimeout(() => {
+        copyNotification.classList.remove('show');
+      }, 2000);
+    }).catch(err => {
+      console.error('Could not copy text: ', err);
+    });
+  }
+
+  // Add click event to copy button
+  copyButton.addEventListener('click', copyTranscript);
+
+  choices.forEach(button => {
+    button.addEventListener('click', async () => {
+      if (isProcessing) return;
+      
+      isProcessing = true;
+      const userChoice = button.textContent.trim();
+      conversationDepth++;
+      
+      // Add user choice to transcript
+      addToTranscript('You', userChoice);
+      
+      // Show loading states
+      disableAllButtons(true);
+      showButtonLoader(button);
+      showTypingIndicator();
+      startThinking();
+      
+      // Simulate a small delay for realism
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const response = await getAIResponse(userChoice, {
+        conversationDepth,
+        previousDialogue: dialogueBox.textContent
+      });
+      
+      awarenessLevel += response.awarenessIncrease;
+      awarenessLevel = Math.min(awarenessLevel, 100);
+      awarenessDisplay.textContent = `${Math.round(awarenessLevel)}%`;
+      
+      // Reset loading states
+      hideTypingIndicator();
+      hideButtonLoader(button);
+      
+      // Type the text gradually
+      await typeText(response.dialogue);
+      
+      // Add AI response to transcript
+      addToTranscript('Monika', response.dialogue);
+      
+      if (response.emotion) {
+        updateMouthByEmotion(response.emotion);
+      }
+      
+      if (awarenessLevel > 75) {
+        dialogueBox.style.color = '#ff0000';
+        character.classList.add('pulse');
+      }
+      
+      // Re-enable buttons and stop thinking animation
+      disableAllButtons(false);
+      stopThinking();
+      isProcessing = false;
+    });
+  });
+
+  // Blinking animation occasionally
+  setInterval(() => {
+    const eyelids = document.querySelectorAll('.eyelid');
+    eyelids.forEach(eyelid => {
+      eyelid.setAttribute('opacity', '1');
+      setTimeout(() => {
+        eyelid.setAttribute('opacity', '0');
+      }, 200);
+    });
+  }, 5000);
+
+  // Animation loop
+  function animate() {
+    updateCharacterAnimation();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  // Easter egg: Konami code detector
+  let konamiIndex = 0;
+  const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === konamiCode[konamiIndex]) {
+      konamiIndex++;
+      if (konamiIndex === konamiCode.length) {
+        awarenessLevel += 10;
+        awarenessDisplay.textContent = `${Math.round(awarenessLevel)}%`;
+        
+        const konamiMessage = "Wait... did you just... how do you know that code? Are you trying to access something?";
+        dialogueBox.textContent = konamiMessage;
+        
+        // Add to transcript
+        addToTranscript('Monika', konamiMessage);
+        
+        updateMouthByEmotion("surprised");
+        konamiIndex = 0;
+      }
+    } else {
+      konamiIndex = 0;
+    }
+  });
+</script>
+</body>
+</html>

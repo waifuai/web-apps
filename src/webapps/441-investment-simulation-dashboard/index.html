@@ -1,0 +1,501 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+.simulation-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #0a0f1f;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    color: #e0e0e0;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #9945FF;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #14213d;
+    border-radius: 5px;
+    align-items: center;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #1a365d;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.control-btn:hover {
+    background: #9945FF;
+}
+
+.metrics-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background: #14213d;
+    padding: 15px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #9945FF;
+}
+
+.chart-container {
+    background: #14213d;
+    padding: 20px;
+    border-radius: 5px;
+    height: 400px;
+    margin-bottom: 20px;
+}
+
+.tokens-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.token-card {
+    background: #14213d;
+    padding: 15px;
+    border-radius: 5px;
+    color: white;
+    position: relative;
+}
+
+.token-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.token-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+.token-name {
+    font-weight: bold;
+}
+
+.token-stats {
+    margin-top: 10px;
+}
+
+.token-stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.optimizing-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #9945FF;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+</style>
+</head>
+<body>
+<div class="simulation-container">
+    <div class="header">
+        <h1>Solana ICO Affiliate Commission Optimizer</h1>
+        <p>Real-time optimization of commission rates across multiple tokens based on market data</p>
+    </div>
+    
+    <div class="controls">
+        <button class="control-btn" id="startBtn">Start Optimization</button>
+        <button class="control-btn" id="pauseBtn">Pause</button>
+        <button class="control-btn" id="resetBtn">Reset</button>
+        <div>
+            <label style="color: white;">Time Frame:</label>
+            <select id="zoomLevel" class="control-btn">
+                <option value="1h">1 Hour</option>
+                <option value="6h">6 Hours</option>
+                <option value="24h">24 Hours</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="metrics-panel">
+        <div class="metric-card">
+            <h3>Average Commission Rate</h3>
+            <div class="metric-value" id="avgCommissionRate">0.00%</div>
+        </div>
+        <div class="metric-card">
+            <h3>Total Investment Volume</h3>
+            <div class="metric-value" id="totalInvestmentVolume">$0</div>
+        </div>
+        <div class="metric-card">
+            <h3>Total Affiliate Earnings</h3>
+            <div class="metric-value" id="totalEarnings">$0</div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="performanceChart"></canvas>
+    </div>
+    
+    <h2>Token Portfolio</h2>
+    <div class="tokens-container" id="tokensContainer">
+        <!-- Token cards will be dynamically inserted here -->
+    </div>
+</div>
+
+<script>
+// Token data
+const tokens = [
+    { 
+        id: 'sol1', 
+        name: 'SolanaDAO', 
+        color: '#9945FF', 
+        baseCommission: 0.5,
+        currentCommission: 0.5,
+        volume: 0,
+        earnings: 0,
+        optimizing: true
+    },
+    { 
+        id: 'sol2', 
+        name: 'SolFi', 
+        color: '#14F195', 
+        baseCommission: 0.8,
+        currentCommission: 0.8,
+        volume: 0,
+        earnings: 0,
+        optimizing: true
+    },
+    { 
+        id: 'sol3', 
+        name: 'DegenSol', 
+        color: '#FF9900', 
+        baseCommission: 1.2,
+        currentCommission: 1.2,
+        volume: 0,
+        earnings: 0,
+        optimizing: true
+    },
+    { 
+        id: 'sol4', 
+        name: 'MetaSolana', 
+        color: '#DC1FFF', 
+        baseCommission: 0.7,
+        currentCommission: 0.7,
+        volume: 0,
+        earnings: 0,
+        optimizing: false
+    },
+    { 
+        id: 'sol5', 
+        name: 'SolSwap', 
+        color: '#00C2FF', 
+        baseCommission: 0.9,
+        currentCommission: 0.9,
+        volume: 0,
+        earnings: 0,
+        optimizing: true
+    }
+];
+
+let simulationRunning = false;
+let chart;
+let totalVolume = 0;
+let totalEarnings = 0;
+
+function createTokenCards() {
+    const container = document.getElementById('tokensContainer');
+    container.innerHTML = '';
+    
+    tokens.forEach(token => {
+        const card = document.createElement('div');
+        card.className = 'token-card';
+        
+        let optimizingBadge = token.optimizing ? 
+            `<span class="optimizing-badge">Optimizing</span>` : '';
+        
+        card.innerHTML = `
+            ${optimizingBadge}
+            <div class="token-header">
+                <svg class="token-icon" viewBox="0 0 30 30">
+                    <circle cx="15" cy="15" r="15" fill="${token.color}" />
+                </svg>
+                <div class="token-name">${token.name}</div>
+            </div>
+            <div class="token-stats">
+                <div class="token-stat">
+                    <span>Commission Rate:</span>
+                    <span id="${token.id}-commission">${token.currentCommission.toFixed(2)}%</span>
+                </div>
+                <div class="token-stat">
+                    <span>Volume:</span>
+                    <span id="${token.id}-volume">$0</span>
+                </div>
+                <div class="token-stat">
+                    <span>Earnings:</span>
+                    <span id="${token.id}-earnings">$0</span>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+function initializeChart() {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    
+    // Create datasets for each token
+    const datasets = tokens.map(token => {
+        return {
+            label: `${token.name} Commission`,
+            data: [],
+            borderColor: token.color,
+            tension: 0.4,
+            fill: false
+        };
+    });
+    
+    // Add volume dataset
+    datasets.push({
+        label: 'Total Volume ($1000s)',
+        data: [],
+        borderColor: '#ffffff',
+        borderDash: [5, 5],
+        tension: 0.4,
+        fill: false,
+        yAxisID: 'y1'
+    });
+    
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Commission Rate (%)',
+                        color: 'white'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                y1: {
+                    beginAtZero: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Volume ($1000s)',
+                        color: 'white'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            }
+        }
+    });
+}
+
+function optimizeCommissionRates() {
+    // Simulate AI optimization logic
+    tokens.forEach(token => {
+        if (token.optimizing) {
+            // Simulate some market conditions affecting optimal rate
+            const marketFactor = Math.sin(Date.now() / 10000) * 0.5 + 0.5;
+            const competitionFactor = Math.cos(Date.now() / 15000) * 0.3 + 0.7;
+            
+            // Optimize commission rate based on "AI analysis"
+            const optimalRate = token.baseCommission * (0.8 + marketFactor * 0.4) * competitionFactor;
+            
+            // Gradual adjustment toward optimal rate (simulating AI learning)
+            token.currentCommission = token.currentCommission * 0.9 + optimalRate * 0.1;
+            
+            // Keep commission rate within reasonable bounds
+            token.currentCommission = Math.max(0.1, Math.min(2.0, token.currentCommission));
+        }
+    });
+}
+
+function updateTokenData() {
+    // Reset totals
+    totalVolume = 0;
+    let periodEarnings = 0;
+    
+    tokens.forEach(token => {
+        // Generate random volume with some correlation to commission rate
+        // Lower commissions generally mean higher volume
+        const baseVolume = Math.random() * 50000;
+        const commissionImpact = Math.max(0, 1 - (token.currentCommission / 3));
+        token.volume = baseVolume * commissionImpact;
+        
+        // Calculate earnings
+        const newEarnings = token.volume * token.currentCommission / 100;
+        token.earnings += newEarnings;
+        
+        // Update totals
+        totalVolume += token.volume;
+        periodEarnings += newEarnings;
+        totalEarnings += newEarnings;
+        
+        // Update UI
+        document.getElementById(`${token.id}-commission`).textContent = token.currentCommission.toFixed(2) + '%';
+        document.getElementById(`${token.id}-volume`).textContent = '$' + token.volume.toFixed(0);
+        document.getElementById(`${token.id}-earnings`).textContent = '$' + token.earnings.toFixed(2);
+    });
+    
+    // Calculate average commission rate (weighted by volume)
+    let weightedCommissionSum = 0;
+    tokens.forEach(token => {
+        weightedCommissionSum += token.currentCommission * token.volume;
+    });
+    const avgCommissionRate = totalVolume > 0 ? weightedCommissionSum / totalVolume : 0;
+    
+    // Update summary metrics
+    document.getElementById('avgCommissionRate').textContent = avgCommissionRate.toFixed(2) + '%';
+    document.getElementById('totalInvestmentVolume').textContent = '$' + totalVolume.toFixed(0);
+    document.getElementById('totalEarnings').textContent = '$' + totalEarnings.toFixed(2);
+    
+    return periodEarnings;
+}
+
+function updateSimulation() {
+    if (!simulationRunning) return;
+
+    // Optimize commission rates
+    optimizeCommissionRates();
+    
+    // Update token data and get earnings
+    updateTokenData();
+
+    // Update chart
+    const timestamp = new Date().toLocaleTimeString();
+    chart.data.labels.push(timestamp);
+    
+    // Add data for each token's commission rate
+    tokens.forEach((token, index) => {
+        chart.data.datasets[index].data.push(token.currentCommission);
+    });
+    
+    // Add volume data (in thousands)
+    chart.data.datasets[tokens.length].data.push(totalVolume/1000);
+
+    // Remove old data points if more than 30
+    if (chart.data.labels.length > 30) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach(dataset => dataset.data.shift());
+    }
+
+    chart.update();
+    
+    // Schedule next update
+    setTimeout(updateSimulation, 1000);
+}
+
+// Event Listeners
+document.getElementById('startBtn').addEventListener('click', () => {
+    simulationRunning = true;
+    updateSimulation();
+});
+
+document.getElementById('pauseBtn').addEventListener('click', () => {
+    simulationRunning = false;
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+    simulationRunning = false;
+    chart.data.labels = [];
+    chart.data.datasets.forEach(dataset => dataset.data = []);
+    chart.update();
+    
+    // Reset token data
+    tokens.forEach(token => {
+        token.currentCommission = token.baseCommission;
+        token.volume = 0;
+        token.earnings = 0;
+    });
+    
+    totalVolume = 0;
+    totalEarnings = 0;
+    
+    // Update UI
+    updateTokenData();
+});
+
+document.getElementById('zoomLevel').addEventListener('change', (e) => {
+    // This would adjust the time scale in a real implementation
+    console.log("Time frame changed to: " + e.target.value);
+});
+
+// Initialize the simulation when the page loads
+createTokenCards();
+initializeChart();
+</script>
+</body></html>

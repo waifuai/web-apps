@@ -1,0 +1,183 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokenomics Airdrop Simulation</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="header-container">
+    <h1><i class="fas fa-parachute-box"></i> Tokenomics Airdrop Simulation</h1>
+    <p class="tagline">Analyze different token distribution strategies and their market impact</p>
+  </div>
+
+  <div class="container">
+    <div id="controls">
+      <div class="control-panel">
+        <div class="panel-header">
+          <i class="fas fa-cogs"></i>
+          <h2>Market Parameters</h2>
+        </div>
+        <div class="input-group">
+          <label for="initial-price">Initial Token Price ($P_0$):</label>
+          <input type="number" id="initial-price" value="1" step="0.1">
+        </div>
+
+        <div class="input-group">
+          <label for="initial-supply">Initial Token Supply ($S_0$):</label>
+          <input type="number" id="initial-supply" value="1000000">
+        </div>
+
+        <div class="input-group">
+          <label for="max-time">Time Steps ($T_{max}$):</label>
+          <input type="number" id="max-time" value="100">
+        </div>
+
+        <div class="input-group">
+          <label for="num-users">Number of Users:</label>
+          <input type="number" id="num-users" value="1000">
+        </div>
+
+        <div class="panel-header archetype-header">
+          <i class="fas fa-users"></i>
+          <h2>User Archetypes</h2>
+        </div>
+
+        <div class="archetypes-container">
+          <div class="archetype-card hodler">
+            <div class="archetype-icon"><i class="fas fa-handshake"></i></div>
+            <h3>Hodlers</h3>
+            <div class="input-group">
+              <label for="hodler-ratio">Ratio:</label>
+              <input type="number" id="hodler-ratio" value="0.5" step="0.1" min="0" max="1">
+            </div>
+            <div class="input-group">
+              <label for="hodler-hodl-prob">Hodl Probability:</label>
+              <input type="number" id="hodler-hodl-prob" value="0.9" step="0.1" min="0" max="1">
+            </div>
+          </div>
+
+          <div class="archetype-card trader">
+            <div class="archetype-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Traders</h3>
+            <div class="input-group">
+              <label for="trader-ratio">Ratio:</label>
+              <input type="number" id="trader-ratio" value="0.3" step="0.1" min="0" max="1">
+            </div>
+            <div class="input-group">
+              <label for="trader-trade-freq">Trade Frequency:</label>
+              <input type="number" id="trader-trade-freq" value="0.2" step="0.1" min="0" max="1">
+            </div>
+          </div>
+
+          <div class="archetype-card dumper">
+            <div class="archetype-icon"><i class="fas fa-arrow-down"></i></div>
+            <h3>Dumpers</h3>
+            <div class="input-group">
+              <label for="dumper-ratio">Ratio:</label>
+              <input type="number" id="dumper-ratio" value="0.2" step="0.1" min="0" max="1">
+            </div>
+            <div class="input-group">
+              <label for="dumper-dump-prob">Dump Probability:</label>
+              <input type="number" id="dumper-dump-prob" value="0.8" step="0.1" min="0" max="1">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-panel">
+        <div class="panel-header">
+          <i class="fas fa-gift"></i>
+          <h2>Airdrop Strategies</h2>
+        </div>
+        
+        <div class="strategy-selector">
+          <select id="airdrop-strategy">
+            <option value="equal">Equal Distribution</option>
+            <option value="proportional">Proportional to Activity</option>
+            <option value="random">Random Distribution</option>
+          </select>
+        </div>
+
+        <div id="strategy-params">
+          <div id="equal-params" class="strategy-param-group active">
+            <div class="strategy-icon"><i class="fas fa-equals"></i></div>
+            <h3>Equal Distribution Parameters</h3>
+            <p>Every user receives exactly the same amount of tokens.</p>
+            <div class="input-group">
+              <label for="equal-amount">Tokens per User:</label>
+              <input type="number" id="equal-amount" value="100">
+            </div>
+          </div>
+          
+          <div id="proportional-params" class="strategy-param-group">
+            <div class="strategy-icon"><i class="fas fa-percentage"></i></div>
+            <h3>Proportional Distribution Parameters</h3>
+            <p>Users receive tokens proportional to their activity level.</p>
+            <div class="input-group">
+              <label for="activity-multiplier">Activity Multiplier:</label>
+              <input type="number" id="activity-multiplier" value="10">
+            </div>
+          </div>
+          
+          <div id="random-params" class="strategy-param-group">
+            <div class="strategy-icon"><i class="fas fa-dice"></i></div>
+            <h3>Random Distribution Parameters</h3>
+            <p>Random users are selected to receive the airdrop.</p>
+            <div class="input-group">
+              <label for="random-prob">Selection Probability:</label>
+              <input type="number" id="random-prob" value="0.1" step="0.01" min="0" max="1">
+            </div>
+            <div class="input-group">
+              <label for="random-amount">Tokens per Selected User:</label>
+              <input type="number" id="random-amount" value="500">
+            </div>
+          </div>
+        </div>
+
+        <button id="run-simulation">
+          <i class="fas fa-play"></i> Run Simulation
+        </button>
+      </div>
+    </div>
+
+    <div id="results">
+      <div class="results-header">
+        <i class="fas fa-chart-pie"></i>
+        <h2>Simulation Results</h2>
+      </div>
+      <div id="charts">
+        <div class="chart-container">
+          <div class="chart-header">
+            <i class="fas fa-coins"></i>
+            <h3>Token Price Evolution</h3>
+          </div>
+          <canvas id="price-chart"></canvas>
+        </div>
+        <div class="chart-container">
+          <div class="chart-header">
+            <i class="fas fa-database"></i>
+            <h3>Token Supply Evolution</h3>
+          </div>
+          <canvas id="supply-chart"></canvas>
+        </div>
+      </div>
+      <div id="strategy-comparison">
+        <div class="chart-header">
+          <i class="fas fa-balance-scale"></i>
+          <h3>Strategy Analysis</h3>
+        </div>
+        <p id="comparison-text">Run a simulation to see results analysis.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Tokenomics Airdrop Simulator | <i class="fas fa-code"></i> with <i class="fas fa-heart"></i> for blockchain enthusiasts</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

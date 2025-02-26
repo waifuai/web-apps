@@ -1,0 +1,383 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>TokenAffiliates Dynamic Commission Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(120deg, #1a365d 0%, #2d3748 100%);
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .commission-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #4fd1c5;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen text-gray-100">
+  <div class="flex flex-col lg:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <nav class="w-full lg:w-64 bg-gray-900 p-4 lg:min-h-screen">
+      <div class="flex items-center justify-center lg:justify-start mb-8">
+        <svg class="h-8 w-8 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#4FD1C5" stroke-width="2"/>
+          <path d="M7.5 12H16.5" stroke="#4FD1C5" stroke-width="2" stroke-linecap="round"/>
+          <path d="M12 7.5V16.5" stroke="#4FD1C5" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h1 class="text-xl font-bold">TokenAffiliates</h1>
+      </div>
+      <ul class="space-y-2">
+        <li>
+          <a href="#dashboard" class="nav-link active flex items-center p-2 rounded hover:bg-gray-800">
+            <i class="fas fa-tachometer-alt w-5 mr-2"></i>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="#tokens" class="nav-link flex items-center p-2 rounded hover:bg-gray-800">
+            <i class="fas fa-coins w-5 mr-2"></i>
+            Tokens
+          </a>
+        </li>
+        <li>
+          <a href="#analytics" class="nav-link flex items-center p-2 rounded hover:bg-gray-800">
+            <i class="fas fa-chart-line w-5 mr-2"></i>
+            Analytics
+          </a>
+        </li>
+        <li>
+          <a href="#reports" class="nav-link flex items-center p-2 rounded hover:bg-gray-800">
+            <i class="fas fa-file-alt w-5 mr-2"></i>
+            Reports
+          </a>
+        </li>
+        <li>
+          <a href="#wallet" class="nav-link flex items-center p-2 rounded hover:bg-gray-800">
+            <i class="fas fa-wallet w-5 mr-2"></i>
+            Wallet
+          </a>
+        </li>
+        <li>
+          <a href="#settings" class="nav-link flex items-center p-2 rounded hover:bg-gray-800">
+            <i class="fas fa-cog w-5 mr-2"></i>
+            Settings
+          </a>
+        </li>
+      </ul>
+      
+      <div class="mt-auto pt-8">
+        <div class="bg-gray-800 p-4 rounded-lg">
+          <div class="flex items-center mb-3">
+            <div class="h-10 w-10 rounded-full bg-teal-500 flex items-center justify-center mr-3">
+              <span class="font-bold">JD</span>
+            </div>
+            <div>
+              <p class="font-medium">John Doe</p>
+              <p class="text-xs text-gray-400">Affiliate Level: Gold</p>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-gray-700">
+            <a href="#" class="text-sm text-gray-400 hover:text-teal-500">Sign Out</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 lg:p-8 overflow-y-auto" id="content-area">
+      <!-- Dashboard Tab Content -->
+      <div id="dashboard-content" class="tab-content active">
+        <header class="flex justify-between items-center mb-8">
+          <div>
+            <h1 class="text-3xl font-bold mb-1">Dashboard</h1>
+            <p class="text-gray-400">Welcome back, John! Here's your commission overview.</p>
+          </div>
+          <div class="flex items-center">
+            <button class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg mr-3">
+              <i class="fas fa-bell mr-2"></i>
+              <span class="bg-teal-500 text-xs rounded-full px-1 absolute -mt-2 -mr-1">3</span>
+            </button>
+            <button id="connectWalletBtn" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center">
+              <i class="fas fa-link mr-2"></i>
+              Connect Wallet
+            </button>
+          </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="card rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-sm text-gray-400">Total Earnings</p>
+                <h3 class="text-2xl font-bold">2,456.32 SOL</h3>
+              </div>
+              <div class="bg-teal-500 bg-opacity-20 p-3 rounded-full">
+                <i class="fas fa-money-bill-wave text-teal-500"></i>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <span class="text-green-500 flex items-center mr-2">
+                <i class="fas fa-arrow-up mr-1"></i>
+                24.5%
+              </span>
+              <span class="text-sm text-gray-400">vs last month</span>
+            </div>
+          </div>
+
+          <div class="card rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-sm text-gray-400">Active Referrals</p>
+                <h3 class="text-2xl font-bold">156</h3>
+              </div>
+              <div class="bg-purple-500 bg-opacity-20 p-3 rounded-full">
+                <i class="fas fa-users text-purple-500"></i>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <span class="text-green-500 flex items-center mr-2">
+                <i class="fas fa-arrow-up mr-1"></i>
+                12.3%
+              </span>
+              <span class="text-sm text-gray-400">vs last month</span>
+            </div>
+          </div>
+
+          <div class="card rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-sm text-gray-400">Conversion Rate</p>
+                <h3 class="text-2xl font-bold">8.25%</h3>
+              </div>
+              <div class="bg-blue-500 bg-opacity-20 p-3 rounded-full">
+                <i class="fas fa-exchange-alt text-blue-500"></i>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <span class="text-red-500 flex items-center mr-2">
+                <i class="fas fa-arrow-down mr-1"></i>
+                2.1%
+              </span>
+              <span class="text-sm text-gray-400">vs last month</span>
+            </div>
+          </div>
+
+          <div class="card rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-sm text-gray-400">Pending Payout</p>
+                <h3 class="text-2xl font-bold">342.87 SOL</h3>
+              </div>
+              <div class="bg-yellow-500 bg-opacity-20 p-3 rounded-full">
+                <i class="fas fa-clock text-yellow-500"></i>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <button class="text-xs bg-teal-500 hover:bg-teal-600 px-3 py-1 rounded">
+                Claim Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="card rounded-lg p-6 mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Performance Metrics</h2>
+            <div class="flex">
+              <select id="chartTimeframe" class="bg-gray-800 text-white rounded-lg px-3 py-1 text-sm">
+                <option value="week">Last 7 Days</option>
+                <option value="month" selected>Last 30 Days</option>
+                <option value="quarter">Last 90 Days</option>
+                <option value="year">Last Year</option>
+              </select>
+            </div>
+          </div>
+          <div class="h-80">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top Performing Tokens -->
+        <div class="card rounded-lg p-6 mb-8">
+          <h2 class="text-xl font-bold mb-6">Top Performing Tokens</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-sm text-gray-400 border-b border-gray-700">
+                  <th class="pb-3">Token</th>
+                  <th class="pb-3">Price</th>
+                  <th class="pb-3">Conversions</th>
+                  <th class="pb-3">Earnings</th>
+                  <th class="pb-3">Commission</th>
+                  <th class="pb-3">Change</th>
+                  <th class="pb-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="topTokensTable">
+                <!-- Populated via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="card rounded-lg p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Recent Activities</h2>
+            <a href="#" class="text-teal-500 text-sm hover:underline">View All</a>
+          </div>
+          <div class="space-y-4" id="recentActivities">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tokens Tab Content -->
+      <div id="tokens-content" class="tab-content hidden">
+        <header class="flex justify-between items-center mb-8">
+          <div>
+            <h1 class="text-3xl font-bold mb-1">Token Management</h1>
+            <p class="text-gray-400">Manage your referral links and commission rates</p>
+          </div>
+          <div>
+            <button class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg">
+              <i class="fas fa-plus mr-2"></i>
+              Add New Token
+            </button>
+          </div>
+        </header>
+
+        <!-- Search and Filter -->
+        <div class="flex flex-col md:flex-row gap-4 mb-8">
+          <div class="relative flex-grow">
+            <input type="text" placeholder="Search tokens..." class="w-full bg-gray-800 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+          <div class="flex gap-4">
+            <select class="bg-gray-800 rounded-lg px-4 py-2">
+              <option>All Platforms</option>
+              <option>Solana</option>
+              <option>Ethereum</option>
+              <option>Binance Smart Chain</option>
+            </select>
+            <select class="bg-gray-800 rounded-lg px-4 py-2">
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>Pending</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tokens Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tokensGrid">
+          <!-- Token cards will be populated via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Analytics Tab Content -->
+      <div id="analytics-content" class="tab-content hidden">
+        <header class="mb-8">
+          <h1 class="text-3xl font-bold mb-1">Analytics</h1>
+          <p class="text-gray-400">Detailed performance and conversion metrics</p>
+        </header>
+
+        <!-- Analytics will be populated via JavaScript -->
+      </div>
+
+      <!-- Reports Tab Content -->
+      <div id="reports-content" class="tab-content hidden">
+        <header class="mb-8">
+          <h1 class="text-3xl font-bold mb-1">Reports</h1>
+          <p class="text-gray-400">Generate and download custom reports</p>
+        </header>
+
+        <!-- Custom Reports -->
+        <div class="card rounded-lg p-6 mb-8">
+          <h2 class="text-xl font-bold mb-6">Custom Reports</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label class="block text-sm font-medium mb-2">Date Range</label>
+              <select class="w-full bg-gray-800 rounded-lg p-3">
+                <option>Last 7 Days</option>
+                <option>Last 30 Days</option>
+                <option>Last Quarter</option>
+                <option>Custom Range</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Token Filter</label>
+              <select class="w-full bg-gray-800 rounded-lg p-3" multiple>
+                <option selected>SOL</option>
+                <option>RAY</option>
+                <option>SRM</option>
+                <option>BONK</option>
+                <option>JUP</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Report Type</label>
+              <select class="w-full bg-gray-800 rounded-lg p-3">
+                <option>Commission Summary</option>
+                <option>Performance Analytics</option>
+                <option>Conversion Rates</option>
+                <option>Traffic Sources</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg flex items-center">
+              <i class="fas fa-file-download mr-2"></i>
+              Generate Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Saved Reports -->
+        <div class="card rounded-lg p-6">
+          <h2 class="text-xl font-bold mb-6">Saved Reports</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="text-left text-sm text-gray-400 border-b border-gray-700">
+                  <th class="pb-3">Report Name</th>
+                  <th class="pb-3">Type</th>
+                  <th class="pb-3">Date Range</th>
+                  <th class="pb-3">Created</th>
+                  <th class="pb-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="savedReportsTable">
+                <!-- Populated via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="app.js"></script>
+</body>
+</html>

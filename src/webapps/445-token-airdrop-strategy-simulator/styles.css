@@ -1,0 +1,123 @@
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #4CAF50;
+  font-size: 2.5rem;
+}
+
+.description {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #aaa;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+button {
+  padding: 1rem;
+  background: #4CAF50;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+button:hover {
+  transform: translateY(-3px);
+  background: #45a049;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+button:disabled {
+  background: #888;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .metrics {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.metric {
+  background: #2d2d2d;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.metric:hover {
+  transform: translateY(-2px);
+}
+
+.label {
+  display: block;
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#chart {
+  background: #2d2d2d;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.strategy-info {
+  background: #2d2d2d;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.strategy-info h3 {
+  color: #4CAF50;
+  margin-top: 0;
+}
+
+.strategy-info ul {
+  padding-left: 1.5rem;
+}
+
+.strategy-info li {
+  margin-bottom: 0.5rem;
+}

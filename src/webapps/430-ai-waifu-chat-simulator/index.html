@@ -1,0 +1,82 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Waifu Chat Simulator</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="/styles.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="waifu-container">
+      <svg class="waifu-character" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hair back -->
+        <path class="hair-back" d="M150 80 Q100 60 80 120 Q60 180 70 240 Q80 300 150 320 Q220 300 230 240 Q240 180 220 120 Q200 60 150 80" fill="#FFB6C1"/>
+        
+        <!-- Neck -->
+        <path class="neck" d="M140 170 Q150 180 160 170 L160 190 Q150 195 140 190 Z" fill="#ffe6f2"/>
+        
+        <!-- Body/Outfit -->
+        <path class="outfit" d="M120 190 Q150 210 180 190 Q200 240 220 300 Q180 330 150 340 Q120 330 80 300 Q100 240 120 190" fill="#FF69B4"/>
+        <path class="outfit-detail" d="M120 190 Q150 210 180 190 L175 230 Q150 240 125 230 Z" fill="#FF1493" opacity="0.3"/>
+        
+        <!-- Arms -->
+        <path class="arm left-arm" d="M120 190 Q90 220 70 300" stroke="#ffe6f2" stroke-width="20" fill="none" stroke-linecap="round"/>
+        <path class="arm right-arm" d="M180 190 Q210 220 230 300" stroke="#ffe6f2" stroke-width="20" fill="none" stroke-linecap="round"/>
+        
+        <!-- Face -->
+        <circle class="face" cx="150" cy="120" r="70" fill="#ffe6f2"/>
+        
+        <!-- Hair front -->
+        <path class="hair-front" d="M150 50 Q100 60 100 100 Q95 120 90 130 L95 140 Q110 130 115 140 L110 150 Q120 145 125 155" fill="#FFB6C1"/>
+        <path class="hair-front" d="M150 50 Q200 60 200 100 Q205 120 210 130 L205 140 Q190 130 185 140 L190 150 Q180 145 175 155" fill="#FFB6C1"/>
+        <path class="hair-bangs" d="M110 80 Q150 70 190 80 Q170 90 150 85 Q130 90 110 80" fill="#FFB6C1"/>
+        <path class="hair-strand" d="M100 110 Q90 130 95 150" fill="none" stroke="#FFB6C1" stroke-width="5"/>
+        <path class="hair-strand" d="M200 110 Q210 130 205 150" fill="none" stroke="#FFB6C1" stroke-width="5"/>
+        
+        <!-- Eyebrows -->
+        <path class="eyebrow left-eyebrow" d="M115 95 Q125 90 135 95" fill="none" stroke="#666" stroke-width="2"/>
+        <path class="eyebrow right-eyebrow" d="M165 95 Q175 90 185 95" fill="none" stroke="#666" stroke-width="2"/>
+        
+        <!-- Eyes -->
+        <g class="eyes">
+          <ellipse class="eye-white left-eye-white" cx="125" cy="110" rx="15" ry="12" fill="white"/>
+          <ellipse class="eye-white right-eye-white" cx="175" cy="110" rx="15" ry="12" fill="white"/>
+          <circle class="eye left-eye" cx="125" cy="110" r="7" fill="#9370DB"/>
+          <circle class="eye right-eye" cx="175" cy="110" r="7" fill="#9370DB"/>
+          <circle class="eye-highlight left-eye-highlight" cx="122" cy="107" r="2" fill="white"/>
+          <circle class="eye-highlight right-eye-highlight" cx="172" cy="107" r="2" fill="white"/>
+          
+          <!-- Eyelids - hidden by default -->
+          <path class="eyelid left-eyelid" d="M110 110 Q125 110 140 110 Q125 125 110 110" fill="#ffe6f2" opacity="0"/>
+          <path class="eyelid right-eyelid" d="M160 110 Q175 110 190 110 Q175 125 160 110" fill="#ffe6f2" opacity="0"/>
+        </g>
+        
+        <!-- Nose -->
+        <path class="nose" d="M147 125 Q150 130 153 125" fill="none" stroke="#ffb3b3" stroke-width="1.5"/>
+        
+        <!-- Mouth -->
+        <path class="mouth" d="M135 145 Q150 155 165 145" fill="none" stroke="#FF5454" stroke-width="3"/>
+        
+        <!-- Blush -->
+        <circle class="blush left-blush" cx="110" cy="130" r="12" fill="#ff6699" opacity="0"/>
+        <circle class="blush right-blush" cx="190" cy="130" r="12" fill="#ff6699" opacity="0"/>
+        
+        <!-- Accessories -->
+        <path class="hair-accessory" d="M120 70 Q150 60 180 70 Q170 55 150 50 Q130 55 120 70" fill="#FFC0CB"/>
+      </svg>
+    </div>
+    
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

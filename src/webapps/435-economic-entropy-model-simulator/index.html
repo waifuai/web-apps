@@ -1,0 +1,587 @@
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .model-viz {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .viz-container {
+      display: flex;
+      height: 300px;
+      position: relative;
+      overflow: hidden;
+      background: #e9f7ff;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .control-group {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .output-display {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e9ecef;
+      border-radius: 4px;
+    }
+    
+    .factory {
+      position: absolute;
+      bottom: 20px;
+      width: 50px;
+      height: 60px;
+      transition: all 0.5s ease;
+    }
+    
+    .factory-active {
+      fill: #3a6ea5;
+    }
+    
+    .factory-inactive {
+      fill: #888;
+    }
+    
+    .smoke {
+      position: absolute;
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+    
+    .worker {
+      position: absolute;
+      bottom: 10px;
+      width: 20px;
+      height: 30px;
+      transition: all 0.5s ease;
+    }
+    
+    .worker-active {
+      fill: #38761d;
+    }
+    
+    .worker-inactive {
+      fill: #cc0000;
+    }
+    
+    .gauge-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    
+    .gauge {
+      width: 200px;
+      height: 100px;
+      position: relative;
+      text-align: center;
+    }
+    
+    .gauge-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .government-building {
+      position: absolute;
+      bottom: 20px;
+      right: 40px;
+      width: 80px;
+      height: 100px;
+    }
+    
+    .money-flow {
+      position: absolute;
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+    
+    /* New layout styles */
+    .dual-view {
+      display: flex;
+      height: 400px;
+      margin-bottom: 20px;
+    }
+    
+    .viz-panel {
+      flex: 1;
+      position: relative;
+      background: #e9f7ff;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-right: 10px;
+    }
+    
+    .chart-panel {
+      flex: 1;
+      background: #fff;
+      border-radius: 4px;
+      margin-left: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Economic Entropy Model Simulator</h1>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label>Tax Rate (T):</label>
+        <input type="range" id="taxRate" min="0" max="1" step="0.01" value="0.3">
+        <span id="taxValue">0.3</span>
+      </div>
+      
+      <div class="control-group">
+        <label>Regulation Level (R):</label>
+        <input type="range" id="regLevel" min="0" max="1" step="0.01" value="0.2">
+        <span id="regValue">0.2</span>
+      </div>
+      
+      <div class="control-group">
+        <label>Initial Producers (N₀):</label>
+        <input type="range" id="producers" min="100" max="1000" step="10" value="500">
+        <span id="producersValue">500</span>
+      </div>
+    </div>
+
+    <div class="model-viz">
+      <!-- New dual panel view -->
+      <div class="dual-view">
+        <div class="viz-panel" id="visualContainer">
+          <svg class="government-building" viewBox="0 0 100 120">
+            <rect x="10" y="20" width="80" height="100" fill="#777" />
+            <rect x="20" y="40" width="15" height="20" fill="#fff" />
+            <rect x="45" y="40" width="15" height="20" fill="#fff" />
+            <rect x="70" y="40" width="15" height="20" fill="#fff" />
+            <rect x="20" y="70" width="15" height="20" fill="#fff" />
+            <rect x="45" y="70" width="15" height="20" fill="#fff" />
+            <rect x="70" y="70" width="15" height="20" fill="#fff" />
+            <rect x="40" y="0" width="20" height="20" fill="#777" />
+            <rect x="35" y="110" width="30" height="10" fill="#555" />
+          </svg>
+          <!-- Factories and workers will be added dynamically with JavaScript -->
+        </div>
+        
+        <div class="chart-panel">
+          <canvas id="modelCanvas"></canvas>
+        </div>
+      </div>
+      
+      <div class="gauge-container">
+        <div class="gauge">
+          <div class="gauge-title">Economic Entropy</div>
+          <svg id="entropyGauge" width="200" height="100"></svg>
+        </div>
+        <div class="gauge">
+          <div class="gauge-title">Economic Output</div>
+          <svg id="outputGauge" width="200" height="100"></svg>
+        </div>
+        <div class="gauge">
+          <div class="gauge-title">Producer Motivation</div>
+          <svg id="motivationGauge" width="200" height="100"></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="output-display">
+      <h3>System State:</h3>
+      <div id="outputMetrics"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const canvas = document.getElementById('modelCanvas');
+    const ctx = canvas.getContext('2d');
+    let chart;
+    const visualContainer = document.getElementById('visualContainer');
+    const entropyGauge = document.getElementById('entropyGauge');
+    const outputGauge = document.getElementById('outputGauge');
+    const motivationGauge = document.getElementById('motivationGauge');
+
+    // Model parameters
+    const k = 0.5;  // entropy increase rate
+    const l = 0.3;  // entropy reduction rate
+    const a = 0.8;  // tax impact on motivation
+    const b = 0.6;  // regulation impact on motivation
+    const c = 0.9;  // tax impact on strike probability
+    const d = 0.7;  // regulation impact on strike probability
+    const m = 100;  // entropy impact on output
+    const Y0 = 1000; // base output
+
+    // Factory and worker SVG templates
+    const factorySvg = `
+      <rect x="5" y="30" width="40" height="30" class="factory-body" />
+      <rect x="15" y="10" width="20" height="20" class="factory-body" />
+      <rect x="20" y="0" width="10" height="10" class="factory-body" />
+    `;
+
+    const workerSvg = `
+      <circle cx="10" cy="5" r="5" class="worker-head" />
+      <rect x="7" y="10" width="6" height="15" class="worker-body" />
+      <line x1="7" y1="15" x2="0" y2="20" stroke-width="2" class="worker-limb" />
+      <line x1="13" y1="15" x2="20" y2="20" stroke-width="2" class="worker-limb" />
+      <line x1="7" y1="25" x2="5" y2="35" stroke-width="2" class="worker-limb" />
+      <line x1="13" y1="25" x2="15" y2="35" stroke-width="2" class="worker-limb" />
+    `;
+
+    const smokeSvg = `
+      <circle cx="5" cy="5" r="5" fill="#aaa" opacity="0.7" />
+    `;
+
+    const moneySvg = `
+      <rect x="0" y="0" width="10" height="5" fill="#85bb65" rx="1" />
+      <circle cx="5" cy="2.5" r="2" fill="#fff" opacity="0.7" />
+    `;
+
+    function calculateSystemState(T, R, N0) {
+      // Calculate producer participation and motivation
+      const S = c*T + d*R;  // strike probability
+      const N = N0 * (1 - S);  // active producers
+      const M = 1 - a*T - b*R;  // motivation
+      
+      // Calculate equilibrium entropy
+      const Se = (k*(T + R))/(l*N*M);
+      
+      // Calculate economic output
+      const Y = Y0 - m*Se;
+      
+      return {
+        entropy: Se,
+        output: Y,
+        activeProducers: N,
+        motivation: M,
+        strikeProb: S
+      };
+    }
+
+    function createGauge(svgElement, value, max, color) {
+      const width = 200;
+      const height = 100;
+      const radius = 80;
+      const centerX = width / 2;
+      const centerY = height;
+      
+      // Clear the SVG
+      svgElement.innerHTML = '';
+      
+      // Calculate angle (from -Math.PI/2 to Math.PI/2)
+      const normalizedValue = Math.min(value / max, 1);
+      const angle = (Math.PI * normalizedValue) - (Math.PI / 2);
+      
+      // Draw gauge background
+      const bgPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      bgPath.setAttribute("d", `M ${centerX - radius} ${centerY} A ${radius} ${radius} 0 0 1 ${centerX + radius} ${centerY}`);
+      bgPath.setAttribute("fill", "none");
+      bgPath.setAttribute("stroke", "#ddd");
+      bgPath.setAttribute("stroke-width", "10");
+      svgElement.appendChild(bgPath);
+      
+      // Draw gauge value
+      const valuePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const endX = centerX + radius * Math.cos(angle);
+      const endY = centerY + radius * Math.sin(angle);
+      valuePath.setAttribute("d", `M ${centerX - radius} ${centerY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`);
+      valuePath.setAttribute("fill", "none");
+      valuePath.setAttribute("stroke", color);
+      valuePath.setAttribute("stroke-width", "10");
+      svgElement.appendChild(valuePath);
+      
+      // Add needle
+      const needle = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      needle.setAttribute("x1", centerX);
+      needle.setAttribute("y1", centerY);
+      needle.setAttribute("x2", endX);
+      needle.setAttribute("y2", endY);
+      needle.setAttribute("stroke", "#333");
+      needle.setAttribute("stroke-width", "2");
+      svgElement.appendChild(needle);
+      
+      // Add value text
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", centerX);
+      text.setAttribute("y", centerY - 20);
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", "#333");
+      text.textContent = Math.round(value);
+      svgElement.appendChild(text);
+    }
+
+    function updateVisualElements(state) {
+      // Clear previous elements
+      const existingFactories = document.querySelectorAll('.factory');
+      const existingWorkers = document.querySelectorAll('.worker');
+      const existingSmoke = document.querySelectorAll('.smoke');
+      const existingMoney = document.querySelectorAll('.money-flow');
+      
+      existingFactories.forEach(factory => factory.remove());
+      existingWorkers.forEach(worker => worker.remove());
+      existingSmoke.forEach(smoke => smoke.remove());
+      existingMoney.forEach(money => money.remove());
+      
+      // Create factories
+      const totalFactories = 10;
+      const activeFactories = Math.round(totalFactories * (1 - state.strikeProb));
+      
+      for (let i = 0; i < totalFactories; i++) {
+        const factory = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        factory.classList.add('factory');
+        factory.setAttribute('viewBox', '0 0 50 60');
+        factory.style.left = `${50 + i * 70}px`;
+        
+        const isActive = i < activeFactories;
+        factory.innerHTML = factorySvg;
+        
+        // Set factory color based on active status
+        const bodyElements = factory.querySelectorAll('.factory-body');
+        bodyElements.forEach(el => {
+          el.classList.add(isActive ? 'factory-active' : 'factory-inactive');
+        });
+        
+        visualContainer.appendChild(factory);
+        
+        // Add smoke if factory is active
+        if (isActive) {
+          const intensity = state.motivation;
+          const smokeCount = Math.round(3 * intensity);
+          
+          for (let j = 0; j < smokeCount; j++) {
+            setTimeout(() => {
+              const smoke = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+              smoke.classList.add('smoke');
+              smoke.setAttribute('viewBox', '0 0 10 10');
+              smoke.style.left = `${75 + i * 70}px`;
+              smoke.style.bottom = `${80 + Math.random() * 50}px`;
+              smoke.innerHTML = smokeSvg;
+              visualContainer.appendChild(smoke);
+              
+              // Animate smoke
+              setTimeout(() => {
+                smoke.style.opacity = '1';
+                smoke.style.bottom = `${120 + Math.random() * 80}px`;
+                smoke.style.left = `${75 + i * 70 + (Math.random() * 20 - 10)}px`;
+              }, 10);
+              
+              setTimeout(() => {
+                smoke.style.opacity = '0';
+              }, 2000);
+              
+              setTimeout(() => {
+                smoke.remove();
+              }, 3000);
+            }, j * 500);
+          }
+        }
+      }
+      
+      // Create workers
+      const totalWorkers = 20;
+      const activeWorkers = Math.round((state.activeProducers / 1000) * totalWorkers);
+      
+      for (let i = 0; i < totalWorkers; i++) {
+        const worker = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        worker.classList.add('worker');
+        worker.setAttribute('viewBox', '0 0 20 35');
+        worker.style.left = `${30 + i * 40}px`;
+        
+        const isActive = i < activeWorkers;
+        worker.innerHTML = workerSvg;
+        
+        // Set worker color based on active status
+        const bodyElements = worker.querySelectorAll('.worker-head, .worker-body');
+        bodyElements.forEach(el => {
+          el.classList.add(isActive ? 'worker-active' : 'worker-inactive');
+        });
+        
+        const limbElements = worker.querySelectorAll('.worker-limb');
+        limbElements.forEach(el => {
+          el.setAttribute('stroke', isActive ? '#38761d' : '#cc0000');
+        });
+        
+        visualContainer.appendChild(worker);
+      }
+      
+      // Create money flow animations (taxes)
+      const taxRate = parseFloat(document.getElementById('taxRate').value);
+      if (taxRate > 0.1) {
+        const moneyFlowCount = Math.round(taxRate * 10);
+        
+        for (let i = 0; i < moneyFlowCount; i++) {
+          setTimeout(() => {
+            const money = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            money.classList.add('money-flow');
+            money.setAttribute('viewBox', '0 0 10 5');
+            
+            // Random starting position near a factory
+            const factoryIndex = Math.floor(Math.random() * activeFactories);
+            money.style.left = `${75 + factoryIndex * 70}px`;
+            money.style.bottom = '60px';
+            money.innerHTML = moneySvg;
+            visualContainer.appendChild(money);
+            
+            // Animate money flow to government building
+            setTimeout(() => {
+              money.style.opacity = '1';
+            }, 10);
+            
+            setTimeout(() => {
+              money.style.left = `${visualContainer.clientWidth - 80}px`;
+              money.style.bottom = '100px';
+            }, 100);
+            
+            setTimeout(() => {
+              money.style.opacity = '0';
+            }, 1500);
+            
+            setTimeout(() => {
+              money.remove();
+            }, 2000);
+          }, i * 300);
+        }
+      }
+      
+      // Update gauges
+      createGauge(entropyGauge, state.entropy, 20, '#e74c3c');
+      createGauge(outputGauge, state.output, 1000, '#2ecc71');
+      createGauge(motivationGauge, state.motivation * 100, 100, '#3498db');
+    }
+
+    function updateChart() {
+      const T = parseFloat(document.getElementById('taxRate').value);
+      const R = parseFloat(document.getElementById('regLevel').value);
+      const N0 = parseFloat(document.getElementById('producers').value);
+      
+      const state = calculateSystemState(T, R, N0);
+      
+      // Update the visual elements
+      updateVisualElements(state);
+      
+      if (chart) {
+        chart.destroy();
+      }
+      
+      // Create time series data
+      const timePoints = 50;
+      const labels = Array.from({length: timePoints}, (_, i) => i);
+      const entropyData = [];
+      const outputData = [];
+      
+      for (let i = 0; i < timePoints; i++) {
+        const noise = Math.random() * 0.1 - 0.05;
+        entropyData.push(state.entropy * (1 + noise));
+        outputData.push(state.output * (1 + noise));
+      }
+      
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Economic Entropy',
+            data: entropyData,
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1
+          }, {
+            label: 'Economic Output',
+            data: outputData,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+      
+      // Update metrics display
+      document.getElementById('outputMetrics').innerHTML = `
+        <p>Economic Entropy: ${state.entropy.toFixed(2)}</p>
+        <p>Economic Output: ${state.output.toFixed(2)}</p>
+        <p>Active Producers: ${state.activeProducers.toFixed(2)}</p>
+        <p>Producer Motivation: ${state.motivation.toFixed(2)}</p>
+        <p>Strike Probability: ${state.strikeProb.toFixed(2)}</p>
+      `;
+    }
+
+    // Add event listeners
+    document.getElementById('taxRate').addEventListener('input', (e) => {
+      document.getElementById('taxValue').textContent = e.target.value;
+      updateChart();
+    });
+
+    document.getElementById('regLevel').addEventListener('input', (e) => {
+      document.getElementById('regValue').textContent = e.target.value;
+      updateChart();
+    });
+
+    document.getElementById('producers').addEventListener('input', (e) => {
+      document.getElementById('producersValue').textContent = e.target.value;
+      updateChart();
+    });
+
+    // Make sure canvas is responsive
+    function resizeCanvas() {
+      const chartPanel = document.querySelector('.chart-panel');
+      canvas.width = chartPanel.clientWidth - 20; // Subtract padding
+      canvas.height = chartPanel.clientHeight - 20;
+      if (chart) updateChart();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Initialize everything
+    setTimeout(resizeCanvas, 100); // Short delay to ensure DOM is fully loaded
+    updateChart();
+  </script>
+</body>
+</html>

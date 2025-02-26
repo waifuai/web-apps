@@ -1,0 +1,559 @@
+<meta charset="UTF-8" />
+<title>AI Commission Rate Optimization Simulator</title>
+<style>
+:root {
+  --primary: #2c3e50;
+  --secondary: #3498db;
+  --accent: #e74c3c;
+  --background: #ecf0f1;
+  --green: #2ecc71;
+  --yellow: #f1c40f;
+  --purple: #9b59b6;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--background);
+  margin: 0;
+  padding: 2rem;
+  color: var(--primary);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.parameter-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.graph-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.parameter-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.parameter-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.tooltip {
+  position: absolute;
+  background: var(--primary);
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  width: 200px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.parameter-group:hover .tooltip {
+  opacity: 1;
+}
+
+.graph-container {
+  width: 100%;
+  height: 300px;
+  margin: 1rem 0;
+}
+
+.value-display {
+  display: inline-block;
+  font-weight: bold;
+  color: var(--secondary);
+  width: 50px;
+  text-align: right;
+  margin-left: 10px;
+}
+
+.visualization-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  padding: 8px 16px;
+  background: #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab.active {
+  background: var(--secondary);
+  color: white;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.metric-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.3s;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.metric-title {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.revenue-up {
+  color: var(--green);
+}
+
+.revenue-down {
+  color: var(--accent);
+}
+
+.radar-container {
+  width: 100%;
+  height: 300px;
+  display: none;
+}
+
+.optimization-container {
+  width: 100%;
+  height: 300px;
+  display: none;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="parameter-section">
+    <h2>Simulation Parameters</h2>
+    
+    <div class="parameter-group">
+      <label for="initial-rate">Initial Commission Rate (%)</label>
+      <input type="range" id="initial-rate" class="parameter-input" min="0" max="10" step="0.1" value="5">
+      <span class="value-display" id="initial-rate-value">5.0</span>
+      <div class="tooltip">
+        Starting commission rate for the simulation. Higher rates may increase short-term revenue but could impact long-term market share.
+      </div>
+    </div>
+
+    <div class="parameter-group">
+      <label for="volatility">Market Volatility (%)</label>
+      <input type="range" id="volatility" class="parameter-input" min="0" max="100" step="1" value="30">
+      <span class="value-display" id="volatility-value">30</span>
+      <div class="tooltip">
+        Measure of market price fluctuations. Higher volatility requires more dynamic commission rate adjustment.
+      </div>
+    </div>
+
+    <div class="parameter-group">
+      <label for="time-horizon">Time Horizon (Days)</label>
+      <input type="number" id="time-horizon" class="parameter-input" min="1" max="365" value="30">
+      <div class="tooltip">
+        Duration of the simulation. Longer periods provide more accurate long-term optimization but require more processing time.
+      </div>
+    </div>
+    
+    <div class="parameter-group">
+      <label for="competitive-pressure">Competitive Pressure</label>
+      <input type="range" id="competitive-pressure" class="parameter-input" min="0" max="10" step="0.1" value="5">
+      <span class="value-display" id="competitive-pressure-value">5.0</span>
+      <div class="tooltip">
+        Intensity of market competition. Higher values mean more aggressive competitors, which may require lower commission rates.
+      </div>
+    </div>
+    
+    <div class="parameter-group">
+      <label for="customer-elasticity">Customer Price Elasticity</label>
+      <input type="range" id="customer-elasticity" class="parameter-input" min="0" max="10" step="0.1" value="5">
+      <span class="value-display" id="customer-elasticity-value">5.0</span>
+      <div class="tooltip">
+        How sensitive customers are to price changes. Higher values mean customers are more likely to switch based on commission rates.
+      </div>
+    </div>
+    
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-title">Est. Revenue Change</div>
+        <div class="metric-value" id="revenue-metric">+12.5%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Market Share</div>
+        <div class="metric-value" id="market-share-metric">65.2%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Recommended Rate</div>
+        <div class="metric-value" id="recommended-rate">4.8%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="graph-section">
+    <h2>Impact Visualization</h2>
+    
+    <div class="visualization-tabs">
+      <div class="tab active" data-target="impact">Impact Over Time</div>
+      <div class="tab" data-target="radar">Parameter Balance</div>
+      <div class="tab" data-target="optimization">Optimization Curve</div>
+    </div>
+    
+    <div class="graph-container" id="impact-container">
+      <canvas id="impactChart"></canvas>
+    </div>
+    
+    <div class="radar-container" id="radar-container">
+      <canvas id="radarChart"></canvas>
+    </div>
+    
+    <div class="optimization-container" id="optimization-container">
+      <canvas id="optimizationChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+// Initialize the impact chart
+const ctx = document.getElementById('impactChart').getContext('2d');
+let impactChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array.from({length: 30}, (_, i) => i + 1),
+        datasets: [{
+            label: 'Expected Revenue',
+            data: [],
+            borderColor: '#3498db',
+            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+            tension: 0.4,
+            fill: true
+        },
+        {
+            label: 'Market Share',
+            data: [],
+            borderColor: '#e74c3c',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Commission Rate Impact Analysis'
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false
+            }
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Value'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Days'
+                }
+            }
+        }
+    }
+});
+
+// Initialize the radar chart
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+let radarChart = new Chart(radarCtx, {
+    type: 'radar',
+    data: {
+        labels: [
+            'Revenue Potential',
+            'Market Share',
+            'Customer Retention',
+            'Competitive Position',
+            'Long-term Stability'
+        ],
+        datasets: [{
+            label: 'Current Strategy',
+            data: [0, 0, 0, 0, 0],
+            fill: true,
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            borderColor: 'rgb(52, 152, 219)',
+            pointBackgroundColor: 'rgb(52, 152, 219)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(52, 152, 219)'
+        }, {
+            label: 'Optimal Strategy',
+            data: [0, 0, 0, 0, 0],
+            fill: true,
+            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+            borderColor: 'rgb(46, 204, 113)',
+            pointBackgroundColor: 'rgb(46, 204, 113)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(46, 204, 113)'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        elements: {
+            line: {
+                borderWidth: 3
+            }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Parameter Balance Analysis'
+            }
+        },
+        scales: {
+            r: {
+                angleLines: {
+                    display: true
+                },
+                suggestedMin: 0,
+                suggestedMax: 100
+            }
+        }
+    }
+});
+
+// Initialize the optimization curve chart
+const optCtx = document.getElementById('optimizationChart').getContext('2d');
+let optimizationChart = new Chart(optCtx, {
+    type: 'scatter',
+    data: {
+        datasets: [{
+            label: 'Revenue vs Commission Rate',
+            data: [],
+            backgroundColor: 'rgba(52, 152, 219, 0.6)'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Commission Rate Optimization Curve'
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Commission Rate (%)'
+                },
+                min: 0,
+                max: 10
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Expected Revenue'
+                },
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Update charts based on parameter changes
+function updateCharts() {
+    const initialRate = parseFloat(document.getElementById('initial-rate').value);
+    const volatility = parseFloat(document.getElementById('volatility').value);
+    const timeHorizon = parseInt(document.getElementById('time-horizon').value);
+    const competitivePressure = parseFloat(document.getElementById('competitive-pressure').value);
+    const customerElasticity = parseFloat(document.getElementById('customer-elasticity').value);
+    
+    // Update displayed values
+    document.getElementById('initial-rate-value').textContent = initialRate.toFixed(1);
+    document.getElementById('volatility-value').textContent = volatility.toFixed(0);
+    document.getElementById('competitive-pressure-value').textContent = competitivePressure.toFixed(1);
+    document.getElementById('customer-elasticity-value').textContent = customerElasticity.toFixed(1);
+    
+    // Update time horizon on x-axis
+    impactChart.data.labels = Array.from({length: timeHorizon}, (_, i) => i + 1);
+    
+    // Generate simulated data for impact chart
+    const revenue = Array.from({length: timeHorizon}, (_, i) => {
+        const daySeed = i / timeHorizon;
+        return 100 * (1 + (initialRate/100)) * 
+               (1 - (volatility/200) * daySeed) * 
+               (1 - (competitivePressure/20) * daySeed) * 
+               Math.pow(1 - (customerElasticity/50) * initialRate/10, daySeed * 3);
+    });
+    
+    const marketShare = Array.from({length: timeHorizon}, (_, i) => {
+        const daySeed = i / timeHorizon;
+        return 100 * Math.exp(-initialRate/10) * 
+               (1 - (volatility/300)) * 
+               (1 - (competitivePressure/15) * daySeed) * 
+               (1 - customerElasticity * initialRate/100 * daySeed);
+    });
+    
+    // Update impact chart
+    impactChart.data.datasets[0].data = revenue;
+    impactChart.data.datasets[1].data = marketShare;
+    impactChart.update();
+    
+    // Update radar chart
+    const revenueScore = 100 * (1 - Math.abs(initialRate - 5)/10) * (1 - volatility/200);
+    const marketShareScore = 100 * Math.exp(-initialRate/5) * (1 - competitivePressure/20);
+    const retentionScore = 100 * (1 - customerElasticity * initialRate/100);
+    const competitiveScore = 100 * (1 - competitivePressure/10) * (1 - initialRate/20);
+    const stabilityScore = 100 * (1 - volatility/100) * (1 - customerElasticity/20);
+    
+    radarChart.data.datasets[0].data = [
+        revenueScore, 
+        marketShareScore, 
+        retentionScore, 
+        competitiveScore, 
+        stabilityScore
+    ];
+    
+    // Optimal strategy (simplified calculation)
+    const optimalRate = 5 * (1 - volatility/200) * (1 - competitivePressure/20) * (1 - customerElasticity/20);
+    const optRevenueScore = 100 * (1 - Math.abs(optimalRate - 5)/10) * (1 - volatility/200);
+    const optMarketShareScore = 100 * Math.exp(-optimalRate/5) * (1 - competitivePressure/20);
+    const optRetentionScore = 100 * (1 - customerElasticity * optimalRate/100);
+    const optCompetitiveScore = 100 * (1 - competitivePressure/10) * (1 - optimalRate/20);
+    const optStabilityScore = 100 * (1 - volatility/100) * (1 - customerElasticity/20);
+    
+    radarChart.data.datasets[1].data = [
+        optRevenueScore, 
+        optMarketShareScore, 
+        optRetentionScore, 
+        optCompetitiveScore, 
+        optStabilityScore
+    ];
+    
+    radarChart.update();
+    
+    // Update optimization curve
+    const points = [];
+    for(let rate = 0; rate <= 10; rate += 0.5) {
+        const estimatedRevenue = 100 * (1 + (rate/100)) * 
+                               (1 - (volatility/200)) * 
+                               (1 - (competitivePressure/20)) * 
+                               Math.pow(1 - (customerElasticity/50) * rate/10, 0.5);
+        
+        points.push({
+            x: rate,
+            y: estimatedRevenue
+        });
+    }
+    optimizationChart.data.datasets[0].data = points;
+    optimizationChart.update();
+    
+    // Update metrics
+    const finalRevenue = revenue[revenue.length - 1];
+    const initialRevenue = revenue[0];
+    const revenueChange = ((finalRevenue - initialRevenue) / initialRevenue * 100).toFixed(1);
+    const finalMarketShare = marketShare[marketShare.length - 1].toFixed(1);
+    
+    const revMetric = document.getElementById('revenue-metric');
+    revMetric.textContent = (revenueChange >= 0 ? '+' : '') + revenueChange + '%';
+    revMetric.className = 'metric-value ' + (revenueChange >= 0 ? 'revenue-up' : 'revenue-down');
+    
+    document.getElementById('market-share-metric').textContent = finalMarketShare + '%';
+    document.getElementById('recommended-rate').textContent = optimalRate.toFixed(1) + '%';
+}
+
+// Tab switching functionality
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        
+        // Add active class to clicked tab
+        tab.classList.add('active');
+        
+        // Hide all containers
+        document.getElementById('impact-container').style.display = 'none';
+        document.getElementById('radar-container').style.display = 'none';
+        document.getElementById('optimization-container').style.display = 'none';
+        
+        // Show the selected container
+        const target = tab.getAttribute('data-target');
+        document.getElementById(target + '-container').style.display = 'block';
+        
+        // Trigger resize event to make Chart.js responsive
+        window.dispatchEvent(new Event('resize'));
+    });
+});
+
+// Add event listeners to inputs
+document.getElementById('initial-rate').addEventListener('input', updateCharts);
+document.getElementById('volatility').addEventListener('input', updateCharts);
+document.getElementById('time-horizon').addEventListener('input', updateCharts);
+document.getElementById('competitive-pressure').addEventListener('input', updateCharts);
+document.getElementById('customer-elasticity').addEventListener('input', updateCharts);
+
+// Add hover effects for parameter groups
+document.querySelectorAll('.parameter-group').forEach(group => {
+    const tooltip = group.querySelector('.tooltip');
+    
+    group.addEventListener('mousemove', (e) => {
+        tooltip.style.left = `${e.pageX + 10}px`;
+        tooltip.style.top = `${e.pageY + 10}px`;
+    });
+});
+
+// Initial chart update
+updateCharts();
+</script>
+</body></html>

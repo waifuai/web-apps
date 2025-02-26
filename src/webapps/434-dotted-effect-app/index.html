@@ -1,0 +1,34 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dotted Effect App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Dotted Effect App</h1>
+  <div class="controls">
+    <div class="slider-container">
+      <label for="dotSize">Dot Size: </label>
+      <input type="range" id="dotSize" min="2" max="30" value="2">
+      <span id="dotSizeValue">2</span>px
+    </div>
+    <div class="button-container">
+      <button id="nextImageButton">Next Image</button>
+      <label for="imageUpload" class="upload-label">Upload Image:</label>
+      <input type="file" id="imageUpload" accept="image/*">
+    </div>
+  </div>
+  <p id="errorMessage" style="color:red;"></p>
+  <div class="media-container">
+    <div class="media-wrapper">
+      <h2>Original Image</h2>
+      <img id="sourceImage" crossOrigin="anonymous" src="https://picsum.photos/400/300?random=1" alt="Sample Image">
+    </div>
+    <div class="media-wrapper">
+      <h2>Dotted Effect</h2>
+      <canvas id="canvasImage"></canvas>
+    </div>
+  </div>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

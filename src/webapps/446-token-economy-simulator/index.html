@@ -1,0 +1,122 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Economy Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Token Economy Simulator</h1>
+      <p>Explore token pricing through bonding curves and simulate exchanges</p>
+    </header>
+    
+    <div class="token-params">
+      <div class="token-card" id="tokenA">
+        <h2>Token A Parameters</h2>
+        
+        <div class="input-group slider-container">
+          <label>Slope (m<sub>A</sub>)</label>
+          <input type="range" id="mA" min="0.01" max="0.1" value="0.02" step="0.01">
+          <span class="slider-value">0.02</span>
+        </div>
+        
+        <div class="input-group slider-container">
+          <label>Intercept (b<sub>A</sub>)</label>
+          <input type="range" id="bA" min="0.1" max="5" value="1.0" step="0.1">
+          <span class="slider-value">1.0</span>
+        </div>
+        
+        <div class="input-group slider-container">
+          <label>Supply (S<sub>A</sub>)</label>
+          <input type="range" id="SA" min="10" max="500" value="100" step="10">
+          <span class="slider-value">100</span>
+        </div>
+        
+        <div class="bonding-curve">
+          <svg id="curveA" width="100%" height="100%" viewBox="0 0 300 200" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <div class="token-card" id="tokenB">
+        <h2>Token B Parameters</h2>
+        
+        <div class="input-group slider-container">
+          <label>Slope (m<sub>B</sub>)</label>
+          <input type="range" id="mB" min="0.01" max="0.1" value="0.01" step="0.01">
+          <span class="slider-value">0.01</span>
+        </div>
+        
+        <div class="input-group slider-container">
+          <label>Intercept (b<sub>B</sub>)</label>
+          <input type="range" id="bB" min="0.1" max="5" value="0.5" step="0.1">
+          <span class="slider-value">0.5</span>
+        </div>
+        
+        <div class="input-group slider-container">
+          <label>Supply (S<sub>B</sub>)</label>
+          <input type="range" id="SB" min="10" max="500" value="200" step="10">
+          <span class="slider-value">200</span>
+        </div>
+        
+        <div class="bonding-curve">
+          <svg id="curveB" width="100%" height="100%" viewBox="0 0 300 200" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="exchange-results">
+      <div class="result-card">
+        <h3>Current Prices</h3>
+        <div class="price-display">
+          <div>
+            <div class="token-icon token-a-icon">A</div>
+            P<sub>A</sub> = <span id="priceA">...</span>
+          </div>
+          <div>
+            <div class="token-icon token-b-icon">B</div>
+            P<sub>B</sub> = <span id="priceB">...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h3>Exchange Rate</h3>
+        <div class="rate-display">
+          1 <span class="token-icon token-a-icon" style="display: inline-flex; width: 25px; height: 25px; font-size: 0.8rem;">A</span>
+          <span class="rate-arrow">→</span>
+          <span id="exchangeRate">...</span>
+          <span class="token-icon token-b-icon" style="display: inline-flex; width: 25px; height: 25px; font-size: 0.8rem;">B</span>
+        </div>
+      </div>
+
+      <div class="conversion-card">
+        <h3>Instant Exchange</h3>
+        <div class="input-group slider-container">
+          <label>Amount of Token A to exchange:</label>
+          <input type="range" id="exchangeAmount" min="0.1" max="10" value="1" step="0.1">
+          <span class="slider-value">1</span>
+        </div>
+        <div class="result-display">
+          You receive: <span id="receivedB">...</span> B
+        </div>
+      </div>
+    </div>
+    
+    <div class="formula-container">
+      <h3>Bonding Curve Formulas</h3>
+      <div class="formula-display">
+        <div class="formula" id="formulaA">
+          P<sub>A</sub>(S<sub>A</sub>) = m<sub>A</sub> × S<sub>A</sub> + b<sub>A</sub>
+        </div>
+        <div class="formula" id="formulaB">
+          P<sub>B</sub>(S<sub>B</sub>) = m<sub>B</sub> × S<sub>B</sub> + b<sub>B</sub>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

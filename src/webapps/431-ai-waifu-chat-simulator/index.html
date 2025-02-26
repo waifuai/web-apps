@@ -1,0 +1,75 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Waifu Chat Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="character-container">
+      <svg id="waifu-svg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hair back -->
+        <path class="hair-back" d="M90 180 C40 150 60 50 150 50 C240 50 260 150 210 180" fill="#8a6eaf"/>
+        
+        <!-- Head & Neck -->
+        <path class="neck" d="M135 180 C135 165 165 165 165 180" fill="#ffe9e9"/>
+        <circle class="head" cx="150" cy="120" r="70" fill="#ffe9e9"/>
+        
+        <!-- Body -->
+        <path class="body" d="M120 180 C90 240 90 340 150 350 C210 340 210 240 180 180" fill="#ffccdd"/>
+        
+        <!-- Clothing top -->
+        <path class="clothing" d="M120 190 C90 240 90 280 150 300 C210 280 210 240 180 190" fill="#f8f8ff"/>
+        <path class="clothing-detail" d="M135 190 L135 240 M165 190 L165 240" stroke="#e0e0ff" stroke-width="2" fill="none"/>
+        
+        <!-- Hair front -->
+        <path class="hair-front" d="M90 120 C70 80 90 50 150 50 C210 50 230 80 210 120" fill="#9a7ebf"/>
+        <path class="hair-strand-1" d="M95 120 C85 150 90 170 100 190" stroke="#9a7ebf" stroke-width="10" fill="none"/>
+        <path class="hair-strand-2" d="M205 120 C215 150 210 170 200 190" stroke="#9a7ebf" stroke-width="10" fill="none"/>
+        <path class="hair-bangs" d="M110 70 C100 90 110 110 120 115 M190 70 C200 90 190 110 180 115 M150 60 C140 80 150 100 150 110" stroke="#9a7ebf" stroke-width="12" fill="none"/>
+        
+        <!-- Eyes group -->
+        <g id="eyes">
+          <!-- Left eye -->
+          <ellipse class="eye-white" cx="125" cy="110" rx="15" ry="18" fill="white"/>
+          <circle class="eye-pupil" cx="125" cy="110" r="7" fill="#5d5bcf"/>
+          <circle class="eye-highlight" cx="122" cy="107" r="3" fill="white"/>
+          
+          <!-- Right eye -->
+          <ellipse class="eye-white" cx="175" cy="110" rx="15" ry="18" fill="white"/>
+          <circle class="eye-pupil" cx="175" cy="110" r="7" fill="#5d5bcf"/>
+          <circle class="eye-highlight" cx="172" cy="107" r="3" fill="white"/>
+          
+          <!-- Eyelashes -->
+          <path class="eyelash" d="M110 102 C115 98 120 97 125 98 M115 120 C120 123 125 123 130 122 M175 98 C180 97 185 98 190 102 M170 122 C175 123 180 123 185 120" stroke="#333" stroke-width="1.5" fill="none"/>
+        </g>
+        
+        <!-- Eyebrows -->
+        <path id="left-eyebrow" d="M110 90 Q125 85 140 90" stroke="#8a6eaf" stroke-width="3" fill="none"/>
+        <path id="right-eyebrow" d="M160 90 Q175 85 190 90" stroke="#8a6eaf" stroke-width="3" fill="none"/>
+        
+        <!-- Mouth -->
+        <path id="mouth" d="M140 145 Q150 152 160 145" fill="none" stroke="#ff9999" stroke-width="2"/>
+        
+        <!-- Blush spots -->
+        <circle class="blush" cx="115" cy="130" r="10" fill="#ffb3b3" opacity="0.5"/>
+        <circle class="blush" cx="185" cy="130" r="10" fill="#ffb3b3" opacity="0.5"/>
+        
+        <!-- Emotional effects container -->
+        <g id="effects"></g>
+      </svg>
+    </div>
+    
+    <div class="chat-container">
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
