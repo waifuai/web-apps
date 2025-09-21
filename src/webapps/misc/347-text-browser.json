@@ -1,0 +1,5 @@
+{
+  "title": "Implementing a Text-Based Web Browser",
+  "link": "./347-text-browser.html",
+  "description": "Dive into the fascinating world of retro computing with this in-depth tutorial on building a text-based web browser from scratch 🌐. Perfect for developers interested in low-level programming and HTTP protocols, the guide walks through parsing HTML, handling CSS basics, and rendering content in a terminal environment using languages like Python or C++ 💻. Explore key challenges such as link navigation, form submissions, and JavaScript emulation without a full GUI, making it an excellent project for understanding the foundations of web technologies 🛠️. Whether you're a student learning networking fundamentals or a hobbyist recreating 90s browsing experiences, this resource provides step-by-step code examples, debugging tips, and performance optimizations to create a functional, lightweight browser that strips away modern bloat for pure efficiency 🚀. Discover how such tools power screen readers and embedded systems today, bridging historical tech with contemporary applications 📚."
+}

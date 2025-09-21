@@ -1,0 +1,5 @@
+{
+  "title": "Interactive MCP Tutorial Guide",
+  "link": "./index.html",
+  "description": "Dive into the fundamentals of the MCP framework with this interactive tutorial that demystifies server-side resources and prompts! 🌐 Resources are the backbone of your application—data streams, whether text or binary, uniquely identified by URIs for seamless access and manipulation. Learn how to expose and manage these assets efficiently to power dynamic web experiences. 🚀 Next, explore Prompts as reusable templates that revolutionize content generation: inject dynamic arguments and inclusive context to create personalized, adaptive responses on the fly. This hands-on guide walks you through practical examples, from setting up basic resources to crafting sophisticated prompts for AI-driven interactions. Perfect for developers seeking to enhance their apps with modular, scalable components—unlock creativity and efficiency in your projects today! 💡 With step-by-step instructions and interactive code snippets, you'll master MCP concepts and apply them to real-world scenarios, boosting productivity across web development and API integrations. (148 words)"
+}
