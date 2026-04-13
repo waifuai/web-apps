@@ -1,0 +1,84 @@
+body {
+  margin: 0;
+  padding: 2rem;
+  font-family: 'Segoe UI', system-ui;
+  background: #f0f2f5;
+  color: #1a1a1a;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.token-params {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.token-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.input-group {
+  margin: 1rem 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.exchange-results {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.result-card, .conversion-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.price-display {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.rate-display {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #27ae60;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.conversion-card .result-display {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2980b9;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+h2, h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}

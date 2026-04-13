@@ -1,0 +1,106 @@
+:root {
+  --bg: #1a1a1a;
+  --text: #f0f0f0;
+  --accent: #4CAF50;
+  --danger: #f44336;
+  --highlight: #FFC107;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.viz-container {
+  position: relative;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: #2a2a2a;
+  border-radius: 8px;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.params-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.param-item input {
+  width: 100%;
+  background: #333;
+  border: 1px solid #444;
+  color: white;
+  padding: 4px;
+}
+
+.chart {
+  height: 200px;
+  background: #2a2a2a;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+}
+
+.stats-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.stat-item {
+  background: #2a2a2a;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  min-width: 120px;
+  text-align: center;
+}
+
+@keyframes pulse {
+  0% { r: 3; }
+  50% { r: 5; }
+  100% { r: 3; }
+}
+
+.bankrupt {
+  stroke: var(--danger);
+  animation: pulse 1s infinite;
+}

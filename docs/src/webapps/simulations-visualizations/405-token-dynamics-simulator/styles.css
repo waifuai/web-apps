@@ -1,0 +1,69 @@
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.simulator-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.controls {
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.strategy-select {
+  margin-bottom: 15px;
+}
+
+.params {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.param-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+input[type="number"] {
+  padding: 5px;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 16px;
+  background: #4CAF50;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+canvas {
+  background: #2a2a2a;
+  padding: 15px;
+  border-radius: 10px;
+}

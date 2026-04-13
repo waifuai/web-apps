@@ -1,0 +1,99 @@
+:root {
+  --cell-size: 20px;
+  --gap: 4px;
+  --color-scale-0: #ebedf0;
+  --color-scale-1: #9be9a8;
+  --color-scale-2: #40c463;
+  --color-scale-3: #30a14e;
+  --color-scale-4: #216e39;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f6f8fa;
+  color: #1f2328;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(26, var(--cell-size));
+  grid-auto-rows: var(--cell-size);
+  gap: var(--gap);
+  margin-bottom: 2rem;
+}
+
+.day-cell {
+  background: var(--color-scale-0);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.day-cell:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.contributions-container {
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 1rem;
+  background: white;
+}
+
+.contribution-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eaecef;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contribution-item:last-child {
+  border-bottom: none;
+}
+
+.contribution-type {
+  width: 80px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.contribution-date {
+  color: #656d76;
+  font-size: 0.9em;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #656d76;
+}
+
+.tooltip {
+  position: absolute;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}

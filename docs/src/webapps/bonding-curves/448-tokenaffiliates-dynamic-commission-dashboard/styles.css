@@ -1,0 +1,166 @@
+.gradient-bg {
+  background: linear-gradient(120deg, #1a202c 0%, #2d3748 100%);
+}
+
+.card {
+  background: rgba(26, 32, 44, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.commission-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #4a5568;
+  border-radius: 5px;
+  outline: none;
+  margin: 10px 0;
+}
+
+.commission-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4fd1c5;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.commission-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #4fd1c5;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Navigation styles */
+.nav-link {
+  transition: all 0.2s ease;
+}
+
+.nav-link.active {
+  background-color: #2d3748;
+  color: #4fd1c5;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  color: #4fd1c5;
+}
+
+/* Tab Content */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4fd1c5;
+}
+
+/* Token card status indicator */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-active {
+  background-color: #48bb78;
+}
+
+.status-pending {
+  background-color: #ecc94b;
+}
+
+.status-inactive {
+  background-color: #f56565;
+}
+
+/* Activity item styling */
+.activity-item {
+  border-left: 2px solid #4a5568;
+  padding-left: 15px;
+  position: relative;
+}
+
+.activity-item::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4fd1c5;
+  position: absolute;
+  left: -7px;
+  top: 0;
+}
+
+/* Animation for notifications */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Tooltip styles */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #1a202c;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

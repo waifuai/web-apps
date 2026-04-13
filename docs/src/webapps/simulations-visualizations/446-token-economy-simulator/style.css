@@ -1,0 +1,232 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui;
+  background: #f5f7fa;
+  color: #2c3e50;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(110, 142, 251, 0.2);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+}
+
+header p {
+  opacity: 0.9;
+  margin: 0.5rem 0 0;
+}
+
+.token-params {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.token-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.token-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.token-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+}
+
+#tokenA::before {
+  background: linear-gradient(90deg, #6e8efb, #a777e3);
+}
+
+#tokenB::before {
+  background: linear-gradient(90deg, #42d392, #647eff);
+}
+
+.input-group {
+  margin: 1.2rem 0;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+input[type="number"]:focus {
+  border-color: #a777e3;
+  box-shadow: 0 0 0 3px rgba(167, 119, 227, 0.2);
+  outline: none;
+  background: white;
+}
+
+.exchange-results {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.result-card, .conversion-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform 0.3s;
+  position: relative;
+}
+
+.result-card:hover, .conversion-card:hover {
+  transform: translateY(-5px);
+}
+
+.price-display {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #2c3e50;
+  margin-top: 1rem;
+}
+
+.price-display div {
+  display: flex;
+  align-items: center;
+  margin: 0.7rem 0;
+  padding: 0.7rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.token-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+.token-a-icon {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+}
+
+.token-b-icon {
+  background: linear-gradient(135deg, #42d392, #647eff);
+}
+
+.rate-display {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #4a5568;
+  text-align: center;
+  padding: 1.5rem 0;
+  position: relative;
+}
+
+.rate-arrow {
+  color: #a777e3;
+  font-size: 1.5rem;
+  margin: 0 0.5rem;
+}
+
+.conversion-card .result-display {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #3182ce;
+  margin-top: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+  background: #ebf8ff;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+h2, h3 {
+  margin-top: 0;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.formula-container {
+  margin-top: 3rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.formula-display {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.formula {
+  text-align: center;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-family: 'Times New Roman', serif;
+  font-size: 1.2rem;
+}
+
+.bonding-curve {
+  height: 200px;
+  margin: 1rem 0;
+}
+
+.slider-container {
+  position: relative;
+  padding-top: 10px;
+}
+
+.slider-value {
+  position: absolute;
+  top: -20px;
+  right: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}

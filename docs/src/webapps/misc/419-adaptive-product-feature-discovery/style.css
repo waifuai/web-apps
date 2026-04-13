@@ -1,0 +1,170 @@
+/* style.css */
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 3fr 1fr; /* Main content and sidebar */
+  grid-template-rows: auto 1fr auto; /* Header, Main, Footer */
+  grid-template-areas:
+    "header header"
+    "main sidebar"
+    "footer footer";
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+header {
+  grid-area: header;
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+main {
+  grid-area: main;
+  padding-right: 20px;
+}
+
+aside#sidebar {
+  grid-area: sidebar;
+  padding-left: 20px;
+  border-left: 1px solid #ccc;
+}
+
+footer {
+  grid-area: footer;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Input Area */
+#input-area {
+  margin-bottom: 20px;
+}
+
+#emotion-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 70%;
+}
+
+#submit-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Display Area */
+#display-area {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#emoji-display {
+  font-size: 5rem;
+  margin-bottom: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Progress Bar */
+#progress-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#progress-bar {
+  background-color: #eee;
+  border-radius: 10px;
+  width: 70%;
+  height: 20px;
+  margin-left: 10px;
+  margin-right: 5px;
+}
+
+#progress {
+  background-color: #28a745;
+  height: 20px;
+  border-radius: 10px;
+  width: 0%; /* Updated by JavaScript */
+  transition: width 0.3s ease;
+}
+
+#progress-percentage {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+
+/* Timeline Area */
+#timeline-area {
+  margin-bottom: 20px;
+}
+
+#timeline {
+  list-style: none;
+  padding: 0;
+}
+
+#timeline li {
+  padding: 8px 0;
+  border-bottom: 1px dashed #ccc;
+}
+
+#timeline li:last-child {
+  border-bottom: none;
+}
+
+/* Sidebar */
+aside#sidebar {
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 15px;
+}
+
+aside#sidebar h2 {
+  margin-top: 0;
+}
+
+/* Reset Button */
+#reset-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+/* Visualization Area */
+#visualization-area {
+  background-color: #eee;
+  padding: 20px;
+  border-radius: 5px;
+  margin-top: 20px;
+}

@@ -1,0 +1,50 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+  margin: 0;
+  padding: 20px;
+}
+
+.sim-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.controls {
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.param-group, .strategy-select, .archetype-params {
+  background: #333;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+label {
+  display: block;
+  margin: 10px 0;
+}
+
+input, select {
+  background: #444;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 5px;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 200px;
+}
+
+#chart {
+  height: 600px;
+  background: #2a2a2a;
+  border-radius: 10px;
+  padding: 15px;
+}

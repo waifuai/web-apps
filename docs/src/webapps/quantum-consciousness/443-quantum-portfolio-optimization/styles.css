@@ -1,0 +1,236 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background-color: #1e293b;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  max-width: 1000px;
+  width: 100%;
+}
+
+h1, h2, h3 {
+  color: #60a5fa;
+  text-align: center;
+}
+
+.portfolio-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.token-input {
+  background-color: #2d3748;
+  border-radius: 8px;
+  padding: 15px;
+  width: calc(33% - 10px);
+  margin-bottom: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.token-input:hover {
+  transform: translateY(-2px);
+}
+
+.quantum-options, .quantum-details, .results {
+  background-color: #2d3748;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #a0aec0;
+  font-weight: 500;
+}
+
+input[type="number"], select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #4a5568;
+  border-radius: 6px;
+  background-color: #2d3748;
+  color: #e2e8f0;
+  transition: border-color 0.3s;
+}
+
+input[type="number"]:focus, select:focus {
+  border-color: #60a5fa;
+  outline: none;
+}
+
+button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.chart-container {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#chart, #comparisonChart {
+  width: 48%;
+  height: 350px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .token-input {
+    width: 100%;
+  }
+  
+  #chart, #comparisonChart {
+    width: 100%;
+  }
+}
+
+.quantum-details {
+  text-align: left;
+  line-height: 1.6;
+}
+
+.quantum-equation {
+  background-color: #1e293b;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 15px 0;
+}
+
+.math-content {
+  color: #e2e8f0;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.quantum-circuit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.qubit-line {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  margin: 5px 0;
+}
+
+.gate {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #60a5fa;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 30px;
+  margin: 0 5px;
+  color: #60a5fa;
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.line {
+  height: 2px;
+  background-color: #60a5fa;
+  flex-grow: 1;
+}
+
+.metric-card {
+  background-color: #374151;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-label {
+  color: #a0aec0;
+}
+
+.metric-value {
+  color: #60a5fa;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.tab {
+  margin-bottom: 15px;
+}
+
+.tab-header {
+  background-color: #374151;
+  padding: 10px 15px;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tab-content {
+  background-color: #2d3748;
+  padding: 15px;
+  border-radius: 0 0 6px 6px;
+}
+
+.MathJax {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.mjx-chtml {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 5px 0;
+}
+
+.portfolio-table th, .portfolio-table td {
+  color: #e2e8f0;
+}
+
+.portfolio-table tbody tr:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+}
